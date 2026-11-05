@@ -273,19 +273,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              if (onExploreDemo) {
-                onExploreDemo();
-              } else {
-                onClose();
-              }
-            }}
-            title="Explore Demo Store"
-            className="p-2 text-zinc-400 hover:text-black hover:bg-zinc-100 rounded-full transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {!isGate && (
+            <button
+              onClick={onClose}
+              title="Close"
+              className="p-2 text-zinc-400 hover:text-black hover:bg-zinc-100 rounded-full transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Modal Body */}
@@ -391,18 +387,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <span>⚡ 1-Click Login (hannan@volopay.co)</span>
                 </button>
               </div>
-
-              {onExploreDemo && (
-                <div className="text-center pt-1">
-                  <button
-                    type="button"
-                    onClick={onExploreDemo}
-                    className="text-xs font-semibold text-zinc-500 hover:text-black hover:underline cursor-pointer"
-                  >
-                    Or explore Demo Kirana Store without login →
-                  </button>
-                </div>
-              )}
 
               <div className="pt-4 text-center border-t border-black">
                 <span className="text-xs text-zinc-500">New to DukaanOS? </span>

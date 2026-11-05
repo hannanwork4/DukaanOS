@@ -103,7 +103,6 @@ export function App() {
     return typeof window !== 'undefined' ? localStorage.getItem('dukaanos_token') : null;
   });
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [isDemoMode, setIsDemoMode] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
@@ -173,18 +172,17 @@ export function App() {
     localStorage.removeItem('dukaanos_business_id');
     setAuthToken(null);
     setCurrentUser(null);
-    setIsDemoMode(true);
-    setActiveBusinessId('b0000000-0000-0000-0000-000000000001');
-    loadAllData(false);
-    showToast('info', 'Logged out successfully. Switched to demo store view.');
-  }, [showToast, loadAllData]);
-
-  const handleExploreDemo = useCallback(() => {
-    setIsDemoMode(true);
-    setActiveBusinessId('b0000000-0000-0000-0000-000000000001');
-    loadAllData(false);
-    showToast('info', 'Welcome to Sri Venkateshwara Store (Demo)!');
-  }, [showToast, loadAllData]);
+    setBusiness(null);
+    setProducts([]);
+    setSuppliers([]);
+    setPurchases([]);
+    setSales([]);
+    setExpenses([]);
+    setTransactions([]);
+    setInsights([]);
+    setActiveTab('overview');
+    showToast('info', 'Logged out of store. Sign in required to access DukaanOS.');
+  }, [showToast]);
 
   // Initial Authentication Verification
   useEffect(() => {
@@ -237,21 +235,19 @@ export function App() {
     );
   }
 
-  // 2. Authentication Gate: Require login unless user clicked Explore Demo or Logged out into Demo Mode
-  if (!authToken && !currentUser && !isDemoMode) {
+  // 2. Authentication Gate: Required to log in before web opens
+  if (!authToken || !currentUser) {
     return (
       <div className="min-h-screen bg-[#0e0f11] flex flex-col items-center justify-center p-4 text-white relative">
         <AuthModal
           isOpen={true}
           isGate={true}
           initialMode="login"
-          onClose={handleExploreDemo}
-          onExploreDemo={handleExploreDemo}
+          onClose={() => {}}
           onSuccess={(user, biz) => {
             setCurrentUser(user);
             setBusiness(biz);
             setAuthToken(localStorage.getItem('dukaanos_token'));
-            setIsDemoMode(false);
             loadAllData(false);
           }}
           showToast={showToast}
@@ -267,7 +263,6 @@ export function App() {
   return (
     <Layout
       business={business}
-      isDemo={isDemoMode || !authToken || !currentUser}
       activeTab={activeTab}
       onTabChange={handleTabChange}
       onRefresh={() => loadAllData(false)}
@@ -389,15 +384,10 @@ export function App() {
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
-        onExploreDemo={() => {
-          setIsAuthOpen(false);
-          handleExploreDemo();
-        }}
         onSuccess={(user, biz) => {
           setCurrentUser(user);
           setBusiness(biz);
           setAuthToken(localStorage.getItem('dukaanos_token'));
-          setIsDemoMode(false);
           setIsAuthOpen(false);
           loadAllData(false);
         }}
