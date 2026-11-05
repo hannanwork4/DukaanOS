@@ -41,6 +41,8 @@ export const api = {
     fetchJson<any>('/api/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
   login: (data: any) =>
     fetchJson<any>('/api/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+  demoLogin: () =>
+    fetchJson<any>('/api/auth/demo-login', { method: 'POST' }),
   getAuthMe: () =>
     fetchJson<any>('/api/auth/me'),
 

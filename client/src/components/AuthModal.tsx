@@ -27,6 +27,7 @@ interface AuthModalProps {
   initialMode?: 'login' | 'signup';
   isGate?: boolean;
   onOpenDoc?: (doc: 'terms' | 'privacy') => void;
+  onExploreDemo?: () => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -36,7 +37,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   showToast,
   initialMode = 'login',
   isGate = false,
-  onOpenDoc
+  onOpenDoc,
+  onExploreDemo
 }) => {
   const { t } = useTranslation();
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
@@ -98,6 +100,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onClose();
     } catch (err: any) {
       setErrorMessage(err.message || 'Login failed. Please verify your Email ID and Password.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 1-Click Demo Login
+  const handleDemoLogin = async () => {
+    setIsLoading(true);
+    setErrorMessage('');
+    try {
+      const res = await api.demoLogin();
+      if (res.token) {
+        localStorage.setItem('dukaanos_token', res.token);
+      }
+      if (res.business?.id) {
+        setActiveBusinessId(res.business.id);
+      }
+      showToast('success', `Welcome to ${res.business?.name || 'Sri Venkateshwara Store'} (Demo Store)!`);
+      onSuccess(res.user, res.business);
+      onClose();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to open demo store.');
     } finally {
       setIsLoading(false);
     }
@@ -249,14 +273,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           </div>
 
-          {!isGate && (
-            <button
-              onClick={onClose}
-              className="p-2 text-zinc-400 hover:text-black hover:bg-zinc-100 rounded-full transition-colors cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
+          <button
+            onClick={() => {
+              if (onExploreDemo) {
+                onExploreDemo();
+              } else {
+                onClose();
+              }
+            }}
+            title="Explore Demo Store"
+            className="p-2 text-zinc-400 hover:text-black hover:bg-zinc-100 rounded-full transition-colors cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Modal Body */}
@@ -325,6 +354,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </>
                 )}
               </button>
+
+              {/* 1-Click Demo Login */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleDemoLogin}
+                  disabled={isLoading}
+                  className="w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-2 border-emerald-600 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <Sparkles className="w-4 h-4 text-emerald-600" />
+                  <span>⚡ Quick Demo Store Login (Instant Access)</span>
+                </button>
+              </div>
+
+              {onExploreDemo && (
+                <div className="text-center pt-1">
+                  <button
+                    type="button"
+                    onClick={onExploreDemo}
+                    className="text-xs font-semibold text-zinc-500 hover:text-black hover:underline cursor-pointer"
+                  >
+                    Or explore Demo Kirana Store without login →
+                  </button>
+                </div>
+              )}
 
               <div className="pt-4 text-center border-t border-black">
                 <span className="text-xs text-zinc-500">New to DukaanOS? </span>

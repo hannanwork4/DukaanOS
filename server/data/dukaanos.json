@@ -7,43 +7,8 @@
       "phone": "+91 98765 43210",
       "address": "Shop No. 4, Main Market, Lajpat Nagar, New Delhi",
       "currency": "INR",
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-05T12:35:23.101Z"
-    },
-    {
-      "id": "b-test-1793882452573",
-      "name": "Test Kirana",
-      "currency": "INR",
-      "created_at": "2026-11-05T12:40:52.573Z",
-      "updated_at": "2026-11-05T12:40:52.574Z"
-    },
-    {
-      "id": "b-demo-1793884543512",
-      "name": "Sharma General Store",
-      "currency": "INR",
-      "created_at": "2026-11-05T13:15:43.513Z",
-      "updated_at": "2026-11-05T13:15:43.514Z"
-    },
-    {
-      "id": "b-test-1793884572643",
-      "name": "Test Kirana",
-      "currency": "INR",
-      "created_at": "2026-11-05T13:16:12.644Z",
-      "updated_at": "2026-11-05T13:16:12.645Z"
-    },
-    {
-      "id": "b-test-1793903220562",
-      "name": "Test Kirana",
-      "currency": "INR",
-      "created_at": "2026-11-05T18:27:00.562Z",
-      "updated_at": "2026-11-05T18:27:00.564Z"
-    },
-    {
-      "id": "b-test-1793903245172",
-      "name": "Test Kirana",
-      "currency": "INR",
-      "created_at": "2026-11-05T18:27:25.172Z",
-      "updated_at": "2026-11-05T18:27:25.173Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-05T21:46:04.752Z"
     }
   ],
   "products": [
@@ -59,8 +24,8 @@
       "purchase_price": 115,
       "selling_price": 135,
       "is_archived": false,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000002",
@@ -74,8 +39,8 @@
       "purchase_price": 215,
       "selling_price": 250,
       "is_archived": false,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000003",
@@ -89,8 +54,8 @@
       "purchase_price": 22,
       "selling_price": 28,
       "is_archived": false,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000004",
@@ -104,8 +69,8 @@
       "purchase_price": 42,
       "selling_price": 48,
       "is_archived": false,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000005",
@@ -119,8 +84,8 @@
       "purchase_price": 140,
       "selling_price": 165,
       "is_archived": false,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000006",
@@ -134,8 +99,8 @@
       "purchase_price": 8.5,
       "selling_price": 10,
       "is_archived": false,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000007",
@@ -149,83 +114,8 @@
       "purchase_price": 62,
       "selling_price": 72,
       "is_archived": false,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
-    },
-    {
-      "id": "12932718-08b6-4b14-9d2d-add0a9f6e8d4",
-      "business_id": "b-test-1793882452573",
-      "name": "Tata Tea Gold 250g",
-      "category": "Beverages",
-      "sku": "SKU-452577",
-      "unit": "packets",
-      "current_stock": 20,
-      "min_stock_threshold": 10,
-      "purchase_price": 100,
-      "selling_price": 135,
-      "is_archived": false,
-      "created_at": "2026-11-05T12:40:52.576Z",
-      "updated_at": "2026-11-05T12:40:52.603Z"
-    },
-    {
-      "id": "4927da19-ba4b-46c2-9feb-d480cc8c6118",
-      "business_id": "b-demo-1793884543512",
-      "name": "Cooking Oil",
-      "category": "Edible Oils",
-      "sku": "SKU-543520",
-      "unit": "packets",
-      "current_stock": 20,
-      "min_stock_threshold": 5,
-      "purchase_price": 100,
-      "selling_price": 130,
-      "is_archived": false,
-      "created_at": "2026-11-05T13:15:43.520Z",
-      "updated_at": "2026-11-05T13:15:43.547Z"
-    },
-    {
-      "id": "9c7c9464-635d-45ca-8251-af4edb8866a1",
-      "business_id": "b-test-1793884572643",
-      "name": "Tata Tea Gold 250g",
-      "category": "Beverages",
-      "sku": "SKU-572647",
-      "unit": "packets",
-      "current_stock": 20,
-      "min_stock_threshold": 10,
-      "purchase_price": 100,
-      "selling_price": 135,
-      "is_archived": false,
-      "created_at": "2026-11-05T13:16:12.647Z",
-      "updated_at": "2026-11-05T13:16:12.683Z"
-    },
-    {
-      "id": "e98e14d9-8d51-486e-a86a-f554584d9e9f",
-      "business_id": "b-test-1793903220562",
-      "name": "Tata Tea Gold 250g",
-      "category": "Beverages",
-      "sku": "SKU-220568",
-      "unit": "packets",
-      "current_stock": 20,
-      "min_stock_threshold": 10,
-      "purchase_price": 100,
-      "selling_price": 135,
-      "is_archived": false,
-      "created_at": "2026-11-05T18:27:00.568Z",
-      "updated_at": "2026-11-05T18:27:00.577Z"
-    },
-    {
-      "id": "affdcc1b-5921-45a0-8081-46b1d1fffabb",
-      "business_id": "b-test-1793903245172",
-      "name": "Tata Tea Gold 250g",
-      "category": "Beverages",
-      "sku": "SKU-245177",
-      "unit": "packets",
-      "current_stock": 20,
-      "min_stock_threshold": 10,
-      "purchase_price": 100,
-      "selling_price": 135,
-      "is_archived": false,
-      "created_at": "2026-11-05T18:27:25.176Z",
-      "updated_at": "2026-11-05T18:27:25.213Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     }
   ],
   "suppliers": [
@@ -239,8 +129,8 @@
       "total_purchases": 18500,
       "amount_paid": 14500,
       "outstanding_balance": 4000,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "s0000000-0000-0000-0000-000000000002",
@@ -252,8 +142,8 @@
       "total_purchases": 24000,
       "amount_paid": 24000,
       "outstanding_balance": 0,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "s0000000-0000-0000-0000-000000000003",
@@ -265,293 +155,14 @@
       "total_purchases": 12500,
       "amount_paid": 10000,
       "outstanding_balance": 2500,
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
-    },
-    {
-      "id": "ab336ce8-9d72-404b-b521-3db651a82b16",
-      "business_id": "b-test-1793882452573",
-      "name": "Sharma Wholesale Agency",
-      "business_name": "Sharma Agency Pvt Ltd",
-      "phone": "+91 98999 11111",
-      "total_purchases": 2500,
-      "amount_paid": 2500,
-      "outstanding_balance": 1000,
-      "created_at": "2026-11-05T12:40:52.578Z",
-      "updated_at": "2026-11-05T12:40:52.605Z"
-    },
-    {
-      "id": "6851d9b8-9dca-4e05-839c-ab0800be1b86",
-      "business_id": "b-demo-1793884543512",
-      "name": "Ramesh Traders",
-      "phone": "+91 98112 34567",
-      "total_purchases": 2500,
-      "amount_paid": 1500,
-      "outstanding_balance": 1000,
-      "created_at": "2026-11-05T13:15:43.516Z",
-      "updated_at": "2026-11-05T13:15:43.550Z"
-    },
-    {
-      "id": "e18ff524-fa64-40f2-b95a-57763a4fafc4",
-      "business_id": "b-test-1793884572643",
-      "name": "Sharma Wholesale Agency",
-      "business_name": "Sharma Agency Pvt Ltd",
-      "phone": "+91 98999 11111",
-      "total_purchases": 2500,
-      "amount_paid": 2500,
-      "outstanding_balance": 1000,
-      "created_at": "2026-11-05T13:16:12.649Z",
-      "updated_at": "2026-11-05T13:16:12.686Z"
-    },
-    {
-      "id": "97955317-77d0-407d-8558-9ef82e925139",
-      "business_id": "b-test-1793903220562",
-      "name": "Sharma Wholesale Agency",
-      "business_name": "Sharma Agency Pvt Ltd",
-      "phone": "+91 98999 11111",
-      "total_purchases": 2000,
-      "amount_paid": 2000,
-      "outstanding_balance": 0,
-      "created_at": "2026-11-05T18:27:00.570Z",
-      "updated_at": "2026-11-05T18:27:00.589Z"
-    },
-    {
-      "id": "23465335-880a-4fa1-96d2-4f136a0a856d",
-      "business_id": "b-test-1793903245172",
-      "name": "Sharma Wholesale Agency",
-      "business_name": "Sharma Agency Pvt Ltd",
-      "phone": "+91 98999 11111",
-      "total_purchases": 2500,
-      "amount_paid": 2500,
-      "outstanding_balance": 0,
-      "created_at": "2026-11-05T18:27:25.182Z",
-      "updated_at": "2026-11-05T18:27:25.216Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     }
   ],
-  "purchases": [
-    {
-      "id": "e2e87bef-776e-4f94-8df3-3d8cc9732a64",
-      "business_id": "b-test-1793882452573",
-      "supplier_id": "ab336ce8-9d72-404b-b521-3db651a82b16",
-      "supplier_name": "Sharma Wholesale Agency",
-      "purchase_date": "2026-11-05T12:40:52.580Z",
-      "total_amount": 2500,
-      "amount_paid": 1500,
-      "outstanding_amount": 1000,
-      "payment_method": "Bank Transfer",
-      "notes": "Test initial stock purchase",
-      "status": "completed",
-      "created_at": "2026-11-05T12:40:52.580Z",
-      "updated_at": "2026-11-05T12:40:52.606Z"
-    },
-    {
-      "id": "ed6b13e3-743d-4382-a791-0914d5a1ee94",
-      "business_id": "b-demo-1793884543512",
-      "supplier_id": "6851d9b8-9dca-4e05-839c-ab0800be1b86",
-      "supplier_name": "Ramesh Traders",
-      "purchase_date": "2026-11-05T13:15:43.523Z",
-      "total_amount": 2500,
-      "amount_paid": 1500,
-      "outstanding_amount": 1000,
-      "payment_method": "Cash",
-      "notes": "20 packets of cooking oil from Ramesh Traders",
-      "status": "completed",
-      "created_at": "2026-11-05T13:15:43.523Z",
-      "updated_at": "2026-11-05T13:15:43.552Z"
-    },
-    {
-      "id": "b604a1e4-7661-4f31-af7d-f41660b2077c",
-      "business_id": "b-test-1793884572643",
-      "supplier_id": "e18ff524-fa64-40f2-b95a-57763a4fafc4",
-      "supplier_name": "Sharma Wholesale Agency",
-      "purchase_date": "2026-11-05T13:16:12.651Z",
-      "total_amount": 2500,
-      "amount_paid": 1500,
-      "outstanding_amount": 1000,
-      "payment_method": "Bank Transfer",
-      "notes": "Test initial stock purchase",
-      "status": "completed",
-      "created_at": "2026-11-05T13:16:12.651Z",
-      "updated_at": "2026-11-05T13:16:12.689Z"
-    },
-    {
-      "id": "809f2b52-c2ec-4185-9ec6-298d17f96556",
-      "business_id": "b-test-1793903220562",
-      "supplier_id": "97955317-77d0-407d-8558-9ef82e925139",
-      "supplier_name": "Sharma Wholesale Agency",
-      "purchase_date": "2026-11-05T18:27:00.573Z",
-      "total_amount": 2000,
-      "amount_paid": 1000,
-      "outstanding_amount": 1000,
-      "payment_method": "Cash",
-      "notes": "Test initial stock purchase",
-      "status": "completed",
-      "created_at": "2026-11-05T18:27:00.573Z",
-      "updated_at": "2026-11-05T18:27:00.573Z"
-    },
-    {
-      "id": "c444e9eb-9c92-4f69-9362-23c128ee3a8c",
-      "business_id": "b-test-1793903245172",
-      "supplier_id": "23465335-880a-4fa1-96d2-4f136a0a856d",
-      "supplier_name": "Sharma Wholesale Agency",
-      "purchase_date": "2026-11-05T18:27:25.184Z",
-      "total_amount": 2500,
-      "amount_paid": 1500,
-      "outstanding_amount": 1000,
-      "payment_method": "Bank Transfer",
-      "notes": "Test initial stock purchase",
-      "status": "completed",
-      "created_at": "2026-11-05T18:27:25.184Z",
-      "updated_at": "2026-11-05T18:27:25.219Z"
-    }
-  ],
-  "purchase_items": [
-    {
-      "id": "5fd5afa0-0e0d-4fbe-a38b-ff6dbe721f75",
-      "purchase_id": "e2e87bef-776e-4f94-8df3-3d8cc9732a64",
-      "product_id": "12932718-08b6-4b14-9d2d-add0a9f6e8d4",
-      "product_name": "Tata Tea Gold 250g",
-      "quantity": 25,
-      "unit_price": 100,
-      "total_price": 2500
-    },
-    {
-      "id": "cdd7c39f-b7c4-4a6e-8fd1-ebf7628bf62f",
-      "purchase_id": "ed6b13e3-743d-4382-a791-0914d5a1ee94",
-      "product_id": "4927da19-ba4b-46c2-9feb-d480cc8c6118",
-      "product_name": "Cooking Oil",
-      "quantity": 25,
-      "unit_price": 100,
-      "total_price": 2500
-    },
-    {
-      "id": "96f6b636-2eea-4092-8a62-872fcb70012e",
-      "purchase_id": "b604a1e4-7661-4f31-af7d-f41660b2077c",
-      "product_id": "9c7c9464-635d-45ca-8251-af4edb8866a1",
-      "product_name": "Tata Tea Gold 250g",
-      "quantity": 25,
-      "unit_price": 100,
-      "total_price": 2500
-    },
-    {
-      "id": "867f5796-3967-467d-9a13-b52aaad22cba",
-      "purchase_id": "809f2b52-c2ec-4185-9ec6-298d17f96556",
-      "product_id": "e98e14d9-8d51-486e-a86a-f554584d9e9f",
-      "product_name": "Tata Tea Gold 250g",
-      "quantity": 20,
-      "unit_price": 100,
-      "total_price": 2000
-    },
-    {
-      "id": "2030362d-abf7-4442-ac66-91af6ca56de2",
-      "purchase_id": "c444e9eb-9c92-4f69-9362-23c128ee3a8c",
-      "product_id": "affdcc1b-5921-45a0-8081-46b1d1fffabb",
-      "product_name": "Tata Tea Gold 250g",
-      "quantity": 25,
-      "unit_price": 100,
-      "total_price": 2500
-    }
-  ],
-  "sales": [
-    {
-      "id": "52890ee3-a9de-44f2-8965-c659b115d015",
-      "business_id": "b-test-1793882452573",
-      "sale_date": "2026-11-05T12:40:52.592Z",
-      "total_amount": 650,
-      "amount_received": 650,
-      "outstanding_amount": 0,
-      "payment_method": "UPI",
-      "estimated_profit": 150,
-      "customer_name": "Anil Verma",
-      "status": "completed",
-      "created_at": "2026-11-05T12:40:52.592Z",
-      "updated_at": "2026-11-05T12:40:52.592Z"
-    },
-    {
-      "id": "bc47d6e1-dcc1-406b-89ae-a00bac2ecea2",
-      "business_id": "b-demo-1793884543512",
-      "sale_date": "2026-11-05T13:15:43.534Z",
-      "total_amount": 650,
-      "amount_received": 650,
-      "outstanding_amount": 0,
-      "payment_method": "UPI",
-      "estimated_profit": 150,
-      "notes": "Sold 5 packets Cooking Oil",
-      "status": "completed",
-      "created_at": "2026-11-05T13:15:43.534Z",
-      "updated_at": "2026-11-05T13:15:43.534Z"
-    },
-    {
-      "id": "56b01c8a-6a03-47e5-baf8-f07abe29832b",
-      "business_id": "b-test-1793884572643",
-      "sale_date": "2026-11-05T13:16:12.670Z",
-      "total_amount": 650,
-      "amount_received": 650,
-      "outstanding_amount": 0,
-      "payment_method": "UPI",
-      "estimated_profit": 150,
-      "customer_name": "Anil Verma",
-      "status": "completed",
-      "created_at": "2026-11-05T13:16:12.670Z",
-      "updated_at": "2026-11-05T13:16:12.670Z"
-    },
-    {
-      "id": "4a4309fd-8c01-4918-8a0a-b73922a4d380",
-      "business_id": "b-test-1793903245172",
-      "sale_date": "2026-11-05T18:27:25.203Z",
-      "total_amount": 650,
-      "amount_received": 650,
-      "outstanding_amount": 0,
-      "payment_method": "UPI",
-      "estimated_profit": 150,
-      "customer_name": "Anil Verma",
-      "status": "completed",
-      "created_at": "2026-11-05T18:27:25.203Z",
-      "updated_at": "2026-11-05T18:27:25.203Z"
-    }
-  ],
-  "sale_items": [
-    {
-      "id": "6d5fe66a-2b14-44d7-8c8d-0a7fdb91af2d",
-      "sale_id": "52890ee3-a9de-44f2-8965-c659b115d015",
-      "product_id": "12932718-08b6-4b14-9d2d-add0a9f6e8d4",
-      "product_name": "Tata Tea Gold 250g",
-      "quantity": 5,
-      "unit_price": 130,
-      "total_price": 650,
-      "unit_cost": 100
-    },
-    {
-      "id": "299efa8e-f3f6-42c1-a011-b411789b1e90",
-      "sale_id": "bc47d6e1-dcc1-406b-89ae-a00bac2ecea2",
-      "product_id": "4927da19-ba4b-46c2-9feb-d480cc8c6118",
-      "product_name": "Cooking Oil",
-      "quantity": 5,
-      "unit_price": 130,
-      "total_price": 650,
-      "unit_cost": 100
-    },
-    {
-      "id": "e2df5c85-6d3f-4dba-8c17-06d81eeb2c94",
-      "sale_id": "56b01c8a-6a03-47e5-baf8-f07abe29832b",
-      "product_id": "9c7c9464-635d-45ca-8251-af4edb8866a1",
-      "product_name": "Tata Tea Gold 250g",
-      "quantity": 5,
-      "unit_price": 130,
-      "total_price": 650,
-      "unit_cost": 100
-    },
-    {
-      "id": "d71df082-b553-4198-8c62-fef892c69cd3",
-      "sale_id": "4a4309fd-8c01-4918-8a0a-b73922a4d380",
-      "product_id": "affdcc1b-5921-45a0-8081-46b1d1fffabb",
-      "product_name": "Tata Tea Gold 250g",
-      "quantity": 5,
-      "unit_price": 130,
-      "total_price": 650,
-      "unit_cost": 100
-    }
-  ],
+  "purchases": [],
+  "purchase_items": [],
+  "sales": [],
+  "sale_items": [],
   "expenses": [
     {
       "id": "e0000000-0000-0000-0000-000000000001",
@@ -559,11 +170,11 @@
       "description": "Shop Electricity Bill October",
       "category": "Electricity",
       "amount": 2450,
-      "date": "2026-11-03T12:35:23.101Z",
+      "date": "2026-11-03T21:46:04.752Z",
       "payment_method": "UPI",
       "notes": "Paid via BSES online portal",
-      "created_at": "2026-11-03T12:35:23.101Z",
-      "updated_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z",
+      "updated_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "e0000000-0000-0000-0000-000000000002",
@@ -571,548 +182,58 @@
       "description": "Tempo Transport charges for grain sacks",
       "category": "Transport",
       "amount": 600,
-      "date": "2026-11-04T12:35:23.101Z",
+      "date": "2026-11-04T21:46:04.752Z",
       "payment_method": "Cash",
       "notes": "Local tempo freight from mandi",
-      "created_at": "2026-11-04T12:35:23.101Z",
-      "updated_at": "2026-11-04T12:35:23.101Z"
-    },
-    {
-      "id": "35fc8e52-d74a-4381-a78b-151887c5a763",
-      "business_id": "b-test-1793882452573",
-      "description": "Shop Rent November",
-      "category": "Rent",
-      "amount": 5000,
-      "date": "2026-11-05T12:40:52.608Z",
-      "payment_method": "Bank Transfer",
-      "created_at": "2026-11-05T12:40:52.608Z",
-      "updated_at": "2026-11-05T12:40:52.608Z"
-    },
-    {
-      "id": "252cfc9b-5ccd-4f8b-8329-94afa28823ef",
-      "business_id": "b-test-1793884572643",
-      "description": "Shop Rent November",
-      "category": "Rent",
-      "amount": 5000,
-      "date": "2026-11-05T13:16:12.693Z",
-      "payment_method": "Bank Transfer",
-      "created_at": "2026-11-05T13:16:12.693Z",
-      "updated_at": "2026-11-05T13:16:12.693Z"
-    },
-    {
-      "id": "dc6958ad-f901-4d9f-9f5c-5cc08f72e297",
-      "business_id": "b-test-1793903245172",
-      "description": "Shop Rent November",
-      "category": "Rent",
-      "amount": 5000,
-      "date": "2026-11-05T18:27:25.221Z",
-      "payment_method": "Bank Transfer",
-      "created_at": "2026-11-05T18:27:25.221Z",
-      "updated_at": "2026-11-05T18:27:25.221Z"
+      "created_at": "2026-11-04T21:46:04.752Z",
+      "updated_at": "2026-11-04T21:46:04.752Z"
     }
   ],
-  "supplier_payments": [
-    {
-      "id": "2a97bd81-bf2f-4191-9f86-e6470330d004",
-      "business_id": "b-test-1793882452573",
-      "supplier_id": "ab336ce8-9d72-404b-b521-3db651a82b16",
-      "purchase_id": "e2e87bef-776e-4f94-8df3-3d8cc9732a64",
-      "amount": 1000,
-      "payment_date": "2026-11-05T12:40:52.580Z",
-      "payment_method": "Cash",
-      "notes": "Paid at time of purchase e2e87bef",
-      "created_at": "2026-11-05T12:40:52.580Z"
-    },
-    {
-      "id": "d1c3688d-6a40-4a0c-8f1c-bbb2be65ccc3",
-      "business_id": "b-test-1793882452573",
-      "supplier_id": "ab336ce8-9d72-404b-b521-3db651a82b16",
-      "supplier_name": "Sharma Wholesale Agency",
-      "amount": 1000,
-      "payment_date": "2026-11-05T12:40:52.588Z",
-      "payment_method": "UPI",
-      "notes": "Clearance of pending dues",
-      "created_at": "2026-11-05T12:40:52.588Z"
-    },
-    {
-      "id": "23910d48-288d-4d94-9319-168443cb59d6",
-      "business_id": "b-demo-1793884543512",
-      "supplier_id": "6851d9b8-9dca-4e05-839c-ab0800be1b86",
-      "purchase_id": "ed6b13e3-743d-4382-a791-0914d5a1ee94",
-      "amount": 1000,
-      "payment_date": "2026-11-05T13:15:43.523Z",
-      "payment_method": "Cash",
-      "notes": "Paid at time of purchase ed6b13e3",
-      "created_at": "2026-11-05T13:15:43.523Z"
-    },
-    {
-      "id": "c5c5a7c6-1a84-49de-b7e2-849692d02a0a",
-      "business_id": "b-test-1793884572643",
-      "supplier_id": "e18ff524-fa64-40f2-b95a-57763a4fafc4",
-      "purchase_id": "b604a1e4-7661-4f31-af7d-f41660b2077c",
-      "amount": 1000,
-      "payment_date": "2026-11-05T13:16:12.651Z",
-      "payment_method": "Cash",
-      "notes": "Paid at time of purchase b604a1e4",
-      "created_at": "2026-11-05T13:16:12.651Z"
-    },
-    {
-      "id": "f905395d-42b5-4bb1-928d-2c21249cbebf",
-      "business_id": "b-test-1793884572643",
-      "supplier_id": "e18ff524-fa64-40f2-b95a-57763a4fafc4",
-      "supplier_name": "Sharma Wholesale Agency",
-      "amount": 1000,
-      "payment_date": "2026-11-05T13:16:12.663Z",
-      "payment_method": "UPI",
-      "notes": "Clearance of pending dues",
-      "created_at": "2026-11-05T13:16:12.663Z"
-    },
-    {
-      "id": "f84bef2b-070a-4cf6-a494-1bc1216820f2",
-      "business_id": "b-test-1793903220562",
-      "supplier_id": "97955317-77d0-407d-8558-9ef82e925139",
-      "purchase_id": "809f2b52-c2ec-4185-9ec6-298d17f96556",
-      "amount": 1000,
-      "payment_date": "2026-11-05T18:27:00.573Z",
-      "payment_method": "Cash",
-      "notes": "Paid at time of purchase 809f2b52",
-      "created_at": "2026-11-05T18:27:00.573Z"
-    },
-    {
-      "id": "ffba3152-0664-43be-8501-1745810aca7f",
-      "business_id": "b-test-1793903245172",
-      "supplier_id": "23465335-880a-4fa1-96d2-4f136a0a856d",
-      "purchase_id": "c444e9eb-9c92-4f69-9362-23c128ee3a8c",
-      "amount": 1000,
-      "payment_date": "2026-11-05T18:27:25.184Z",
-      "payment_method": "Cash",
-      "notes": "Paid at time of purchase c444e9eb",
-      "created_at": "2026-11-05T18:27:25.184Z"
-    },
-    {
-      "id": "8b827000-b3a4-4bf5-9749-f1142e86f9b0",
-      "business_id": "b-test-1793903245172",
-      "supplier_id": "23465335-880a-4fa1-96d2-4f136a0a856d",
-      "supplier_name": "Sharma Wholesale Agency",
-      "amount": 1000,
-      "payment_date": "2026-11-05T18:27:25.196Z",
-      "payment_method": "UPI",
-      "notes": "Clearance of pending dues",
-      "created_at": "2026-11-05T18:27:25.196Z"
-    }
-  ],
-  "stock_movements": [
-    {
-      "id": "efda060b-f854-481d-bf00-08d44cbefaac",
-      "business_id": "b-test-1793882452573",
-      "product_id": "12932718-08b6-4b14-9d2d-add0a9f6e8d4",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "purchase",
-      "quantity": 20,
-      "stock_before": 0,
-      "stock_after": 20,
-      "reference_id": "e2e87bef-776e-4f94-8df3-3d8cc9732a64",
-      "notes": "Purchase from Sharma Wholesale Agency (e2e87bef)",
-      "created_at": "2026-11-05T12:40:52.580Z"
-    },
-    {
-      "id": "093fa1bc-919f-4355-b929-7e9312f2d263",
-      "business_id": "b-test-1793882452573",
-      "product_id": "12932718-08b6-4b14-9d2d-add0a9f6e8d4",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "sale",
-      "quantity": -5,
-      "stock_before": 20,
-      "stock_after": 15,
-      "reference_id": "52890ee3-a9de-44f2-8965-c659b115d015",
-      "notes": "Sale (UPI) - Sale ID: 52890ee3",
-      "created_at": "2026-11-05T12:40:52.592Z"
-    },
-    {
-      "id": "b0f34cef-4095-4cd4-be03-9d2262dc3031",
-      "business_id": "b-test-1793882452573",
-      "product_id": "12932718-08b6-4b14-9d2d-add0a9f6e8d4",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "purchase_reversal",
-      "quantity": -20,
-      "stock_before": 15,
-      "stock_after": -5,
-      "reference_id": "e2e87bef-776e-4f94-8df3-3d8cc9732a64",
-      "notes": "Reversal for edited purchase e2e87bef",
-      "created_at": "2026-11-05T12:40:52.601Z"
-    },
-    {
-      "id": "d303c2c7-51cd-49f6-b7ee-b63a82f9ee03",
-      "business_id": "b-test-1793882452573",
-      "product_id": "12932718-08b6-4b14-9d2d-add0a9f6e8d4",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "purchase",
-      "quantity": 25,
-      "stock_before": -5,
-      "stock_after": 20,
-      "reference_id": "e2e87bef-776e-4f94-8df3-3d8cc9732a64",
-      "notes": "Updated purchase from Sharma Wholesale Agency (e2e87bef)",
-      "created_at": "2026-11-05T12:40:52.604Z"
-    },
-    {
-      "id": "3e040676-87fd-4819-bbe2-a598345ef858",
-      "business_id": "b-demo-1793884543512",
-      "product_id": "4927da19-ba4b-46c2-9feb-d480cc8c6118",
-      "product_name": "Cooking Oil",
-      "type": "purchase",
-      "quantity": 20,
-      "stock_before": 0,
-      "stock_after": 20,
-      "reference_id": "ed6b13e3-743d-4382-a791-0914d5a1ee94",
-      "notes": "Purchase from Ramesh Traders (ed6b13e3)",
-      "created_at": "2026-11-05T13:15:43.523Z"
-    },
-    {
-      "id": "b51cc279-0d72-488b-b7b0-e07e9cd36e88",
-      "business_id": "b-demo-1793884543512",
-      "product_id": "4927da19-ba4b-46c2-9feb-d480cc8c6118",
-      "product_name": "Cooking Oil",
-      "type": "sale",
-      "quantity": -5,
-      "stock_before": 20,
-      "stock_after": 15,
-      "reference_id": "bc47d6e1-dcc1-406b-89ae-a00bac2ecea2",
-      "notes": "Sale (UPI) - Sale ID: bc47d6e1",
-      "created_at": "2026-11-05T13:15:43.534Z"
-    },
-    {
-      "id": "dc752793-8d26-42d1-a989-a300e6aba008",
-      "business_id": "b-demo-1793884543512",
-      "product_id": "4927da19-ba4b-46c2-9feb-d480cc8c6118",
-      "product_name": "Cooking Oil",
-      "type": "purchase_reversal",
-      "quantity": -20,
-      "stock_before": 15,
-      "stock_after": -5,
-      "reference_id": "ed6b13e3-743d-4382-a791-0914d5a1ee94",
-      "notes": "Reversal for edited purchase ed6b13e3",
-      "created_at": "2026-11-05T13:15:43.544Z"
-    },
-    {
-      "id": "0d5bd4e7-86fc-4271-a493-e7a858bc8fcf",
-      "business_id": "b-demo-1793884543512",
-      "product_id": "4927da19-ba4b-46c2-9feb-d480cc8c6118",
-      "product_name": "Cooking Oil",
-      "type": "purchase",
-      "quantity": 25,
-      "stock_before": -5,
-      "stock_after": 20,
-      "reference_id": "ed6b13e3-743d-4382-a791-0914d5a1ee94",
-      "notes": "Updated purchase from Ramesh Traders (ed6b13e3)",
-      "created_at": "2026-11-05T13:15:43.549Z"
-    },
-    {
-      "id": "e28e7c3c-16e7-4a81-b94b-bfd468bb0015",
-      "business_id": "b-test-1793884572643",
-      "product_id": "9c7c9464-635d-45ca-8251-af4edb8866a1",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "purchase",
-      "quantity": 20,
-      "stock_before": 0,
-      "stock_after": 20,
-      "reference_id": "b604a1e4-7661-4f31-af7d-f41660b2077c",
-      "notes": "Purchase from Sharma Wholesale Agency (b604a1e4)",
-      "created_at": "2026-11-05T13:16:12.651Z"
-    },
-    {
-      "id": "73955634-2e5c-4288-9b9a-8bcc0edd1966",
-      "business_id": "b-test-1793884572643",
-      "product_id": "9c7c9464-635d-45ca-8251-af4edb8866a1",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "sale",
-      "quantity": -5,
-      "stock_before": 20,
-      "stock_after": 15,
-      "reference_id": "56b01c8a-6a03-47e5-baf8-f07abe29832b",
-      "notes": "Sale (UPI) - Sale ID: 56b01c8a",
-      "created_at": "2026-11-05T13:16:12.670Z"
-    },
-    {
-      "id": "c47abea1-716b-4a1d-a98a-1238d4485188",
-      "business_id": "b-test-1793884572643",
-      "product_id": "9c7c9464-635d-45ca-8251-af4edb8866a1",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "purchase_reversal",
-      "quantity": -20,
-      "stock_before": 15,
-      "stock_after": -5,
-      "reference_id": "b604a1e4-7661-4f31-af7d-f41660b2077c",
-      "notes": "Reversal for edited purchase b604a1e4",
-      "created_at": "2026-11-05T13:16:12.680Z"
-    },
-    {
-      "id": "5189e6fe-ad2c-4c05-b08a-7f52a8886a96",
-      "business_id": "b-test-1793884572643",
-      "product_id": "9c7c9464-635d-45ca-8251-af4edb8866a1",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "purchase",
-      "quantity": 25,
-      "stock_before": -5,
-      "stock_after": 20,
-      "reference_id": "b604a1e4-7661-4f31-af7d-f41660b2077c",
-      "notes": "Updated purchase from Sharma Wholesale Agency (b604a1e4)",
-      "created_at": "2026-11-05T13:16:12.684Z"
-    },
-    {
-      "id": "58988ed4-bd42-4ee7-98db-939b8d58658e",
-      "business_id": "b-test-1793903220562",
-      "product_id": "e98e14d9-8d51-486e-a86a-f554584d9e9f",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "purchase",
-      "quantity": 20,
-      "stock_before": 0,
-      "stock_after": 20,
-      "reference_id": "809f2b52-c2ec-4185-9ec6-298d17f96556",
-      "notes": "Purchase from Sharma Wholesale Agency (809f2b52)",
-      "created_at": "2026-11-05T18:27:00.573Z"
-    },
-    {
-      "id": "cba5bb8d-c313-451d-bbb0-32df624c48f1",
-      "business_id": "b-test-1793903245172",
-      "product_id": "affdcc1b-5921-45a0-8081-46b1d1fffabb",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "purchase",
-      "quantity": 20,
-      "stock_before": 0,
-      "stock_after": 20,
-      "reference_id": "c444e9eb-9c92-4f69-9362-23c128ee3a8c",
-      "notes": "Purchase from Sharma Wholesale Agency (c444e9eb)",
-      "created_at": "2026-11-05T18:27:25.184Z"
-    },
-    {
-      "id": "c7439e96-c159-4372-b0e2-401a7fefe5ee",
-      "business_id": "b-test-1793903245172",
-      "product_id": "affdcc1b-5921-45a0-8081-46b1d1fffabb",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "sale",
-      "quantity": -5,
-      "stock_before": 20,
-      "stock_after": 15,
-      "reference_id": "4a4309fd-8c01-4918-8a0a-b73922a4d380",
-      "notes": "Sale (UPI) - Sale ID: 4a4309fd",
-      "created_at": "2026-11-05T18:27:25.203Z"
-    },
-    {
-      "id": "ba9077ec-1794-47f6-9ea5-2a3711d6bde1",
-      "business_id": "b-test-1793903245172",
-      "product_id": "affdcc1b-5921-45a0-8081-46b1d1fffabb",
-      "product_name": "Tata Tea Gold 250g",
-      "type": "purchase",
-      "quantity": 5,
-      "stock_before": 15,
-      "stock_after": 20,
-      "reference_id": "c444e9eb-9c92-4f69-9362-23c128ee3a8c",
-      "notes": "Updated purchase edit adjustment (c444e9eb)",
-      "created_at": "2026-11-05T18:27:25.215Z"
-    }
-  ],
+  "supplier_payments": [],
+  "stock_movements": [],
   "transactions": [
     {
       "id": "t0000000-0000-0000-0000-000000000001",
       "business_id": "b0000000-0000-0000-0000-000000000001",
       "type": "expense",
       "amount": 2450,
-      "date": "2026-11-03T12:35:23.101Z",
+      "date": "2026-11-03T21:46:04.752Z",
       "description": "Shop Electricity Bill October (Electricity)",
       "payment_method": "UPI",
       "status": "completed",
-      "created_at": "2026-11-03T12:35:23.101Z"
+      "created_at": "2026-11-03T21:46:04.752Z"
     },
     {
       "id": "t0000000-0000-0000-0000-000000000002",
       "business_id": "b0000000-0000-0000-0000-000000000001",
       "type": "expense",
       "amount": 600,
-      "date": "2026-11-04T12:35:23.101Z",
+      "date": "2026-11-04T21:46:04.752Z",
       "description": "Tempo Transport charges for grain sacks (Transport)",
       "payment_method": "Cash",
       "status": "completed",
-      "created_at": "2026-11-04T12:35:23.101Z"
-    },
+      "created_at": "2026-11-04T21:46:04.752Z"
+    }
+  ],
+  "otps": [
     {
-      "id": "61e9ebfd-ee8e-4b4a-98f4-cb89b2ca8b72",
-      "business_id": "b-test-1793882452573",
-      "type": "purchase",
-      "amount": 2000,
-      "date": "2026-11-05T12:40:52.580Z",
-      "description": "Purchase from Sharma Wholesale Agency [20x Tata Tea Gold 250g] - Paid: ₹1000, Pending: ₹1000",
-      "reference_id": "e2e87bef-776e-4f94-8df3-3d8cc9732a64",
-      "payment_method": "Cash",
-      "status": "completed",
-      "created_at": "2026-11-05T12:40:52.580Z"
-    },
+      "email": "hannanwork4@gmail.com",
+      "otp": "816365",
+      "expires_at": 1793915446837,
+      "verified": true
+    }
+  ],
+  "users": [
     {
-      "id": "53e456a5-d727-41d3-bdc1-82f21ac96135",
-      "business_id": "b-test-1793882452573",
-      "type": "supplier_payment",
-      "amount": 1000,
-      "date": "2026-11-05T12:40:52.588Z",
-      "description": "Payment to Sharma Wholesale Agency (UPI) - Clearance of pending dues",
-      "reference_id": "d1c3688d-6a40-4a0c-8f1c-bbb2be65ccc3",
-      "payment_method": "UPI",
-      "status": "completed",
-      "created_at": "2026-11-05T12:40:52.588Z"
-    },
-    {
-      "id": "5b2bfce0-0820-458b-bedb-ae5adf5e7421",
-      "business_id": "b-test-1793882452573",
-      "type": "sale",
-      "amount": 650,
-      "date": "2026-11-05T12:40:52.592Z",
-      "description": "Sale [5x Tata Tea Gold 250g] - Mode: UPI (Cust: Anil Verma)",
-      "reference_id": "52890ee3-a9de-44f2-8965-c659b115d015",
-      "payment_method": "UPI",
-      "status": "completed",
-      "created_at": "2026-11-05T12:40:52.592Z"
-    },
-    {
-      "id": "bbd4b021-345b-4462-b9cd-f6a8aad0fc65",
-      "business_id": "b-test-1793882452573",
-      "type": "expense",
-      "amount": 5000,
-      "date": "2026-11-05T12:40:52.608Z",
-      "description": "Shop Rent November (Rent)",
-      "reference_id": "35fc8e52-d74a-4381-a78b-151887c5a763",
-      "payment_method": "Bank Transfer",
-      "status": "completed",
-      "created_at": "2026-11-05T12:40:52.608Z"
-    },
-    {
-      "id": "7a67348a-f5e3-479d-8d2b-ac0aae80640d",
-      "business_id": "b-demo-1793884543512",
-      "type": "purchase",
-      "amount": 2000,
-      "date": "2026-11-05T13:15:43.523Z",
-      "description": "Purchase from Ramesh Traders [20x Cooking Oil] - Paid: ₹1000, Pending: ₹1000",
-      "reference_id": "ed6b13e3-743d-4382-a791-0914d5a1ee94",
-      "payment_method": "Cash",
-      "status": "completed",
-      "created_at": "2026-11-05T13:15:43.523Z"
-    },
-    {
-      "id": "a1d5cc6f-f5f8-4db9-b0ed-d5da1578e311",
-      "business_id": "b-demo-1793884543512",
-      "type": "sale",
-      "amount": 650,
-      "date": "2026-11-05T13:15:43.534Z",
-      "description": "Sale [5x Cooking Oil] - Mode: UPI",
-      "reference_id": "bc47d6e1-dcc1-406b-89ae-a00bac2ecea2",
-      "payment_method": "UPI",
-      "status": "completed",
-      "created_at": "2026-11-05T13:15:43.534Z"
-    },
-    {
-      "id": "e063568d-d4a3-4ab1-ac25-281a8768d3cb",
-      "business_id": "b-test-1793884572643",
-      "type": "purchase",
-      "amount": 2000,
-      "date": "2026-11-05T13:16:12.651Z",
-      "description": "Purchase from Sharma Wholesale Agency [20x Tata Tea Gold 250g] - Paid: ₹1000, Pending: ₹1000",
-      "reference_id": "b604a1e4-7661-4f31-af7d-f41660b2077c",
-      "payment_method": "Cash",
-      "status": "completed",
-      "created_at": "2026-11-05T13:16:12.651Z"
-    },
-    {
-      "id": "e11ee340-f710-4d44-84cf-4f410caf62f1",
-      "business_id": "b-test-1793884572643",
-      "type": "supplier_payment",
-      "amount": 1000,
-      "date": "2026-11-05T13:16:12.663Z",
-      "description": "Payment to Sharma Wholesale Agency (UPI) - Clearance of pending dues",
-      "reference_id": "f905395d-42b5-4bb1-928d-2c21249cbebf",
-      "payment_method": "UPI",
-      "status": "completed",
-      "created_at": "2026-11-05T13:16:12.663Z"
-    },
-    {
-      "id": "34fd8af5-43a9-418f-9ad8-563566d8212e",
-      "business_id": "b-test-1793884572643",
-      "type": "sale",
-      "amount": 650,
-      "date": "2026-11-05T13:16:12.670Z",
-      "description": "Sale [5x Tata Tea Gold 250g] - Mode: UPI (Cust: Anil Verma)",
-      "reference_id": "56b01c8a-6a03-47e5-baf8-f07abe29832b",
-      "payment_method": "UPI",
-      "status": "completed",
-      "created_at": "2026-11-05T13:16:12.670Z"
-    },
-    {
-      "id": "dc95988a-3c72-4295-834b-c43f795989cf",
-      "business_id": "b-test-1793884572643",
-      "type": "expense",
-      "amount": 5000,
-      "date": "2026-11-05T13:16:12.693Z",
-      "description": "Shop Rent November (Rent)",
-      "reference_id": "252cfc9b-5ccd-4f8b-8329-94afa28823ef",
-      "payment_method": "Bank Transfer",
-      "status": "completed",
-      "created_at": "2026-11-05T13:16:12.693Z"
-    },
-    {
-      "id": "9f49e31e-9863-4da4-a196-55d8e923e94a",
-      "business_id": "b-test-1793903220562",
-      "type": "purchase",
-      "amount": 2000,
-      "date": "2026-11-05T18:27:00.573Z",
-      "description": "Purchase from Sharma Wholesale Agency [20x Tata Tea Gold 250g] - Paid: ₹1000, Pending: ₹1000",
-      "reference_id": "809f2b52-c2ec-4185-9ec6-298d17f96556",
-      "payment_method": "Cash",
-      "status": "completed",
-      "created_at": "2026-11-05T18:27:00.573Z"
-    },
-    {
-      "id": "8b71ba19-607b-42d7-8840-fbc2b9374ad1",
-      "business_id": "b-test-1793903245172",
-      "type": "purchase",
-      "amount": 2000,
-      "date": "2026-11-05T18:27:25.184Z",
-      "description": "Purchase from Sharma Wholesale Agency [20x Tata Tea Gold 250g] - Paid: ₹1000, Pending: ₹1000",
-      "reference_id": "c444e9eb-9c92-4f69-9362-23c128ee3a8c",
-      "payment_method": "Cash",
-      "status": "completed",
-      "created_at": "2026-11-05T18:27:25.184Z"
-    },
-    {
-      "id": "f0bb81f8-0186-4a12-99fe-ab60289ed204",
-      "business_id": "b-test-1793903245172",
-      "type": "supplier_payment",
-      "amount": 1000,
-      "date": "2026-11-05T18:27:25.196Z",
-      "description": "Payment to Sharma Wholesale Agency (UPI) - Clearance of pending dues",
-      "reference_id": "8b827000-b3a4-4bf5-9749-f1142e86f9b0",
-      "payment_method": "UPI",
-      "status": "completed",
-      "created_at": "2026-11-05T18:27:25.196Z"
-    },
-    {
-      "id": "be4350c3-7bd0-4f68-8863-3f232650efaf",
-      "business_id": "b-test-1793903245172",
-      "type": "sale",
-      "amount": 650,
-      "date": "2026-11-05T18:27:25.203Z",
-      "description": "Sale [5x Tata Tea Gold 250g] - Mode: UPI (Cust: Anil Verma)",
-      "reference_id": "4a4309fd-8c01-4918-8a0a-b73922a4d380",
-      "payment_method": "UPI",
-      "status": "completed",
-      "created_at": "2026-11-05T18:27:25.203Z"
-    },
-    {
-      "id": "b6d93ef1-2791-4b75-aeae-c0b24395000b",
-      "business_id": "b-test-1793903245172",
-      "type": "expense",
-      "amount": 5000,
-      "date": "2026-11-05T18:27:25.221Z",
-      "description": "Shop Rent November (Rent)",
-      "reference_id": "dc6958ad-f901-4d9f-9f5c-5cc08f72e297",
-      "payment_method": "Bank Transfer",
-      "status": "completed",
-      "created_at": "2026-11-05T18:27:25.221Z"
+      "id": "a0f6805a-9922-4a6e-b3eb-97268a0ea1a4",
+      "email": "hannanwork4@gmail.com",
+      "password_hash": "00b0d7e527c83c618eb34152d7039d065b574ef81ed5e9fd8ed856d0e64e7a71",
+      "business_id": "b740587a-fce9-4940-80ab-d43ce877ebe4",
+      "name": "Hannan",
+      "phone": "8143813994",
+      "is_verified": true,
+      "created_at": "2026-11-05T21:41:11.121Z",
+      "updated_at": "2026-11-05T21:41:11.121Z"
     }
   ]
 }

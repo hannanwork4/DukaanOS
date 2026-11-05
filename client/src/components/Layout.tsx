@@ -34,6 +34,7 @@ interface LayoutProps {
   isRefreshing?: boolean;
   onOpenAuth?: () => void;
   onLogout?: () => void;
+  isDemo?: boolean;
   lowStockItems?: { id: string; name: string; current_stock: number }[];
   pendingSuppliers?: { id: string; name: string; outstanding_balance: number }[];
   products?: Product[];
@@ -50,6 +51,7 @@ export const Layout: React.FC<LayoutProps> = ({
   isRefreshing,
   onOpenAuth,
   onLogout,
+  isDemo = false,
   lowStockItems = [],
   pendingSuppliers = [],
   products = [],
@@ -225,81 +227,102 @@ export const Layout: React.FC<LayoutProps> = ({
 
         {/* User Profile Footer (Interactive Dropdown Menu) */}
         <div className="p-3 border-t border-zinc-800/80 bg-[#0e0f11] relative" ref={profileMenuRef}>
-          {isProfileMenuOpen && (
-            <div className="absolute bottom-full left-3 right-3 mb-2 bg-[#17181c] border border-zinc-800 rounded-2xl shadow-2xl p-2 z-50 text-white animate-fade-in">
-              <div className="px-3 py-2 border-b border-zinc-800/80">
-                <div className="text-xs font-bold text-white truncate">{business?.owner_name || 'Store Owner'}</div>
-                <div className="text-[11px] text-zinc-400 truncate">{business?.name || 'DukaanOS'}</div>
-              </div>
-
-              <div className="py-1 space-y-0.5">
-                <button
-                  onClick={() => {
-                    setIsProfileMenuOpen(false);
-                    onTabChange('profile');
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer text-left"
-                >
-                  <UserIcon className="w-3.5 h-3.5" />
-                  <span>{t('storeOwnerProfile')}</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setIsProfileMenuOpen(false);
-                    onTabChange('settings');
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer text-left"
-                >
-                  <Settings className="w-3.5 h-3.5" />
-                  <span>{t('storeSettings')}</span>
-                </button>
-
-                {onOpenAuth && (
-                  <button
-                    onClick={() => {
-                      setIsProfileMenuOpen(false);
-                      onOpenAuth();
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-emerald-400 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer text-left"
-                  >
-                    <Store className="w-3.5 h-3.5" />
-                    <span>{t('switchStore')}</span>
-                  </button>
-                )}
-
-                {onLogout && (
-                  <button
-                    onClick={() => {
-                      setIsProfileMenuOpen(false);
-                      onLogout();
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose-400 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer text-left"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                    <span>{t('logOut')}</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div
-            onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-            className="flex items-center justify-between p-2 rounded-xl hover:bg-[#17181c] transition-colors cursor-pointer"
-          >
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-white text-black font-bold text-xs flex items-center justify-center shrink-0">
-                {getInitials(business?.owner_name || 'Abdul Hannan')}
-              </div>
-              <div className="truncate">
-                <div className="text-xs font-semibold text-white truncate">
-                  {business?.owner_name || 'Abdul Hannan'}
+          {isDemo ? (
+            <div className="space-y-2">
+              <div className="px-2.5 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-[11px] text-zinc-400">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-amber-300">Demo Store View</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
                 </div>
+                <p className="text-[10px] text-zinc-500 mt-0.5 truncate">{business?.name || 'Sri Venkateshwara Store'}</p>
               </div>
+              <button
+                onClick={onOpenAuth}
+                className="w-full py-2.5 px-3 bg-white hover:bg-zinc-200 text-black font-extrabold text-xs rounded-xl transition-all shadow-btn-3d flex items-center justify-center gap-2 cursor-pointer border border-black hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <Store className="w-3.5 h-3.5 text-black" />
+                <span>Sign In / Create Store</span>
+              </button>
             </div>
-            <ChevronDown className={`w-3.5 h-3.5 text-zinc-500 shrink-0 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
-          </div>
+          ) : (
+            <>
+              {isProfileMenuOpen && (
+                <div className="absolute bottom-full left-3 right-3 mb-2 bg-[#17181c] border border-zinc-800 rounded-2xl shadow-2xl p-2 z-50 text-white animate-fade-in">
+                  <div className="px-3 py-2 border-b border-zinc-800/80">
+                    <div className="text-xs font-bold text-white truncate">{business?.owner_name || 'Store Owner'}</div>
+                    <div className="text-[11px] text-zinc-400 truncate">{business?.name || 'DukaanOS'}</div>
+                  </div>
+
+                  <div className="py-1 space-y-0.5">
+                    <button
+                      onClick={() => {
+                        setIsProfileMenuOpen(false);
+                        onTabChange('profile');
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer text-left"
+                    >
+                      <UserIcon className="w-3.5 h-3.5" />
+                      <span>{t('storeOwnerProfile')}</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setIsProfileMenuOpen(false);
+                        onTabChange('settings');
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer text-left"
+                    >
+                      <Settings className="w-3.5 h-3.5" />
+                      <span>{t('storeSettings')}</span>
+                    </button>
+
+                    {onOpenAuth && (
+                      <button
+                        onClick={() => {
+                          setIsProfileMenuOpen(false);
+                          onOpenAuth();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-emerald-400 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer text-left"
+                      >
+                        <Store className="w-3.5 h-3.5" />
+                        <span>{t('switchStore')}</span>
+                      </button>
+                    )}
+
+                    {onLogout && (
+                      <button
+                        onClick={() => {
+                          setIsProfileMenuOpen(false);
+                          onLogout();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose-400 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer text-left"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        <span>{t('logOut')}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                className="flex items-center justify-between p-2 rounded-xl hover:bg-[#17181c] transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-full bg-white text-black font-bold text-xs flex items-center justify-center shrink-0">
+                    {getInitials(business?.owner_name || 'Abdul Hannan')}
+                  </div>
+                  <div className="truncate">
+                    <div className="text-xs font-semibold text-white truncate">
+                      {business?.owner_name || 'Abdul Hannan'}
+                    </div>
+                  </div>
+                </div>
+                <ChevronDown className={`w-3.5 h-3.5 text-zinc-500 shrink-0 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
+              </div>
+            </>
+          )}
         </div>
       </aside>
 
@@ -319,6 +342,15 @@ export const Layout: React.FC<LayoutProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
+            {isDemo && onOpenAuth && (
+              <button
+                onClick={onOpenAuth}
+                className="px-2.5 py-1 bg-white hover:bg-zinc-100 text-black font-extrabold text-[11px] rounded-lg border border-black cursor-pointer shadow-xs"
+              >
+                Sign In
+              </button>
+            )}
+
             {/* Mobile Search Toggle */}
             <button
               onClick={() => {
@@ -616,6 +648,16 @@ export const Layout: React.FC<LayoutProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
+            {isDemo && onOpenAuth && (
+              <button
+                onClick={onOpenAuth}
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-zinc-100 text-black font-extrabold text-xs rounded-xl border border-black shadow-btn-3d transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <Store className="w-3.5 h-3.5 text-black" />
+                <span>Sign In to Store</span>
+              </button>
+            )}
+
             {/* Desktop Language Selector Dropdown */}
             <LanguageSelector isDark={true} />
 

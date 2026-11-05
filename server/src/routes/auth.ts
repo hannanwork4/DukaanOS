@@ -263,5 +263,63 @@ router.get('/me', async (req: Request, res: Response) => {
   }
 });
 
+// 6. Demo Store Login (Instant 1-Click Access)
+router.post('/demo-login', async (_req: Request, res: Response) => {
+  try {
+    const demoBizId = process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
+    let business = await db.getBusiness(demoBizId);
+    if (!business) {
+      business = {
+        id: demoBizId,
+        name: 'Sri Venkateshwara Store',
+        owner_name: 'Venkatesh Rao',
+        phone: '9848022338',
+        address: 'Visakhapatnam, Andhra Pradesh',
+        currency: 'INR',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      await db.createBusiness(business);
+      await db.seedInitialData(demoBizId);
+    }
+
+    let demoUser = await db.getUserByEmail('demo@dukaanos.com');
+    if (!demoUser) {
+      demoUser = {
+        id: 'u0000000-0000-0000-0000-000000000001',
+        email: 'demo@dukaanos.com',
+        password_hash: hashPassword('demo123'),
+        business_id: demoBizId,
+        name: business.owner_name || 'Venkatesh Rao',
+        phone: business.phone || '9848022338',
+        is_verified: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      await db.createUser(demoUser);
+    }
+
+    const token = generateToken(demoUser);
+
+    res.json({
+      success: true,
+      message: 'Demo store session loaded successfully!',
+      data: {
+        token,
+        user: {
+          id: demoUser.id,
+          email: demoUser.email,
+          name: demoUser.name,
+          phone: demoUser.phone,
+          business_id: demoUser.business_id
+        },
+        business
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: 'Failed to initialize demo store session' });
+  }
+});
+
 export default router;
 
