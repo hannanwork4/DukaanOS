@@ -212,16 +212,16 @@ export const Settings: React.FC<SettingsProps> = ({
         </div>
       </div>
 
-      {/* DEMO DATA RESET CARD */}
+      {/* SAMPLE STORE DATA RESET CARD */}
       <div className="glass-panel rounded-3xl p-6 border border-black shadow-card-3d bg-white space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-sm font-bold text-black flex items-center gap-2">
               <RefreshCcw className="w-4 h-4 text-black" />
-              {t('demoStoreData')}
+              <span>{t('demoStoreData') || 'Sample Store Catalog'}</span>
             </h3>
             <p className="text-xs text-zinc-500 mt-1">
-              {t('demoStoreDataSub')}
+              {t('demoStoreDataSub') || 'Restore standard Kirana store baseline products, inventory, and supplier records for testing.'}
             </p>
           </div>
           <button
@@ -229,7 +229,7 @@ export const Settings: React.FC<SettingsProps> = ({
             disabled={isResetting}
             className="px-4 py-2 text-xs font-bold text-black bg-zinc-100 hover:bg-zinc-200 border border-black rounded-xl transition-all cursor-pointer"
           >
-            {isResetting ? (t('resettingBtn') || 'Resetting...') : t('resetDemoDataBtn')}
+            {isResetting ? (t('resettingBtn') || 'Resetting...') : (t('resetDemoDataBtn') || 'Restore Sample Data')}
           </button>
         </div>
       </div>
