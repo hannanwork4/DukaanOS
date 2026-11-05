@@ -13,11 +13,15 @@ import {
   Expense,
   SupplierPayment,
   StockMovement,
-  TransactionRecord
+  TransactionRecord,
+  User,
+  OtpRecord
 } from '../types.js';
 
 interface SchemaData {
   businesses: Business[];
+  users?: User[];
+  otps?: OtpRecord[];
   products: Product[];
   suppliers: Supplier[];
   purchases: Purchase[];
@@ -76,9 +80,20 @@ export class LocalStore implements IDatabase {
 
   private saveData(dataToSave?: SchemaData) {
     const toWrite = dataToSave || this.data;
+    const content = JSON.stringify(toWrite, null, 2);
     const tempPath = `${this.filePath}.tmp`;
-    fs.writeFileSync(tempPath, JSON.stringify(toWrite, null, 2), 'utf-8');
-    fs.renameSync(tempPath, this.filePath);
+    try {
+      fs.writeFileSync(tempPath, content, 'utf-8');
+      try {
+        fs.renameSync(tempPath, this.filePath);
+      } catch {
+        // Fallback for Windows EPERM / locked files
+        fs.writeFileSync(this.filePath, content, 'utf-8');
+        try { fs.unlinkSync(tempPath); } catch {}
+      }
+    } catch {
+      fs.writeFileSync(this.filePath, content, 'utf-8');
+    }
   }
 
   async getBusiness(id: string): Promise<Business | null> {
@@ -94,6 +109,104 @@ export class LocalStore implements IDatabase {
     }
     this.saveData();
     return business;
+  }
+
+  async updateBusiness(id: string, updates: Partial<Business>): Promise<Business | null> {
+    const index = this.data.businesses.findIndex(b => b.id === id);
+    if (index === -1) return null;
+    this.data.businesses[index] = {
+      ...this.data.businesses[index],
+      ...updates,
+      updated_at: new Date().toISOString()
+    };
+    this.saveData();
+    return this.data.businesses[index];
+  }
+
+  async deleteBusiness(id: string): Promise<boolean> {
+    const bIdx = this.data.businesses.findIndex(b => b.id === id);
+    if (bIdx >= 0) {
+      this.data.businesses.splice(bIdx, 1);
+    }
+    this.data.products = (this.data.products || []).filter(p => p.business_id !== id);
+    this.data.suppliers = (this.data.suppliers || []).filter(s => s.business_id !== id);
+
+    const purchaseIds = (this.data.purchases || []).filter(p => p.business_id === id).map(p => p.id);
+    this.data.purchases = (this.data.purchases || []).filter(p => p.business_id !== id);
+    this.data.purchase_items = (this.data.purchase_items || []).filter(pi => !purchaseIds.includes(pi.purchase_id));
+
+    const saleIds = (this.data.sales || []).filter(s => s.business_id === id).map(s => s.id);
+    this.data.sales = (this.data.sales || []).filter(s => s.business_id !== id);
+    this.data.sale_items = (this.data.sale_items || []).filter(si => !saleIds.includes(si.sale_id));
+
+    this.data.expenses = (this.data.expenses || []).filter(e => e.business_id !== id);
+    this.data.supplier_payments = (this.data.supplier_payments || []).filter(sp => sp.business_id !== id);
+    this.data.stock_movements = (this.data.stock_movements || []).filter(sm => sm.business_id !== id);
+    this.data.transactions = (this.data.transactions || []).filter(t => t.business_id !== id);
+
+    if (this.data.users) {
+      this.data.users = this.data.users.filter(u => u.business_id !== id);
+    }
+
+    this.saveData();
+    return true;
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    if (!this.data.users) this.data.users = [];
+    return this.data.users.find(u => u.email.toLowerCase() === email.toLowerCase().trim()) || null;
+  }
+
+  async getUserById(id: string): Promise<User | null> {
+    if (!this.data.users) this.data.users = [];
+    return this.data.users.find(u => u.id === id) || null;
+  }
+
+  async createUser(user: User): Promise<User> {
+    if (!this.data.users) this.data.users = [];
+    this.data.users.push(user);
+    this.saveData();
+    return user;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | null> {
+    if (!this.data.users) this.data.users = [];
+    const idx = this.data.users.findIndex(u => u.id === id);
+    if (idx === -1) return null;
+    this.data.users[idx] = {
+      ...this.data.users[idx],
+      ...updates,
+      updated_at: new Date().toISOString()
+    };
+    this.saveData();
+    return this.data.users[idx];
+  }
+
+  async saveOtp(email: string, otp: string, ttlMs = 10 * 60 * 1000): Promise<void> {
+    if (!this.data.otps) this.data.otps = [];
+    const normalized = email.toLowerCase().trim();
+    this.data.otps = this.data.otps.filter(o => o.email !== normalized && o.expires_at > Date.now());
+    this.data.otps.push({
+      email: normalized,
+      otp,
+      expires_at: Date.now() + ttlMs
+    });
+    this.saveData();
+  }
+
+  async verifyOtp(email: string, otp: string): Promise<boolean> {
+    if (!this.data.otps) return false;
+    const normalized = email.toLowerCase().trim();
+    const record = this.data.otps.find(o => o.email === normalized && o.otp === otp.trim());
+    if (!record) return false;
+    if (record.expires_at < Date.now()) {
+      this.data.otps = this.data.otps.filter(o => o !== record);
+      this.saveData();
+      return false;
+    }
+    this.data.otps = this.data.otps.filter(o => o !== record);
+    this.saveData();
+    return true;
   }
 
   async getProducts(businessId: string): Promise<Product[]> {

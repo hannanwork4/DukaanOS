@@ -13,6 +13,7 @@ import {
 import { Purchase, Supplier, Product } from '../types';
 import { Modal } from '../components/Modal';
 import { api } from '../api/client';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface PurchasesProps {
   purchases: Purchase[];
@@ -37,6 +38,7 @@ export const Purchases: React.FC<PurchasesProps> = ({
   onRefresh,
   showToast
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null);
@@ -207,98 +209,98 @@ export const Purchases: React.FC<PurchasesProps> = ({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-200/80">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-black">
-            Purchases & Restocks
+          <h1 className="text-2xl font-bold tracking-tight text-black">
+            {t('purchasesTitle')}
           </h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            Log inventory restocks from distributors, auto-increment stock, and track payable credit.
+          <p className="text-sm text-zinc-500 mt-0.5">
+            {t('purchasesSubtitle')}
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
-          <Plus className="w-4 h-4" />
-          + Record Purchase
+          <Plus className="w-4.5 h-4.5" />
+          {t('newPurchaseBtn')}
         </button>
       </div>
 
       {/* 3D Filter Bar */}
-      <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d flex items-center justify-between gap-3">
+      <div className="glass-panel p-4 rounded-2xl border border-black shadow-card-3d flex items-center justify-between gap-3">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
+          <Search className="w-4.5 h-4.5 text-zinc-400 absolute left-3.5 top-3.5" />
           <input
             type="text"
-            placeholder="Search by supplier or purchased item..."
+            placeholder={t('searchPurchasesPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-zinc-200 rounded-xl focus:outline-hidden focus:border-black focus:bg-white transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-black rounded-xl focus:outline-hidden focus:border-black focus:bg-white transition-colors"
           />
         </div>
       </div>
 
       {/* 3D Glass Purchases Table */}
-      <div className="glass-panel rounded-3xl border border-zinc-200 shadow-card-3d overflow-hidden">
+      <div className="glass-panel rounded-3xl border border-black shadow-card-3d overflow-hidden">
         {filteredPurchases.length === 0 ? (
-          <div className="p-12 text-center text-xs text-zinc-400">
-            No purchase records found. Record a purchase to restock inventory.
+          <div className="p-12 text-center text-sm text-zinc-400">
+            {t('noTransactionsYet')}
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-50/80 border-b border-zinc-200 text-zinc-600 uppercase tracking-wider text-[10px]">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-zinc-50/80 border-b border-zinc-200 text-zinc-600 uppercase tracking-wider text-xs">
                 <tr>
-                  <th className="px-5 py-3.5 font-bold">Date / ID</th>
-                  <th className="px-4 py-3.5 font-bold">Supplier</th>
-                  <th className="px-4 py-3.5 font-bold">Items Purchased</th>
-                  <th className="px-4 py-3.5 font-bold text-right">Total Amount</th>
-                  <th className="px-4 py-3.5 font-bold text-right">Amount Paid</th>
-                  <th className="px-4 py-3.5 font-bold text-right">Outstanding Due</th>
-                  <th className="px-4 py-3.5 font-bold text-center">Payment Mode</th>
-                  <th className="px-5 py-3.5 font-bold text-right">Actions</th>
+                  <th className="px-5 py-4 font-bold">{t('dateCol')} / {t('invoiceCol')}</th>
+                  <th className="px-4 py-4 font-bold">{t('supplierCol')}</th>
+                  <th className="px-4 py-4 font-bold">{t('itemsCountCol')}</th>
+                  <th className="px-4 py-4 font-bold text-right">{t('amountCol')}</th>
+                  <th className="px-4 py-4 font-bold text-right">{t('amountPaidCol')}</th>
+                  <th className="px-4 py-4 font-bold text-right">{t('dueBalanceCol')}</th>
+                  <th className="px-4 py-4 font-bold text-center">{t('paymentMethodCol')}</th>
+                  <th className="px-5 py-4 font-bold text-right">{t('actionsCol')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200/60">
                 {filteredPurchases.map((p) => (
                   <tr key={p.id} className="hover:bg-zinc-50/70 transition-colors">
-                    <td className="px-5 py-3.5">
-                      <div className="font-bold text-black">
+                    <td className="px-5 py-4">
+                      <div className="font-bold text-sm text-black">
                         {new Date(p.purchase_date).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'
                         })}
                       </div>
-                      <div className="text-[10px] font-mono text-zinc-400">
+                      <div className="text-xs font-mono text-zinc-400">
                         #{p.id.slice(0, 8)}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3.5 font-bold text-black">
+                    <td className="px-4 py-4 font-bold text-sm text-black">
                       {p.supplier_name || 'Wholesale Supplier'}
                     </td>
 
-                    <td className="px-4 py-3.5 text-zinc-700">
+                    <td className="px-4 py-4 text-zinc-700">
                       <div className="max-w-xs space-y-0.5">
                         {(p.items || []).map((it, idx) => (
-                          <div key={idx} className="text-[11px] truncate">
+                          <div key={idx} className="text-xs sm:text-sm truncate">
                             <span className="font-bold text-black">{it.quantity}x</span> {it.product_name}
-                            <span className="text-zinc-400 font-mono ml-1">(@ ₹{it.unit_price})</span>
+                            <span className="text-zinc-500 tabular-nums ml-1">(@ ₹{it.unit_price})</span>
                           </div>
                         ))}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono font-bold text-black">
+                    <td className="px-4 py-4 text-right tabular-nums font-bold text-sm text-black">
                       ₹{p.total_amount.toFixed(2)}
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono text-zinc-600">
+                    <td className="px-4 py-4 text-right tabular-nums text-sm text-zinc-600">
                       ₹{p.amount_paid.toFixed(2)}
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono">
+                    <td className="px-4 py-4 text-right tabular-nums text-sm">
                       {p.outstanding_amount > 0 ? (
                         <span className="font-bold text-black underline">
                           ₹{p.outstanding_amount.toFixed(2)}
@@ -308,19 +310,19 @@ export const Purchases: React.FC<PurchasesProps> = ({
                       )}
                     </td>
 
-                    <td className="px-4 py-3.5 text-center">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 text-zinc-800 border border-zinc-200">
+                    <td className="px-4 py-4 text-center">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-zinc-100 text-zinc-800 border border-zinc-200">
                         {p.payment_method}
                       </span>
                     </td>
 
-                    <td className="px-5 py-3.5 text-right">
+                    <td className="px-5 py-4 text-right">
                       <button
                         onClick={() => openEditModal(p)}
                         title="Edit purchase"
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
+                        className="p-2 rounded-xl text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-4.5 h-4.5" />
                       </button>
                     </td>
                   </tr>
@@ -335,27 +337,27 @@ export const Purchases: React.FC<PurchasesProps> = ({
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingPurchase ? 'Edit Purchase Record' : 'Record New Purchase'}
-        subtitle={editingPurchase ? 'Editing will reverse previous inventory & supplier balances before applying updates' : 'Add inventory and track supplier payment'}
+        title={editingPurchase ? t('editProduct') : t('recordPurchaseModalTitle')}
+        subtitle={t('purchasesSubtitle')}
         maxWidth="max-w-2xl"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {formError && (
-            <div className="p-2.5 text-xs text-red-700 bg-red-50 border border-red-200 rounded">
+            <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl">
               {formError}
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Supplier *</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('supplierCol')} *</label>
               <select
                 required
                 value={supplierId}
                 onChange={(e) => setSupplierId(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white"
               >
-                <option value="">Select a supplier...</option>
+                <option value="">{t('selectSupplier')}...</option>
                 {suppliers.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name} {s.business_name ? `(${s.business_name})` : ''} — Due: ₹{s.outstanding_balance}
@@ -365,39 +367,39 @@ export const Purchases: React.FC<PurchasesProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Purchase Date *</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('dateCol')} *</label>
               <input
                 type="date"
                 required
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white"
               />
             </div>
           </div>
 
           {/* Line Items Editor */}
-          <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50 space-y-2">
-            <div className="flex items-center justify-between text-xs font-semibold text-slate-700 pb-1">
+          <div className="border border-zinc-200 rounded-2xl p-4 bg-zinc-50/70 space-y-3">
+            <div className="flex items-center justify-between text-sm font-bold text-black pb-1">
               <span>Purchased Products</span>
               <button
                 type="button"
                 onClick={addItemRow}
-                className="text-xs text-slate-900 font-medium hover:underline flex items-center gap-1"
+                className="text-sm text-black font-semibold hover:underline flex items-center gap-1.5"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
                 Add Item
               </button>
             </div>
 
-            <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+            <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
               {items.map((item, idx) => (
-                <div key={idx} className="flex gap-2 items-center bg-white p-2 rounded border border-slate-200 text-xs">
+                <div key={idx} className="flex gap-2.5 items-center bg-white p-2.5 rounded-xl border border-zinc-200 text-sm">
                   <div className="flex-1">
                     <select
                       value={item.product_id}
                       onChange={(e) => handleProductChange(idx, e.target.value)}
-                      className="w-full p-1.5 text-xs border border-slate-200 rounded focus:outline-hidden"
+                      className="w-full p-2 text-sm border border-zinc-200 rounded-lg focus:outline-hidden"
                     >
                       {products.map((p) => (
                         <option key={p.id} value={p.id}>
@@ -407,7 +409,7 @@ export const Purchases: React.FC<PurchasesProps> = ({
                     </select>
                   </div>
 
-                  <div className="w-20">
+                  <div className="w-24">
                     <input
                       type="number"
                       step="0.01"
@@ -415,11 +417,11 @@ export const Purchases: React.FC<PurchasesProps> = ({
                       placeholder="Qty"
                       value={item.quantity}
                       onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
-                      className="w-full p-1.5 text-xs border border-slate-200 rounded focus:outline-hidden text-right"
+                      className="w-full p-2 text-sm border border-zinc-200 rounded-lg focus:outline-hidden text-right font-mono"
                     />
                   </div>
 
-                  <div className="w-24">
+                  <div className="w-28">
                     <input
                       type="number"
                       step="0.01"
@@ -427,11 +429,11 @@ export const Purchases: React.FC<PurchasesProps> = ({
                       placeholder="₹ Price"
                       value={item.unit_price}
                       onChange={(e) => handleItemChange(idx, 'unit_price', e.target.value)}
-                      className="w-full p-1.5 text-xs border border-slate-200 rounded focus:outline-hidden text-right"
+                      className="w-full p-2 text-sm border border-zinc-200 rounded-lg focus:outline-hidden text-right font-mono"
                     />
                   </div>
 
-                  <div className="w-24 text-right font-mono font-bold text-slate-900 pr-1">
+                  <div className="w-28 text-right font-mono font-bold text-black pr-1">
                     ₹{((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)).toFixed(2)}
                   </div>
 
@@ -439,9 +441,9 @@ export const Purchases: React.FC<PurchasesProps> = ({
                     <button
                       type="button"
                       onClick={() => removeItemRow(idx)}
-                      className="p-1 text-slate-400 hover:text-red-600 rounded"
+                      className="p-1.5 text-zinc-400 hover:text-black rounded-lg hover:bg-zinc-100"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   )}
                 </div>
@@ -449,16 +451,16 @@ export const Purchases: React.FC<PurchasesProps> = ({
             </div>
 
             {/* Total Row */}
-            <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-xs font-bold text-slate-900 px-1">
+            <div className="pt-2.5 border-t border-zinc-200 flex justify-between items-center text-sm font-bold text-black px-1">
               <span>Total Purchase Value</span>
-              <span className="text-sm font-mono">₹{currentTotal.toFixed(2)}</span>
+              <span className="text-base font-mono">₹{currentTotal.toFixed(2)}</span>
             </div>
           </div>
 
           {/* Payment Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Amount Paid Upfront (₹)</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">Amount Paid Upfront (₹)</label>
               <input
                 type="number"
                 step="0.01"
@@ -467,20 +469,20 @@ export const Purchases: React.FC<PurchasesProps> = ({
                 placeholder="Amount paid"
                 value={amountPaid}
                 onChange={(e) => setAmountPaid(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white font-mono"
               />
-              <div className="mt-1 text-[11px] text-slate-500 flex justify-between">
+              <div className="mt-1 text-xs text-zinc-500 flex justify-between">
                 <span>Remaining Pending:</span>
-                <span className="font-mono font-bold text-amber-600">₹{currentOutstanding.toFixed(2)}</span>
+                <span className="font-mono font-bold text-black">₹{currentOutstanding.toFixed(2)}</span>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Payment Method</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">Payment Method</label>
               <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value as any)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white"
               >
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>
@@ -492,30 +494,30 @@ export const Purchases: React.FC<PurchasesProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Notes / Bill Invoice No. (optional)</label>
+            <label className="block text-sm font-semibold text-zinc-900 mb-1.5">Notes / Bill Invoice No. (optional)</label>
             <input
               type="text"
               placeholder="e.g. Invoice #9821, Delivery received via tempo"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500"
+              className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-zinc-200">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-3 py-1.5 text-xs text-slate-700 border border-slate-300 rounded hover:bg-slate-50"
+              className="px-4 py-2 text-sm font-semibold text-zinc-700 border border-zinc-300 rounded-xl hover:bg-zinc-50"
             >
-              Cancel
+              {t('cancelBtn')}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-1.5 text-xs font-medium text-white bg-slate-900 rounded hover:bg-slate-800 disabled:opacity-50"
+              className="px-5 py-2 text-sm font-bold text-white bg-black rounded-xl hover:bg-zinc-800 disabled:opacity-50 shadow-btn-3d"
             >
-              {isSubmitting ? 'Saving...' : editingPurchase ? 'Update Purchase' : 'Save Purchase'}
+              {isSubmitting ? '...' : editingPurchase ? t('saveChangesBtn') : t('completePurchaseBtn')}
             </button>
           </div>
         </form>

@@ -14,6 +14,7 @@ import { Sale, Product, Business } from '../types';
 import { Modal } from '../components/Modal';
 import { ReceiptModal } from '../components/ReceiptModal';
 import { api } from '../api/client';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface SalesProps {
   sales: Sale[];
@@ -36,6 +37,7 @@ export const Sales: React.FC<SalesProps> = ({
   onRefresh,
   showToast
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSale, setEditingSale] = useState<Sale | null>(null);
@@ -219,118 +221,118 @@ export const Sales: React.FC<SalesProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-200/80">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-black">
-            Sales & Billing
+          <h1 className="text-2xl font-bold tracking-tight text-black">
+            {t('salesTitle')}
           </h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            Record customer counter sales, deduct inventory stock, and track gross profit margins.
+          <p className="text-sm text-zinc-500 mt-0.5">
+            {t('salesSubtitle')}
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
-          <Plus className="w-4 h-4" />
-          + New Sale
+          <Plus className="w-4.5 h-4.5" />
+          {t('newSaleBtn')}
         </button>
       </div>
 
       {/* 3D Filter Bar */}
-      <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d flex items-center justify-between gap-3">
+      <div className="glass-panel p-4 rounded-2xl border border-black shadow-card-3d flex items-center justify-between gap-3">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
+          <Search className="w-4.5 h-4.5 text-zinc-500 absolute left-3.5 top-3.5" />
           <input
             type="text"
-            placeholder="Search by customer name or product sold..."
+            placeholder={t('searchSalesPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-zinc-200 rounded-xl focus:outline-hidden focus:border-black focus:bg-white transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-black rounded-xl focus:outline-hidden focus:ring-1 focus:ring-black focus:bg-white transition-colors"
           />
         </div>
       </div>
 
       {/* 3D Glass Sales List Table */}
-      <div className="glass-panel rounded-3xl border border-zinc-200 shadow-card-3d overflow-hidden">
+      <div className="glass-panel rounded-3xl border border-black shadow-card-3d overflow-hidden">
         {filteredSales.length === 0 ? (
-          <div className="p-12 text-center text-xs text-zinc-400">
-            No sales recorded yet. Record a sale to track revenue and profit.
+          <div className="p-12 text-center text-sm text-zinc-400">
+            {t('noTransactionsYet')}
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-50/80 border-b border-zinc-200 text-zinc-600 uppercase tracking-wider text-[10px]">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-zinc-50/80 border-b border-black text-zinc-800 uppercase tracking-wider text-xs">
                 <tr>
-                  <th className="px-5 py-3.5 font-bold">Date / ID</th>
-                  <th className="px-4 py-3.5 font-bold">Customer</th>
-                  <th className="px-4 py-3.5 font-bold">Items Sold</th>
-                  <th className="px-4 py-3.5 font-bold text-right">Total Amount</th>
-                  <th className="px-4 py-3.5 font-bold text-right">Gross Profit</th>
-                  <th className="px-4 py-3.5 font-bold text-center">Payment Mode</th>
-                  <th className="px-5 py-3.5 font-bold text-right">Receipt & Actions</th>
+                  <th className="px-5 py-4 font-bold">{t('dateCol')} / {t('invoiceCol')}</th>
+                  <th className="px-4 py-4 font-bold">{t('customerCol')}</th>
+                  <th className="px-4 py-4 font-bold">{t('itemsCountCol')}</th>
+                  <th className="px-4 py-4 font-bold text-right">{t('amountCol')}</th>
+                  <th className="px-4 py-4 font-bold text-right">{t('profitCol')}</th>
+                  <th className="px-4 py-4 font-bold text-center">{t('paymentMethodCol')}</th>
+                  <th className="px-5 py-4 font-bold text-right">{t('actionsCol')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200/60">
                 {filteredSales.map((s) => (
                   <tr key={s.id} className="hover:bg-zinc-50/70 transition-colors">
-                    <td className="px-5 py-3.5">
-                      <div className="font-bold text-black">
+                    <td className="px-5 py-4">
+                      <div className="font-bold text-sm text-black">
                         {new Date(s.sale_date).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'
                         })}
                       </div>
-                      <div className="text-[10px] font-mono text-zinc-400">
+                      <div className="text-xs font-mono text-zinc-400">
                         #{s.id.slice(0, 8)}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3.5 font-bold text-black">
+                    <td className="px-4 py-4 font-bold text-sm text-black">
                       {s.customer_name || 'Walk-in Customer'}
                     </td>
 
-                    <td className="px-4 py-3.5 text-zinc-700">
+                    <td className="px-4 py-4 text-zinc-700">
                       <div className="max-w-xs space-y-0.5">
                         {(s.items || []).map((it, idx) => (
-                          <div key={idx} className="text-[11px] truncate">
+                          <div key={idx} className="text-xs sm:text-sm truncate">
                             <span className="font-bold text-black">{it.quantity}x</span> {it.product_name}
-                            <span className="text-zinc-400 font-mono ml-1">(@ ₹{it.unit_price})</span>
+                            <span className="text-zinc-500 tabular-nums ml-1">(@ ₹{it.unit_price})</span>
                           </div>
                         ))}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono font-bold text-black">
+                    <td className="px-4 py-4 text-right tabular-nums font-bold text-sm text-black">
                       ₹{s.total_amount.toFixed(2)}
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full font-semibold text-black bg-zinc-100 border border-zinc-200">
+                    <td className="px-4 py-4 text-right tabular-nums">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full font-semibold text-xs text-black bg-zinc-100 border border-black">
                         +₹{s.estimated_profit.toFixed(2)}
                       </span>
                     </td>
 
-                    <td className="px-4 py-3.5 text-center">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 text-zinc-800 border border-zinc-200">
+                    <td className="px-4 py-4 text-center">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-zinc-100 text-zinc-900 border border-black">
                         {s.payment_method}
                       </span>
                     </td>
 
-                    <td className="px-5 py-3.5 text-right">
+                    <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setReceiptTarget(s)}
                           title="Print cash receipt"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-black bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-all shadow-xs cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-black bg-white border border-black rounded-xl hover:bg-zinc-50 transition-all shadow-xs cursor-pointer"
                         >
-                          <Printer className="w-3.5 h-3.5 text-zinc-600" />
+                          <Printer className="w-4 h-4 text-black" />
                           Receipt
                         </button>
                         <button
                           onClick={() => openEditModal(s)}
                           title="Edit sale"
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
+                          className="p-2 rounded-xl text-black hover:bg-zinc-100 border border-black transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -348,98 +350,113 @@ export const Sales: React.FC<SalesProps> = ({
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingSale ? 'Edit Sale Record' : 'Record New Sale'}
-        subtitle="Reduce stock and calculate estimated gross margins automatically"
+        title={editingSale ? t('editProduct') : t('newSaleModalTitle')}
+        subtitle={t('salesSubtitle')}
         maxWidth="max-w-2xl"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {formError && (
-            <div className="p-2.5 text-xs text-red-700 bg-red-50 border border-red-200 rounded">
+            <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl">
               {formError}
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Sale Date *</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('dateCol')} *</label>
               <input
                 type="date"
                 required
                 value={saleDate}
                 onChange={(e) => setSaleDate(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Payment Method *</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('paymentMethodLabel')} *</label>
               <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value as any)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white"
               >
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>
-                <option value="Credit">Credit (Khata / Pending)</option>
+                <option value="Credit">Credit (Khata / Udhar)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Customer Name (optional)</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('customerNameLabel')}</label>
               <input
                 type="text"
                 placeholder="e.g. Ramesh Bhai"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white"
               />
             </div>
           </div>
 
           {/* Line Items Editor */}
-          <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50 space-y-2">
-            <div className="flex items-center justify-between text-xs font-semibold text-slate-700 pb-1">
+          <div className="border border-zinc-200 rounded-2xl p-4 bg-zinc-50/70 space-y-3">
+            <div className="flex items-center justify-between text-sm font-bold text-black pb-1">
               <span>Products Sold</span>
               <button
                 type="button"
                 onClick={addItemRow}
-                className="text-xs text-slate-900 font-medium hover:underline flex items-center gap-1"
+                className="text-sm text-black font-semibold hover:underline flex items-center gap-1.5"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
                 Add Item
               </button>
             </div>
 
-            <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+            <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
               {items.map((item, idx) => {
                 const prod = products.find(p => p.id === item.product_id);
+                const currentQty = parseFloat(item.quantity) || 1;
                 return (
-                  <div key={idx} className="flex gap-2 items-center bg-white p-2 rounded border border-slate-200 text-xs">
-                    <div className="flex-1">
+                  <div key={idx} className="flex gap-2.5 items-center bg-white p-2.5 rounded-xl border border-zinc-200 text-sm">
+                    <div className="flex-1 min-w-0">
                       <select
                         value={item.product_id}
                         onChange={(e) => handleProductChange(idx, e.target.value)}
-                        className="w-full p-1.5 text-xs border border-slate-200 rounded focus:outline-hidden"
+                        className="w-full p-2 text-xs sm:text-sm border border-zinc-200 rounded-lg focus:outline-hidden truncate"
                       >
                         {products.map((p) => (
                           <option key={p.id} value={p.id} disabled={p.current_stock <= 0 && !editingSale}>
-                            {p.name} (Available: {p.current_stock} {p.unit})
+                            {p.name} (Stock: {p.current_stock} {p.unit} • ₹{p.selling_price})
                           </option>
                         ))}
                       </select>
                     </div>
 
-                    <div className="w-20">
+                    {/* Quantity with - / + Stepper */}
+                    <div className="flex items-center border border-zinc-200 rounded-lg overflow-hidden bg-zinc-50 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleItemChange(idx, 'quantity', Math.max(1, currentQty - 1).toString())}
+                        className="px-2 py-1 text-zinc-600 hover:bg-zinc-200 font-bold text-xs"
+                      >
+                        -
+                      </button>
                       <input
                         type="number"
-                        step="0.01"
-                        min="0.01"
+                        step="1"
+                        min="1"
                         max={prod ? prod.current_stock : undefined}
-                        placeholder="Qty"
                         value={item.quantity}
                         onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
-                        className="w-full p-1.5 text-xs border border-slate-200 rounded focus:outline-hidden text-right"
+                        className="w-12 p-1 text-xs text-center font-bold bg-white focus:outline-hidden"
                       />
+                      <button
+                        type="button"
+                        onClick={() => handleItemChange(idx, 'quantity', (currentQty + 1).toString())}
+                        className="px-2 py-1 text-zinc-600 hover:bg-zinc-200 font-bold text-xs"
+                      >
+                        +
+                      </button>
                     </div>
 
                     <div className="w-24">
@@ -450,11 +467,11 @@ export const Sales: React.FC<SalesProps> = ({
                         placeholder="₹ Price"
                         value={item.unit_price}
                         onChange={(e) => handleItemChange(idx, 'unit_price', e.target.value)}
-                        className="w-full p-1.5 text-xs border border-slate-200 rounded focus:outline-hidden text-right"
+                        className="w-full p-1.5 text-xs sm:text-sm border border-zinc-200 rounded-lg focus:outline-hidden text-right font-mono"
                       />
                     </div>
 
-                    <div className="w-24 text-right font-mono font-bold text-slate-900 pr-1">
+                    <div className="w-24 text-right font-mono font-bold text-black text-xs sm:text-sm pr-1">
                       ₹{((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)).toFixed(2)}
                     </div>
 
@@ -462,9 +479,9 @@ export const Sales: React.FC<SalesProps> = ({
                       <button
                         type="button"
                         onClick={() => removeItemRow(idx)}
-                        className="p-1 text-slate-400 hover:text-red-600 rounded"
+                        className="p-1.5 text-zinc-400 hover:text-black rounded-lg hover:bg-zinc-100"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     )}
                   </div>
@@ -473,43 +490,100 @@ export const Sales: React.FC<SalesProps> = ({
             </div>
 
             {/* Total & Profit Preview */}
-            <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-xs px-1">
+            <div className="pt-2.5 border-t border-zinc-200 flex justify-between items-center text-sm px-1">
               <div>
-                <span className="text-slate-500">Est. Gross Margin: </span>
-                <span className="font-bold text-emerald-700 font-mono">+₹{currentEstProfit.toFixed(2)}</span>
+                <span className="text-zinc-500">Est. Gross Margin: </span>
+                <span className="font-bold text-black font-mono">+₹{currentEstProfit.toFixed(2)}</span>
               </div>
               <div className="text-right">
-                <span className="text-slate-500 mr-2">Total Sale:</span>
-                <span className="text-sm font-bold text-slate-900 font-mono">₹{currentTotal.toFixed(2)}</span>
+                <span className="text-zinc-500 mr-2">Total Bill:</span>
+                <span className="text-lg font-bold text-black font-mono">₹{currentTotal.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
+          {/* Payment & Cash Return Calculator */}
+          <div className="border border-zinc-200 rounded-2xl p-4 bg-zinc-50/70 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <label className="text-xs font-bold text-zinc-800 uppercase tracking-wide">
+                Amount Received / Cash Tendered
+              </label>
+              
+              {/* Quick Cash Denomination Chips */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setAmountReceived(currentTotal.toString())}
+                  className="px-2.5 py-1 text-xs font-bold bg-white border border-zinc-200 rounded-lg hover:bg-zinc-100 text-zinc-900 shadow-xs cursor-pointer"
+                >
+                  Exact (₹{currentTotal.toFixed(0)})
+                </button>
+                {[100, 200, 500].filter(n => n >= currentTotal).map((cashNote) => (
+                  <button
+                    key={cashNote}
+                    type="button"
+                    onClick={() => setAmountReceived(cashNote.toString())}
+                    className="px-2.5 py-1 text-xs font-semibold bg-white border border-zinc-200 rounded-lg hover:bg-zinc-100 text-zinc-800 shadow-xs cursor-pointer"
+                  >
+                    ₹{cashNote} Note
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder={`₹${currentTotal.toFixed(2)}`}
+                value={amountReceived}
+                onChange={(e) => setAmountReceived(e.target.value)}
+                className="w-full px-3.5 py-2 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black font-mono font-bold bg-white"
+              />
+            </div>
+
+            {/* Change Return Indicator */}
+            {parseFloat(amountReceived) > currentTotal && (
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs font-bold text-emerald-800 animate-fade-in">
+                <span>💵 {t('returnChangeLabel')}:</span>
+                <span className="text-base font-mono">₹{(parseFloat(amountReceived) - currentTotal).toFixed(2)}</span>
+              </div>
+            )}
+
+            {paymentMethod === 'Credit' && parseFloat(amountReceived || '0') < currentTotal && (
+              <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between text-xs font-semibold text-amber-800 animate-fade-in">
+                <span>📒 {t('khataNotice')} {customerName || 'Customer'}:</span>
+                <span className="font-mono font-bold">₹{(currentTotal - (parseFloat(amountReceived) || 0)).toFixed(2)}</span>
+              </div>
+            )}
+          </div>
+
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Notes (optional)</label>
+            <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('notesLabel')} (optional)</label>
             <input
               type="text"
               placeholder="e.g. Paid via PhonePe UPI, home delivery"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500"
+              className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-zinc-200">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-3 py-1.5 text-xs text-slate-700 border border-slate-300 rounded hover:bg-slate-50"
+              className="px-4 py-2 text-sm font-semibold text-zinc-700 border border-zinc-300 rounded-xl hover:bg-zinc-50"
             >
-              Cancel
+              {t('cancelBtn')}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-1.5 text-xs font-medium text-white bg-slate-900 rounded hover:bg-slate-800 disabled:opacity-50"
+              className="px-5 py-2 text-sm font-bold text-white bg-black rounded-xl hover:bg-zinc-800 disabled:opacity-50 shadow-btn-3d"
             >
-              {isSubmitting ? 'Saving...' : editingSale ? 'Update Sale' : 'Complete Sale'}
+              {isSubmitting ? '...' : editingSale ? t('saveChangesBtn') : t('completeSaleBtn')}
             </button>
           </div>
         </form>

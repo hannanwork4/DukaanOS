@@ -17,6 +17,7 @@ import { Expense } from '../types';
 import { Modal } from '../components/Modal';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { api } from '../api/client';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface ExpensesProps {
   expenses: Expense[];
@@ -27,6 +28,7 @@ interface ExpensesProps {
 const CATEGORIES = ['Electricity', 'Rent', 'Transport', 'Wages', 'Maintenance', 'Miscellaneous'] as const;
 
 export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToast }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [selectedCat, setSelectedCat] = useState('All');
 
@@ -142,33 +144,33 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-200/80">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-black">
-            Operating Expenses
+          <h1 className="text-2xl font-bold tracking-tight text-black">
+            {t('expensesTitle')}
           </h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            Record shop overheads: electricity, rent, freight, wages, and maintenance.
+          <p className="text-sm text-zinc-500 mt-0.5">
+            {t('expensesSub')}
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
-          <Plus className="w-4 h-4" />
-          + Add Expense
+          <Plus className="w-4.5 h-4.5" />
+          {t('addExpenseBtn')}
         </button>
       </div>
 
       {/* 3D Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d">
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between glass-panel p-4 rounded-2xl border border-black shadow-card-3d">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
+          <Search className="w-4.5 h-4.5 text-zinc-500 absolute left-3.5 top-3.5" />
           <input
             type="text"
-            placeholder="Search by expense description or notes..."
+            placeholder={t('searchExpensesPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-zinc-200 rounded-xl focus:outline-hidden focus:border-black focus:bg-white transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-black rounded-xl focus:outline-hidden focus:ring-1 focus:ring-black focus:bg-white transition-colors"
           />
         </div>
 
@@ -176,42 +178,42 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
           <select
             value={selectedCat}
             onChange={(e) => setSelectedCat(e.target.value)}
-            className="text-xs bg-white border border-zinc-200 rounded-xl px-3.5 py-2.5 font-semibold text-zinc-800 focus:outline-hidden focus:border-black"
+            className="text-sm bg-white border border-black rounded-xl px-3.5 py-2.5 font-semibold text-zinc-800 focus:outline-hidden focus:ring-1 focus:ring-black"
           >
-            <option value="All">All Categories</option>
+            <option value="All">{t('allCategories')}</option>
             {CATEGORIES.map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
-          <div className="text-xs font-mono font-bold text-black bg-zinc-100 px-3.5 py-2 rounded-xl border border-zinc-200">
-            Total: ₹{totalExpenseVal.toLocaleString('en-IN')}
+          <div className="text-sm tabular-nums font-bold text-black bg-zinc-100 px-3.5 py-2 rounded-xl border border-black">
+            {t('totalLabel')}: ₹{totalExpenseVal.toLocaleString('en-IN')}
           </div>
         </div>
       </div>
 
       {/* 3D Glass Expenses Table */}
-      <div className="glass-panel rounded-3xl border border-zinc-200 shadow-card-3d overflow-hidden">
+      <div className="glass-panel rounded-3xl border border-black shadow-card-3d overflow-hidden">
         {filteredExpenses.length === 0 ? (
-          <div className="p-12 text-center text-xs text-zinc-400">
-            No expenses recorded for this filter.
+          <div className="p-12 text-center text-sm text-zinc-400">
+            {t('noExpensesFound')}
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-50/80 border-b border-zinc-200 text-zinc-600 uppercase tracking-wider text-[10px]">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-zinc-50/80 border-b border-black text-zinc-800 uppercase tracking-wider text-xs">
                 <tr>
-                  <th className="px-5 py-3.5 font-bold">Date</th>
-                  <th className="px-4 py-3.5 font-bold">Description</th>
-                  <th className="px-4 py-3.5 font-bold">Category</th>
-                  <th className="px-4 py-3.5 font-bold">Payment Mode</th>
-                  <th className="px-4 py-3.5 font-bold text-right">Amount</th>
-                  <th className="px-5 py-3.5 font-bold text-right">Actions</th>
+                  <th className="px-5 py-4 font-bold">{t('dateCol')}</th>
+                  <th className="px-4 py-4 font-bold">{t('descriptionCol')}</th>
+                  <th className="px-4 py-4 font-bold">{t('categoryCol')}</th>
+                  <th className="px-4 py-4 font-bold">{t('paymentModeCol')}</th>
+                  <th className="px-4 py-4 font-bold text-right">{t('amountCol')}</th>
+                  <th className="px-5 py-4 font-bold text-right">{t('actionsCol')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200/60">
                 {filteredExpenses.map((exp) => (
                   <tr key={exp.id} className="hover:bg-zinc-50/70 transition-colors">
-                    <td className="px-5 py-3.5 text-zinc-500 font-mono text-[11px]">
+                    <td className="px-5 py-4 text-zinc-500 tabular-nums text-sm">
                       {new Date(exp.date).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
@@ -219,38 +221,38 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
                       })}
                     </td>
 
-                    <td className="px-4 py-3.5 font-bold text-black">
+                    <td className="px-4 py-4 font-bold text-black">
                       <div>{exp.description}</div>
-                      {exp.notes && <div className="text-[10px] text-zinc-400 font-normal">{exp.notes}</div>}
+                      {exp.notes && <div className="text-xs text-zinc-400 font-normal">{exp.notes}</div>}
                     </td>
 
-                    <td className="px-4 py-3.5">
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-800 border border-zinc-200">
+                    <td className="px-4 py-4">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-100 text-zinc-900 border border-black">
                         {exp.category}
                       </span>
                     </td>
 
-                    <td className="px-4 py-3.5 text-zinc-700">
+                    <td className="px-4 py-4 text-zinc-700">
                       {exp.payment_method}
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono font-bold text-black">
+                    <td className="px-4 py-4 text-right tabular-nums font-bold text-black text-sm">
                       ₹{exp.amount.toFixed(2)}
                     </td>
 
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-1">
+                    <td className="px-5 py-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEditModal(exp)}
                           title="Edit expense"
-                          className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
+                          className="p-2 rounded-xl text-black hover:bg-zinc-100 border border-black transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(exp)}
                           title="Delete expense"
-                          className="p-1.5 rounded-lg text-zinc-400 hover:text-black hover:bg-zinc-100 transition-colors"
+                          className="p-2 rounded-xl text-black hover:bg-zinc-100 border border-black transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -268,35 +270,64 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingExpense ? 'Edit Expense' : 'Record Operating Expense'}
-        subtitle="Manage daily shop operating overheads"
+        title={editingExpense ? t('editExpenseModal') : t('recordExpenseModal')}
+        subtitle={t('expenseModalSub')}
       >
         <form onSubmit={handleSave} className="space-y-4">
           {formError && (
-            <div className="p-2.5 text-xs text-red-700 bg-red-50 border border-red-200 rounded">
+            <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl">
               {formError}
             </div>
           )}
 
+          {/* Quick Expense Preset Chips */}
+          <div className="space-y-1.5 pb-1">
+            <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block">
+              {t('quickPresets')}
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { label: t('teaSnacksChip'), desc: 'Chai & Snacks for Staff', cat: 'Miscellaneous' },
+                { label: t('freightChip'), desc: 'Tempo & Transport Freight', cat: 'Transport' },
+                { label: t('cleaningChip'), desc: 'Shop Cleaning & Broom', cat: 'Maintenance' },
+                { label: t('electricityChip'), desc: 'Monthly Electricity Bill', cat: 'Electricity' },
+                { label: t('wagesChip'), desc: 'Helper Daily Wage', cat: 'Wages' },
+                { label: t('carryBagsChip'), desc: 'Plastic & Paper Packing Bags', cat: 'Miscellaneous' }
+              ].map((chip) => (
+                <button
+                  key={chip.label}
+                  type="button"
+                  onClick={() => {
+                    setDescription(chip.desc);
+                    setCategory(chip.cat as any);
+                  }}
+                  className="px-2.5 py-1 text-xs font-semibold bg-zinc-100 hover:bg-black hover:text-white rounded-lg transition-colors border border-zinc-200 cursor-pointer"
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Description *</label>
+            <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('descLabel')} *</label>
             <input
               type="text"
               required
               placeholder="e.g. Shop Electricity Bill October, Tempo freight"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500"
+              className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Category *</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('categoryCol')} *</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as any)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white"
               >
                 {CATEGORIES.map(c => (
                   <option key={c} value={c}>{c}</option>
@@ -305,7 +336,7 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Amount (₹) *</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('amountCol')} (₹) *</label>
               <input
                 type="number"
                 step="0.01"
@@ -314,28 +345,28 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
                 placeholder="2450"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 font-mono"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black tabular-nums"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Date</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('dateCol')}</label>
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Payment Method</label>
+              <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('paymentMethodLabel')}</label>
               <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value as any)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500 bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black bg-white"
               >
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>
@@ -345,30 +376,30 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Notes / Voucher Details (optional)</label>
+            <label className="block text-sm font-semibold text-zinc-900 mb-1.5">{t('notesVoucherLabel')}</label>
             <input
               type="text"
               placeholder="e.g. Paid online, receipt attached"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded focus:outline-hidden focus:border-slate-500"
+              className="w-full px-3.5 py-2.5 text-sm border border-zinc-300 rounded-xl focus:outline-hidden focus:border-black"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-zinc-200">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-3 py-1.5 text-xs text-slate-700 border border-slate-300 rounded hover:bg-slate-50"
+              className="px-4 py-2 text-sm font-semibold text-zinc-700 border border-zinc-300 rounded-xl hover:bg-zinc-50"
             >
-              Cancel
+              {t('cancelBtn')}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-1.5 text-xs font-medium text-white bg-slate-900 rounded hover:bg-slate-800 disabled:opacity-50"
+              className="px-5 py-2 text-sm font-bold text-white bg-black rounded-xl hover:bg-zinc-800 disabled:opacity-50 shadow-btn-3d"
             >
-              {isSubmitting ? 'Saving...' : editingExpense ? 'Save Changes' : 'Record Expense'}
+              {isSubmitting ? t('savingBtn') : editingExpense ? t('saveChangesBtn') : t('recordExpenseBtn')}
             </button>
           </div>
         </form>
@@ -379,9 +410,9 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
         isOpen={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
-        title="Delete Expense"
-        message={`Are you sure you want to delete expense "${deleteTarget?.description}" of ₹${deleteTarget?.amount}?`}
-        confirmText="Delete Expense"
+        title={t('deleteExpenseTitle')}
+        message={t('deleteExpenseConfirm')}
+        confirmText={t('deleteExpenseTitle')}
       />
     </div>
   );

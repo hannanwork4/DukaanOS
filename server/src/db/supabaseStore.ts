@@ -11,7 +11,8 @@ import {
   Expense,
   SupplierPayment,
   StockMovement,
-  TransactionRecord
+  TransactionRecord,
+  User
 } from '../types.js';
 
 export class SupabaseStore implements IDatabase {
@@ -44,6 +45,67 @@ export class SupabaseStore implements IDatabase {
       .single();
     if (error) throw new Error(`Supabase createBusiness error: ${error.message}`);
     return data as Business;
+  }
+
+  async updateBusiness(id: string, updates: Partial<Business>): Promise<Business | null> {
+    const { data, error } = await this.client
+      .from('businesses')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) return null;
+    return data as Business;
+  }
+
+  async deleteBusiness(id: string): Promise<boolean> {
+    try {
+      await this.client.from('transactions').delete().eq('business_id', id);
+      await this.client.from('stock_movements').delete().eq('business_id', id);
+      await this.client.from('supplier_payments').delete().eq('business_id', id);
+      await this.client.from('expenses').delete().eq('business_id', id);
+      await this.client.from('sales').delete().eq('business_id', id);
+      await this.client.from('purchases').delete().eq('business_id', id);
+      await this.client.from('products').delete().eq('business_id', id);
+      await this.client.from('suppliers').delete().eq('business_id', id);
+      await this.client.from('users').delete().eq('business_id', id);
+      await this.client.from('businesses').delete().eq('id', id);
+      return true;
+    } catch (e) {
+      console.error('Error deleting business in Supabase:', e);
+      return false;
+    }
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    const { data } = await this.client.from('users').select('*').eq('email', email).maybeSingle();
+    return data as User || null;
+  }
+
+  async getUserById(id: string): Promise<User | null> {
+    const { data } = await this.client.from('users').select('*').eq('id', id).maybeSingle();
+    return data as User || null;
+  }
+
+  async createUser(user: User): Promise<User> {
+    const { data, error } = await this.client.from('users').insert(user).select().single();
+    if (error) throw new Error(error.message);
+    return data as User;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | null> {
+    const { data } = await this.client.from('users').update(updates).eq('id', id).select().maybeSingle();
+    return data as User || null;
+  }
+
+  async saveOtp(email: string, otp: string, ttlMs = 600000): Promise<void> {
+    await this.client.from('otps').upsert({ email, otp, expires_at: Date.now() + ttlMs });
+  }
+
+  async verifyOtp(email: string, otp: string): Promise<boolean> {
+    const { data } = await this.client.from('otps').select('*').eq('email', email).eq('otp', otp).maybeSingle();
+    if (!data) return false;
+    return data.expires_at > Date.now();
   }
 
   async getProducts(businessId: string): Promise<Product[]> {

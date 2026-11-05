@@ -109,6 +109,13 @@ export class DukaanApiClient {
     });
   }
 
+  async updateSale(id: string, data: any) {
+    return this.request<any>(`/api/sales/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  }
+
   // Expenses
   async getExpenses() {
     return this.request<any[]>('/api/expenses');
@@ -128,6 +135,11 @@ export class DukaanApiClient {
 
   async getTransactions() {
     return this.request<any[]>('/api/ledger/transactions');
+  }
+
+  // Business
+  async getBusiness() {
+    return this.request<any>('/api/business/profile');
   }
 
   // Insights

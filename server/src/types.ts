@@ -171,3 +171,22 @@ export interface BusinessInsight {
   action_suggested?: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  password_hash: string;
+  business_id: string;
+  name: string;
+  phone?: string;
+  is_verified: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OtpRecord {
+  email: string;
+  otp: string;
+  expires_at: number;
+}
+
+

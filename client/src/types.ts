@@ -156,3 +156,13 @@ export interface BusinessInsight {
   action_suggested?: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  business_id: string;
+  name: string;
+  phone?: string;
+  created_at?: string;
+}
+
+

@@ -9,8 +9,12 @@ import { Expenses } from './pages/Expenses';
 import { Transactions } from './pages/Transactions';
 import { Insights } from './pages/Insights';
 import { Settings } from './pages/Settings';
+import { Profile } from './pages/Profile';
+import { TermsAndConditions } from './pages/TermsAndConditions';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { AuthModal } from './components/AuthModal';
 import { ToastContainer, ToastMessage } from './components/Toast';
-import { api } from './api/client';
+import { api, setActiveBusinessId } from './api/client';
 import {
   Business,
   Product,
@@ -20,12 +24,68 @@ import {
   Expense,
   TransactionRecord,
   DashboardSummary,
-  BusinessInsight
+  BusinessInsight,
+  User
 } from './types';
 
+const getTabFromLocation = (): string => {
+  if (typeof window === 'undefined') return 'dashboard';
+  const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase().trim();
+  const validTabs = [
+    'dashboard',
+    'inventory',
+    'purchases',
+    'sales',
+    'suppliers',
+    'expenses',
+    'transactions',
+    'insights',
+    'profile',
+    'settings',
+    'terms',
+    'privacy'
+  ];
+  return validTabs.includes(hash) ? hash : 'dashboard';
+};
+
 export function App() {
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeTab, setActiveTab] = useState<string>(getTabFromLocation);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Sync state with browser History API so browser Back / Forward buttons work
+  const handleTabChange = useCallback((newTab: string) => {
+    setActiveTab(newTab);
+    const targetHash = `#${newTab}`;
+    if (window.location.hash !== targetHash) {
+      window.history.pushState({ tab: newTab }, '', targetHash);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Initial history entry setup if not present
+    const initial = getTabFromLocation();
+    setActiveTab(initial);
+    if (!window.location.hash || window.location.hash === '#') {
+      window.history.replaceState({ tab: initial }, '', `#${initial}`);
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      const tabFromState = event.state?.tab;
+      const targetTab = tabFromState || getTabFromLocation();
+      setActiveTab(targetTab);
+    };
+
+    const handleHashChange = () => {
+      setActiveTab(getTabFromLocation());
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
 
   // Core Data States
   const [business, setBusiness] = useState<Business | null>(null);
@@ -37,6 +97,10 @@ export function App() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [transactions, setTransactions] = useState<TransactionRecord[]>([]);
   const [insights, setInsights] = useState<BusinessInsight[]>([]);
+
+  // Auth States
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   // Toast System
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -99,24 +163,51 @@ export function App() {
     }
   }, [showToast]);
 
+  const handleLogout = () => {
+    localStorage.removeItem('dukaanos_token');
+    setCurrentUser(null);
+    showToast('info', 'Logged out of store account.');
+    setIsAuthOpen(true);
+  };
+
   useEffect(() => {
     loadAllData(true);
   }, [loadAllData]);
+
+  // Derived notification items
+  const lowStockItems = products
+    .filter(p => Number(p.current_stock) <= Number(p.min_stock_threshold))
+    .map(p => ({ id: p.id, name: p.name, current_stock: p.current_stock }));
+
+  const pendingSuppliersList = suppliers
+    .filter(s => Number(s.outstanding_balance) > 0)
+    .map(s => ({ id: s.id, name: s.name, outstanding_balance: s.outstanding_balance }));
 
   return (
     <Layout
       business={business}
       activeTab={activeTab}
-      onTabChange={setActiveTab}
+      onTabChange={handleTabChange}
       onRefresh={() => loadAllData(false)}
       isRefreshing={isRefreshing}
+      onOpenAuth={() => setIsAuthOpen(true)}
+      onLogout={handleLogout}
+      lowStockItems={lowStockItems}
+      pendingSuppliers={pendingSuppliersList}
+      products={products}
+      suppliers={suppliers}
+      transactions={transactions}
     >
       {activeTab === 'dashboard' && (
         <Dashboard
           summary={summary}
-          onNavigate={setActiveTab}
-          onOpenQuickPurchase={() => setActiveTab('purchases')}
-          onOpenQuickSale={() => setActiveTab('sales')}
+          products={products}
+          suppliers={suppliers}
+          transactions={transactions}
+          insights={insights}
+          onNavigate={handleTabChange}
+          onOpenQuickPurchase={() => handleTabChange('purchases')}
+          onOpenQuickSale={() => handleTabChange('sales')}
         />
       )}
 
@@ -175,7 +266,18 @@ export function App() {
         <Insights
           insights={insights}
           onRefresh={() => loadAllData(false)}
-          onNavigate={setActiveTab}
+          onNavigate={handleTabChange}
+        />
+      )}
+
+      {activeTab === 'profile' && (
+        <Profile
+          business={business}
+          user={currentUser}
+          onRefresh={() => loadAllData(false)}
+          showToast={showToast}
+          onOpenAuth={() => setIsAuthOpen(true)}
+          onLogout={handleLogout}
         />
       )}
 
@@ -184,8 +286,38 @@ export function App() {
           business={business}
           onRefresh={() => loadAllData(false)}
           showToast={showToast}
+          onNavigate={handleTabChange}
+          onLogout={handleLogout}
         />
       )}
+
+      {activeTab === 'terms' && (
+        <TermsAndConditions
+          onBack={() => handleTabChange('settings')}
+        />
+      )}
+
+      {activeTab === 'privacy' && (
+        <PrivacyPolicy
+          onBack={() => handleTabChange('settings')}
+        />
+      )}
+
+      {/* Authentication Modal (Login & Conversational Step-by-Step Onboarding) */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onSuccess={(user, biz) => {
+          setCurrentUser(user);
+          setBusiness(biz);
+          loadAllData(false);
+        }}
+        showToast={showToast}
+        onOpenDoc={(doc) => {
+          handleTabChange(doc);
+          setIsAuthOpen(false);
+        }}
+      />
 
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </Layout>
@@ -193,4 +325,3 @@ export function App() {
 }
 
 export default App;
-

@@ -10,7 +10,10 @@ import expensesRouter from './routes/expenses.js';
 import ledgerRouter from './routes/ledger.js';
 import insightsRouter from './routes/insights.js';
 import businessRouter from './routes/business.js';
+import authRouter from './routes/auth.js';
 import { db } from './db/index.js';
+
+import { getOpenApiSpec } from './openapi.js';
 
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 dotenv.config();
@@ -48,6 +51,13 @@ app.get('/health', (req, res) => {
   });
 });
 
+// OpenAPI 3.1 Specification for API documentation
+app.get(['/openapi.json', '/api/openapi.json'], (req, res) => {
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+  const host = req.get('host') || `localhost:${PORT}`;
+  res.json(getOpenApiSpec(`${protocol}://${host}`));
+});
+
 // Mount Routes
 app.use('/api/products', productsRouter);
 app.use('/api/suppliers', suppliersRouter);
@@ -57,6 +67,7 @@ app.use('/api/expenses', expensesRouter);
 app.use('/api/ledger', ledgerRouter);
 app.use('/api/insights', insightsRouter);
 app.use('/api/business', businessRouter);
+app.use('/api/auth', authRouter);
 
 // Initialize DB and start server
 async function startServer() {

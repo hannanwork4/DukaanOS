@@ -1,22 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  TrendingUp,
-  ShoppingBag,
+  BarChart3,
+  ShoppingCart,
   Receipt,
-  Truck,
-  Boxes,
+  Users,
+  Package,
   AlertTriangle,
-  ArrowUpRight,
-  ArrowDownLeft,
-  PlusCircle,
-  HelpCircle,
-  ChevronRight
+  AlertCircle,
+  Info,
+  TrendingUp,
+  ChevronRight,
+  ChevronDown,
+  Tag,
+  CheckCircle2
 } from 'lucide-react';
-import { DashboardSummary } from '../types';
-import { TrendChart } from '../components/TrendChart';
+import { DashboardSummary, Product, Supplier, BusinessInsight, TransactionRecord } from '../types';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface DashboardProps {
   summary: DashboardSummary | null;
+  products?: Product[];
+  suppliers?: Supplier[];
+  transactions?: TransactionRecord[];
+  insights?: BusinessInsight[];
   onNavigate: (tab: string) => void;
   onOpenQuickSale: () => void;
   onOpenQuickPurchase: () => void;
@@ -24,421 +30,563 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({
   summary,
+  products = [],
+  suppliers = [],
+  transactions = [],
+  insights = [],
   onNavigate,
   onOpenQuickSale,
   onOpenQuickPurchase
 }) => {
+  const { t } = useTranslation();
+  const [timeRange, setTimeRange] = useState<'7days' | '30days'>('7days');
+
   if (!summary) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-8 bg-zinc-200 rounded-xl w-48"></div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="h-10 bg-zinc-200 rounded-xl w-60"></div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-28 glass-panel rounded-2xl"></div>
+            <div key={i} className="h-28 bg-white rounded-2xl border border-zinc-100"></div>
           ))}
         </div>
       </div>
     );
   }
 
-  const isBrandNewShop = 
-    summary.today_sales === 0 &&
-    summary.today_purchases === 0 &&
-    summary.today_expenses === 0 &&
-    summary.total_inventory_value === 0 &&
-    summary.recent_transactions.length === 0;
+  // Currency formatting
+  const formatINR = (val: number) => {
+    return Number(val || 0).toLocaleString('en-IN');
+  };
+
+  const formatTxTime = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      const now = new Date();
+      const isToday = d.toDateString() === now.toDateString();
+      const timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      if (isToday) {
+        return `Today, ${timeStr}`;
+      }
+      return `${d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}, ${timeStr}`;
+    } catch {
+      return dateStr;
+    }
+  };
+
+  // 1. Live Metrics strictly from Real State
+  const pendingSuppliersList = suppliers.filter(s => Number(s.outstanding_balance) > 0);
+  const pendingSuppliersCount = pendingSuppliersList.length;
+
+  const lowStockProducts = products.filter(p => Number(p.current_stock) <= Number(p.min_stock_threshold));
+  const lowStockCount = summary.low_stock_count !== undefined ? summary.low_stock_count : lowStockProducts.length;
+  const lowStockNames = lowStockProducts.map(p => p.name).slice(0, 3).join(', ');
+
+  const totalItemsCount = products.reduce((acc, p) => acc + Number(p.current_stock || 0), 0);
+
+  // 2. Sales Trend strictly from API or real dates
+  const trendData: { date: string; sales: number; count: number }[] = [];
+  if (summary.sales_trend && summary.sales_trend.length > 0) {
+    trendData.push(...summary.sales_trend);
+  } else {
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
+      const salesVal = i === 0 ? summary.today_sales : 0;
+      trendData.push({ date: dateStr, sales: salesVal, count: i === 0 && salesVal > 0 ? 1 : 0 });
+    }
+  }
+
+  const maxSaleValue = Math.max(...trendData.map(d => d.sales), summary.today_sales || 0, 1000);
+  const ceiling = Math.ceil(maxSaleValue / 5000) * 5000 || 5000;
+  const yTicks = [
+    ceiling,
+    Math.round((ceiling * 2) / 3),
+    Math.round(ceiling / 3),
+    0
+  ];
+
+  // 3. Recent Transactions strictly from Real State
+  const displayTransactions = (transactions && transactions.length > 0)
+    ? transactions.slice(0, 5)
+    : (summary.recent_transactions && summary.recent_transactions.length > 0)
+    ? summary.recent_transactions.slice(0, 5)
+    : [];
 
   return (
     <div className="space-y-6">
-      {/* 3D Glass Hero Banner (Monochrome Black & White) */}
-      <div className="relative overflow-hidden rounded-3xl glass-panel p-6 sm:p-8 border border-zinc-200/80 shadow-card-3d bg-white/90">
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-3.5 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 text-zinc-900 border border-zinc-200 text-xs font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-black"></span>
-              Retail Operating System
-            </div>
-            
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-black leading-tight">
-              Store Overview & Ledger
-            </h1>
+      {/* 1. Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111214] tracking-tight">
+            {t('storeOverview')}
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-500 font-normal mt-1">
+            {t('storeOverviewSubtitle')}
+          </p>
+        </div>
 
-            <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-normal">
-              Enter data once. Inventory, sales, supplier credit, and net cash flow are updated automatically with deterministic accounting precision.
-            </p>
-
-            {/* Quick 3D Action Buttons */}
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <button
-                onClick={onOpenQuickSale}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
-              >
-                <PlusCircle className="w-4 h-4" />
-                + Record Sale
-              </button>
-              <button
-                onClick={onOpenQuickPurchase}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-black bg-white border border-zinc-300 rounded-xl shadow-btn-3d-white hover:bg-zinc-50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
-              >
-                <ShoppingBag className="w-4 h-4 text-zinc-700" />
-                + Restock Purchase
-              </button>
-            </div>
-          </div>
-
-          {/* 3D Isometric Monochrome Kirana Store Visual */}
-          <div className="relative w-full max-w-[280px] lg:max-w-[320px] h-44 flex items-center justify-center self-center shrink-0">
-            <svg viewBox="0 0 320 200" className="w-full h-full drop-shadow-xl select-none" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="monoWall" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="100%" stopColor="#f4f4f5" />
-                </linearGradient>
-                <linearGradient id="monoGlass" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
-                  <stop offset="100%" stopColor="rgba(228,228,231,0.5)" />
-                </linearGradient>
-                <filter id="cleanShadow" x="-10%" y="-10%" width="120%" height="120%">
-                  <feDropShadow dx="0" dy="6" stdDeviation="5" floodColor="#000000" floodOpacity="0.08" />
-                </filter>
-              </defs>
-
-              {/* Ground Shadow */}
-              <ellipse cx="160" cy="168" rx="130" ry="18" fill="#e4e4e7" opacity="0.6" />
-
-              {/* Main Building Block */}
-              <rect x="70" y="65" width="180" height="98" rx="8" fill="url(#monoWall)" stroke="#d4d4d8" strokeWidth="1.5" filter="url(#cleanShadow)" />
-
-              {/* Store Signboard */}
-              <rect x="100" y="22" width="120" height="26" rx="6" fill="#09090b" filter="url(#cleanShadow)" />
-              <text x="160" y="39" fill="#ffffff" fontSize="11" fontWeight="800" textAnchor="middle" letterSpacing="1">RETAIL STORE</text>
-
-              {/* Awning / Canopy (Black & White Striped) */}
-              <path d="M 50 64 L 270 64 L 255 44 L 65 44 Z" fill="#18181b" filter="url(#cleanShadow)" />
-              <path d="M 85 44 L 75 64 L 105 64 L 110 44 Z" fill="#ffffff" />
-              <path d="M 140 44 L 135 64 L 165 64 L 165 44 Z" fill="#ffffff" />
-              <path d="M 195 44 L 195 64 L 225 64 L 220 44 Z" fill="#ffffff" />
-
-              {/* Glass Door / Display Showcase */}
-              <rect x="85" y="85" width="60" height="78" rx="4" fill="url(#monoGlass)" stroke="#d4d4d8" strokeWidth="1.5" />
-              <line x1="85" y1="110" x2="145" y2="110" stroke="#d4d4d8" strokeWidth="1" />
-              <line x1="85" y1="135" x2="145" y2="135" stroke="#d4d4d8" strokeWidth="1" />
-
-              {/* Shelf Items */}
-              <rect x="92" y="96" width="12" height="14" rx="2" fill="#27272a" />
-              <rect x="108" y="94" width="14" height="16" rx="2" fill="#71717a" />
-              <rect x="126" y="97" width="12" height="13" rx="2" fill="#18181b" />
-              <rect x="92" y="121" width="14" height="14" rx="2" fill="#71717a" />
-              <rect x="110" y="119" width="12" height="16" rx="2" fill="#18181b" />
-              <rect x="126" y="122" width="12" height="13" rx="2" fill="#27272a" />
-
-              {/* Checkout Counter */}
-              <rect x="160" y="100" width="75" height="63" rx="6" fill="#18181b" filter="url(#cleanShadow)" />
-              <rect x="175" y="88" width="45" height="22" rx="4" fill="#ffffff" stroke="#09090b" strokeWidth="1.5" />
-              <text x="185" y="103" fill="#09090b" fontSize="10" fontFamily="monospace" fontWeight="bold">₹0.00</text>
-
-              {/* 3D Floating Coin (Rupee) */}
-              <g transform="translate(245, 70)">
-                <circle cx="16" cy="16" r="16" fill="#09090b" filter="url(#cleanShadow)" />
-                <circle cx="16" cy="16" r="13" fill="#18181b" stroke="#ffffff" strokeWidth="1" />
-                <text x="16" y="21" fill="#ffffff" fontSize="13" fontWeight="bold" textAnchor="middle">₹</text>
-              </g>
-
-              {/* 3D Crate Box */}
-              <g transform="translate(40, 115)">
-                <polygon points="18,0 36,9 18,18 0,9" fill="#f4f4f5" stroke="#71717a" strokeWidth="1" />
-                <polygon points="0,9 18,18 18,36 0,27" fill="#e4e4e7" stroke="#71717a" strokeWidth="1" />
-                <polygon points="18,18 36,9 36,27 18,36" fill="#27272a" stroke="#71717a" strokeWidth="1" />
-              </g>
-            </svg>
-          </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onOpenQuickSale}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-zinc-200 text-zinc-900 rounded-xl font-semibold text-xs sm:text-sm shadow-xs hover:bg-zinc-50 hover:border-zinc-300 transition-all cursor-pointer"
+          >
+            <ShoppingCart className="w-4 h-4 text-zinc-700" />
+            <span>{t('recordSaleBtn')}</span>
+          </button>
+          
+          <button
+            onClick={onOpenQuickPurchase}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#111214] text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm hover:bg-zinc-800 transition-all cursor-pointer"
+          >
+            <Package className="w-4 h-4 text-white" />
+            <span>{t('restockPurchaseBtn')}</span>
+          </button>
         </div>
       </div>
 
-      {/* Onboarding Guide if shop is empty */}
-      {isBrandNewShop && (
-        <div className="p-5 glass-panel rounded-2xl border border-zinc-200 shadow-card-3d flex items-start gap-4">
-          <div className="p-3 bg-zinc-100 rounded-xl text-black">
-            <HelpCircle className="w-5 h-5" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-black">Welcome to DukaanOS</h4>
-            <p className="text-xs text-zinc-600 mt-1 leading-relaxed">
-              Your store ledger is fresh. You can seed sample retail store data to evaluate the application.
-            </p>
-            <div className="mt-3">
-              <button
-                onClick={() => onNavigate('settings')}
-                className="text-xs font-semibold text-black bg-zinc-100 hover:bg-zinc-200 px-3.5 py-1.5 rounded-lg transition-all"
-              >
-                Load Sample Store Data →
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 6 Key Metrics Grid (Monochrome 3D Glass Cards) */}
+      {/* 2. Top Metrics Strip (6 Cards) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
-        {/* Today's Sales */}
-        <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d hover:shadow-card-3d-hover hover:-translate-y-0.5 transition-all">
-          <div className="flex items-center justify-between text-zinc-500">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Today's Sales</span>
-            <div className="w-7 h-7 rounded-lg bg-zinc-100 text-black flex items-center justify-center">
-              <TrendingUp className="w-3.5 h-3.5" />
+        {/* Card 1: Today's Sales */}
+        <div className="bg-white rounded-2xl p-4 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
+          <div>
+            <div className="w-7 h-7 rounded-lg bg-zinc-100 border border-zinc-200/60 text-black flex items-center justify-center mb-3">
+              <BarChart3 className="w-4 h-4 text-black" />
+            </div>
+            <span className="text-[13px] font-medium text-zinc-500 block">{t('todaySales')}</span>
+            <div className="text-xl font-bold text-zinc-900 tracking-tight mt-0.5 tabular-nums">
+              ₹{formatINR(summary.today_sales)}
             </div>
           </div>
-          <div className="mt-2 text-xl font-extrabold text-black">
-            ₹{summary.today_sales.toLocaleString('en-IN')}
-          </div>
-          <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-zinc-600">
-            {summary.sales_growth_percent !== undefined && summary.sales_growth_percent !== null ? (
-              <span className="inline-flex items-center gap-0.5">
-                {summary.sales_growth_percent >= 0 ? (
-                  <ArrowUpRight className="w-3 h-3 text-black" />
-                ) : (
-                  <ArrowDownLeft className="w-3 h-3 text-zinc-400" />
-                )}
-                {summary.sales_growth_percent > 0 ? `+${summary.sales_growth_percent}%` : `${summary.sales_growth_percent}%`} vs yest.
-              </span>
+          <div className="text-xs font-medium text-zinc-600 mt-2 flex items-center gap-0.5">
+            {summary.sales_growth_percent !== null && summary.sales_growth_percent !== undefined ? (
+              <>
+                <span>{summary.sales_growth_percent >= 0 ? '↑' : '↓'}</span>
+                <span>{Math.abs(summary.sales_growth_percent)}% {t('vsYesterday')}</span>
+              </>
             ) : (
-              <span className="text-zinc-600 flex items-center gap-0.5">
-                <ArrowUpRight className="w-3 h-3 text-black" />
-                Live Revenue
-              </span>
+              <span>{t('liveLedger')}</span>
             )}
           </div>
         </div>
 
-        {/* Today's Purchases */}
-        <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d hover:shadow-card-3d-hover hover:-translate-y-0.5 transition-all">
-          <div className="flex items-center justify-between text-zinc-500">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Purchases</span>
-            <div className="w-7 h-7 rounded-lg bg-zinc-100 text-black flex items-center justify-center">
-              <ShoppingBag className="w-3.5 h-3.5" />
+        {/* Card 2: Today's Purchases */}
+        <div className="bg-white rounded-2xl p-4 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
+          <div>
+            <div className="w-7 h-7 rounded-lg bg-zinc-100 border border-zinc-200/60 text-black flex items-center justify-center mb-3">
+              <ShoppingCart className="w-4 h-4 text-black" />
+            </div>
+            <span className="text-[13px] font-medium text-zinc-500 block">{t('todayPurchases')}</span>
+            <div className="text-xl font-bold text-zinc-900 tracking-tight mt-0.5 tabular-nums">
+              ₹{formatINR(summary.today_purchases)}
             </div>
           </div>
-          <div className="mt-2 text-xl font-extrabold text-black">
-            ₹{summary.today_purchases.toLocaleString('en-IN')}
-          </div>
-          <div className="mt-1 text-[11px] font-medium text-zinc-500">
-            Stock acquired
+          <div className="text-xs font-medium text-zinc-500 mt-2">
+            {t('stockAcquired')}
           </div>
         </div>
 
-        {/* Today's Expenses */}
-        <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d hover:shadow-card-3d-hover hover:-translate-y-0.5 transition-all">
-          <div className="flex items-center justify-between text-zinc-500">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Expenses</span>
-            <div className="w-7 h-7 rounded-lg bg-zinc-100 text-black flex items-center justify-center">
-              <Receipt className="w-3.5 h-3.5" />
+        {/* Card 3: Today's Expenses */}
+        <div className="bg-white rounded-2xl p-4 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
+          <div>
+            <div className="w-7 h-7 rounded-lg bg-zinc-100 border border-zinc-200/60 text-black flex items-center justify-center mb-3">
+              <Receipt className="w-4 h-4 text-black" />
+            </div>
+            <span className="text-[13px] font-medium text-zinc-500 block">{t('todayExpenses')}</span>
+            <div className="text-xl font-bold text-zinc-900 tracking-tight mt-0.5 tabular-nums">
+              ₹{formatINR(summary.today_expenses)}
             </div>
           </div>
-          <div className="mt-2 text-xl font-extrabold text-black">
-            ₹{summary.today_expenses.toLocaleString('en-IN')}
-          </div>
-          <div className="mt-1 text-[11px] font-medium text-zinc-500">
-            Store overheads
+          <div className="text-xs font-medium text-zinc-500 mt-2">
+            {t('storeOverheads')}
           </div>
         </div>
 
-        {/* Outstanding Supplier Dues */}
-        <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d hover:shadow-card-3d-hover hover:-translate-y-0.5 transition-all">
-          <div className="flex items-center justify-between text-zinc-500">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Supplier Dues</span>
-            <div className="w-7 h-7 rounded-lg bg-zinc-100 text-black flex items-center justify-center">
-              <Truck className="w-3.5 h-3.5" />
+        {/* Card 4: Supplier Dues */}
+        <div className="bg-white rounded-2xl p-4 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
+          <div>
+            <div className="w-7 h-7 rounded-lg bg-zinc-100 border border-zinc-200/60 text-black flex items-center justify-center mb-3">
+              <Users className="w-4 h-4 text-black" />
+            </div>
+            <span className="text-[13px] font-medium text-zinc-500 block">{t('supplierDues')}</span>
+            <div className="text-xl font-bold text-zinc-900 tracking-tight mt-0.5 tabular-nums">
+              ₹{formatINR(summary.outstanding_supplier_payments)}
             </div>
           </div>
-          <div className="mt-2 text-xl font-extrabold text-black">
-            ₹{summary.outstanding_supplier_payments.toLocaleString('en-IN')}
-          </div>
-          <div className="mt-1 text-[11px] font-semibold text-zinc-700">
-            Pending clearance
+          <div className="text-xs font-medium text-zinc-500 mt-2">
+            {pendingSuppliersCount} {pendingSuppliersCount === 1 ? t('supplierPending') : t('suppliersPending')}
           </div>
         </div>
 
-        {/* Total Stock Value */}
-        <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d hover:shadow-card-3d-hover hover:-translate-y-0.5 transition-all">
-          <div className="flex items-center justify-between text-zinc-500">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Inventory Value</span>
-            <div className="w-7 h-7 rounded-lg bg-zinc-100 text-black flex items-center justify-center">
-              <Boxes className="w-3.5 h-3.5" />
+        {/* Card 5: Inventory Value */}
+        <div className="bg-white rounded-2xl p-4 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
+          <div>
+            <div className="w-7 h-7 rounded-lg bg-zinc-100 border border-zinc-200/60 text-black flex items-center justify-center mb-3">
+              <Package className="w-4 h-4 text-black" />
+            </div>
+            <span className="text-[13px] font-medium text-zinc-500 block">{t('inventoryValue')}</span>
+            <div className="text-xl font-bold text-zinc-900 tracking-tight mt-0.5 tabular-nums">
+              ₹{formatINR(summary.total_inventory_value)}
             </div>
           </div>
-          <div className="mt-2 text-xl font-extrabold text-black">
-            ₹{summary.total_inventory_value.toLocaleString('en-IN')}
-          </div>
-          <div className="mt-1 text-[11px] font-medium text-zinc-500">
-            Cost valuation
+          <div className="text-xs font-medium text-zinc-500 mt-2">
+            ≈ {totalItemsCount.toLocaleString('en-IN')} {t('unitsValuation')}
           </div>
         </div>
 
-        {/* Low Stock Alert */}
-        <div 
-          onClick={() => onNavigate('inventory')}
-          className={`glass-panel p-4 rounded-2xl border shadow-card-3d hover:shadow-card-3d-hover hover:-translate-y-0.5 transition-all cursor-pointer ${
-            summary.low_stock_count > 0 ? 'border-zinc-400 bg-zinc-50' : 'border-zinc-200'
-          }`}
-        >
-          <div className="flex items-center justify-between text-zinc-500">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Low Stock</span>
-            <div className="w-7 h-7 rounded-lg bg-zinc-100 text-black flex items-center justify-center">
-              <AlertTriangle className="w-3.5 h-3.5" />
+        {/* Card 6: Low Stock Items */}
+        <div className="bg-white rounded-2xl p-4 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
+          <div>
+            <div className="w-7 h-7 rounded-lg bg-zinc-100 border border-zinc-200/60 text-black flex items-center justify-center mb-3">
+              <AlertTriangle className="w-4 h-4 text-black" />
+            </div>
+            <span className="text-[13px] font-medium text-zinc-500 block">{t('lowStockItems')}</span>
+            <div className="text-xl font-bold text-zinc-900 tracking-tight mt-0.5 tabular-nums">
+              {lowStockCount}
             </div>
           </div>
-          <div className="mt-2 text-xl font-extrabold text-black">
-            {summary.low_stock_count} {summary.low_stock_count === 1 ? 'item' : 'items'}
-          </div>
-          <div className="mt-1 text-[11px] font-semibold text-zinc-700">
-            {summary.low_stock_count > 0 ? 'Reorder needed' : 'Optimal levels'}
+          <div className={`text-xs font-medium mt-2 ${lowStockCount > 0 ? 'text-zinc-900 font-bold' : 'text-zinc-500'}`}>
+            {lowStockCount > 0 ? t('needsAttention') : t('optimalLevels')}
           </div>
         </div>
       </div>
 
-      {/* Main Charts & Transactions Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sales Trend Chart (2 columns) */}
-        <div className="lg:col-span-2 glass-panel rounded-3xl p-6 border border-zinc-200 shadow-card-3d">
-          <div className="flex items-center justify-between pb-4 border-b border-zinc-200/80">
-            <div>
-              <h2 className="text-sm font-bold text-black">7-Day Sales Trajectory</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">Daily gross revenue trajectory from recorded transactions</p>
+      {/* 3. Middle Section: Sales Overview Bar Chart & Things to Review */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Left (8 cols): Sales Overview Bar Chart */}
+        <div className="lg:col-span-8 bg-white rounded-2xl p-5 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
+          <div className="flex items-center justify-between pb-4">
+            <h2 className="text-base font-bold text-zinc-900">{t('salesOverview')}</h2>
+            <div className="relative">
+              <button
+                onClick={() => setTimeRange(timeRange === '7days' ? '30days' : '7days')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black bg-white text-xs font-medium text-zinc-600 hover:text-black transition-all cursor-pointer"
+              >
+                <span>{timeRange === '7days' ? t('last7Days') : t('last30Days')}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+              </button>
             </div>
-            <button
-              onClick={() => onNavigate('sales')}
-              className="text-xs font-semibold text-black hover:text-zinc-600 flex items-center gap-1 bg-zinc-100 px-3 py-1.5 rounded-xl border border-zinc-200 transition-colors"
-            >
-              Sales Book →
-            </button>
           </div>
-          <div className="pt-5">
-            <TrendChart data={summary.sales_trend} />
+
+          {/* Bar Chart Area */}
+          <div className="pt-2 pb-1">
+            <div className="flex items-stretch h-52">
+              {/* Y-axis Labels */}
+              <div className="flex flex-col justify-between pr-3 text-[11px] font-medium text-zinc-400 shrink-0 w-8 select-none">
+                {yTicks.map((tick, idx) => (
+                  <span key={idx} className="tabular-nums leading-none">
+                    {tick >= 1000 ? `${Math.round(tick / 1000)}k` : tick}
+                  </span>
+                ))}
+              </div>
+
+              {/* Chart Grid & Bars */}
+              <div className="relative flex-1 flex flex-col justify-between">
+                {/* Dashed Horizontal Guidelines */}
+                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                  <div className="border-b border-dashed border-zinc-100 w-full h-0"></div>
+                  <div className="border-b border-dashed border-zinc-100 w-full h-0"></div>
+                  <div className="border-b border-dashed border-zinc-100 w-full h-0"></div>
+                  <div className="border-b border-zinc-200/60 w-full h-0"></div>
+                </div>
+
+                {/* Bars Container */}
+                <div className="relative z-10 flex-1 grid grid-cols-7 gap-2 sm:gap-4 items-end pb-1 px-2">
+                  {trendData.slice(-7).map((item, idx) => {
+                    const isLast = idx === trendData.slice(-7).length - 1;
+                    const dayLabel = new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' });
+                    const barHeightPct = ceiling > 0
+                      ? Math.min(100, Math.max(item.sales > 0 ? 12 : 4, Math.round((item.sales / ceiling) * 100)))
+                      : 6;
+
+                    return (
+                      <div key={item.date || idx} className="flex flex-col items-center justify-end h-full group relative">
+                        {/* Tooltip on Active/Today's Bar */}
+                        {isLast && summary.today_sales > 0 && (
+                          <div className="absolute -top-7 mb-1 z-20 flex flex-col items-center animate-fade-in">
+                            <div className="bg-[#111214] text-white text-[11px] font-bold px-2.5 py-1 rounded-md shadow-md whitespace-nowrap tabular-nums">
+                              ₹{formatINR(item.sales)}
+                            </div>
+                            <div className="w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-[#111214]"></div>
+                          </div>
+                        )}
+
+                        {/* Bar */}
+                        <div
+                          style={{ height: `${barHeightPct}%` }}
+                          className={`w-full max-w-[48px] rounded-t-sm transition-all duration-300 ${
+                            isLast
+                              ? 'bg-[#111214] shadow-xs'
+                              : 'bg-[#e2e6ed] hover:bg-zinc-300'
+                          }`}
+                        ></div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* X-axis Day Labels */}
+            <div className="flex items-center pl-8 pr-2 pt-2.5">
+              <div className="flex-1 grid grid-cols-7 gap-2 sm:gap-4 text-center">
+                {trendData.slice(-7).map((item, idx) => {
+                  const dayLabel = new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' });
+                  return (
+                    <span key={idx} className="text-xs font-medium text-zinc-400">
+                      {dayLabel}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Quick Insights Highlights (1 column) */}
-        <div className="glass-panel rounded-3xl p-6 border border-zinc-200 shadow-card-3d flex flex-col justify-between">
+        {/* Right (4 cols): Things to Review (100% Real Live State) */}
+        <div className="lg:col-span-4 bg-white rounded-2xl p-5 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-200/80">
-              <h2 className="text-sm font-bold text-black">Deterministic Health</h2>
+            <div className="flex items-center justify-between pb-3">
+              <h2 className="text-base font-bold text-zinc-900">{t('thingsToReview')}</h2>
               <button
                 onClick={() => onNavigate('insights')}
-                className="text-xs font-semibold text-zinc-700 hover:text-black"
+                className="text-xs font-semibold text-zinc-700 hover:text-black flex items-center gap-1 cursor-pointer transition-colors"
               >
-                All Insights →
+                <span>{t('viewAll')}</span>
+                <span>→</span>
               </button>
             </div>
 
-            <div className="mt-4 space-y-3">
-              {summary.low_stock_count > 0 ? (
-                <div className="p-4 rounded-2xl border border-zinc-300 bg-zinc-100/70 text-xs">
-                  <div className="font-bold text-black flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5 text-zinc-800" />
-                    Low Stock Thresholds Reached
+            <div className="space-y-3 mt-1">
+              {/* Review 1: Low Stock */}
+              <div
+                onClick={() => onNavigate('inventory')}
+                className="p-3.5 rounded-xl border border-black hover:bg-zinc-50 transition-all cursor-pointer flex items-center justify-between gap-3 bg-white"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-zinc-100 border border-zinc-200/60 text-black">
+                    {lowStockCount > 0 ? <AlertCircle className="w-4 h-4 text-black" /> : <CheckCircle2 className="w-4 h-4 text-black" />}
                   </div>
-                  <div className="text-zinc-600 mt-1 leading-snug">
-                    <span className="font-semibold text-black">{summary.low_stock_count}</span> products have hit or breached minimum thresholds.
+                  <div className="min-w-0">
+                    <h4 className="text-xs font-bold text-zinc-900 leading-snug truncate">
+                      {lowStockCount > 0
+                        ? `${lowStockCount} ${lowStockCount === 1 ? t('productBelowMin') : t('productsBelowMin')}`
+                        : t('allInventoryHealthy')}
+                    </h4>
+                    <p className="text-[11px] text-zinc-500 truncate mt-0.5">
+                      {lowStockCount > 0 ? lowStockNames : t('noItemsBelowThreshold')}
+                    </p>
                   </div>
                 </div>
-              ) : (
-                <div className="p-4 rounded-2xl border border-zinc-200 bg-white text-xs">
-                  <div className="font-bold text-black">Inventory Levels Healthy</div>
-                  <div className="text-zinc-500 mt-1">All active catalog products have safe stock reserves.</div>
-                </div>
-              )}
+                <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />
+              </div>
 
-              {summary.outstanding_supplier_payments > 0 ? (
-                <div className="p-4 rounded-2xl border border-zinc-300 bg-zinc-100/70 text-xs">
-                  <div className="font-bold text-black flex items-center gap-1.5">
-                    <Truck className="w-3.5 h-3.5 text-zinc-800" />
-                    Pending Supplier Payables
+              {/* Review 2: Supplier Dues */}
+              <div
+                onClick={() => onNavigate('suppliers')}
+                className="p-3.5 rounded-xl border border-black hover:bg-zinc-50 transition-all cursor-pointer flex items-center justify-between gap-3 bg-white"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-zinc-100 border border-zinc-200/60 text-black">
+                    {summary.outstanding_supplier_payments > 0 ? <Info className="w-4 h-4 text-black" /> : <CheckCircle2 className="w-4 h-4 text-black" />}
                   </div>
-                  <div className="text-zinc-600 mt-1 leading-snug">
-                    Total <span className="font-mono font-bold text-black">₹{summary.outstanding_supplier_payments.toLocaleString('en-IN')}</span> due across distributor balances.
+                  <div className="min-w-0">
+                    <h4 className="text-xs font-bold text-zinc-900 leading-snug truncate">
+                      {summary.outstanding_supplier_payments > 0
+                        ? `₹${formatINR(summary.outstanding_supplier_payments)} ${t('pendingWithSuppliers')}`
+                        : t('noPendingDues')}
+                    </h4>
+                    <p className="text-[11px] text-zinc-500 truncate mt-0.5">
+                      {summary.outstanding_supplier_payments > 0
+                        ? `${pendingSuppliersCount} ${pendingSuppliersCount === 1 ? t('supplierPending') : t('suppliersPending')}`
+                        : t('allVendorDuesCleared')}
+                    </p>
                   </div>
                 </div>
-              ) : (
-                <div className="p-4 rounded-2xl border border-zinc-200 bg-white text-xs text-zinc-600">
-                  <div className="font-bold text-black">All Supplier Dues Settled</div>
-                  <div className="text-zinc-500 mt-1">No outstanding credit amounts remaining.</div>
+                <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />
+              </div>
+
+              {/* Review 3: Sales Trend / Growth */}
+              <div
+                onClick={() => onNavigate('insights')}
+                className="p-3.5 rounded-xl border border-black hover:bg-zinc-50 transition-all cursor-pointer flex items-center justify-between gap-3 bg-white"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-zinc-100 border border-zinc-200/60 text-black flex items-center justify-center shrink-0">
+                    <TrendingUp className="w-4 h-4 text-black" />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="text-xs font-bold text-zinc-900 leading-snug truncate">
+                      {summary.today_sales > 0
+                        ? `₹${formatINR(summary.today_sales)} ${t('salesRecordedToday')}`
+                        : t('readyToProcessSales')}
+                    </h4>
+                    <p className="text-[11px] text-zinc-500 truncate mt-0.5">
+                      {summary.sales_growth_percent !== null && summary.sales_growth_percent !== undefined
+                        ? `${summary.sales_growth_percent >= 0 ? '+' : ''}${summary.sales_growth_percent}% ${t('comparedToYesterday')}`
+                        : t('deterministicLedger')}
+                    </p>
+                  </div>
                 </div>
-              )}
+                <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />
+              </div>
             </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-zinc-200/80 text-[11px] text-zinc-500 flex items-center justify-between">
-            <span>Deterministic Records</span>
-            <span className="font-semibold text-black">100% Balanced</span>
           </div>
         </div>
       </div>
 
-      {/* Recent Transactions List */}
-      <div className="glass-panel rounded-3xl border border-zinc-200 shadow-card-3d overflow-hidden">
-        <div className="px-6 py-4 border-b border-zinc-200/80 flex items-center justify-between bg-white/70">
-          <div>
-            <h2 className="text-sm font-bold text-black">Recent Transactions</h2>
-            <p className="text-xs text-zinc-500 mt-0.5">Latest chronological entries in shop ledger</p>
+      {/* 4. Bottom Section: Recent Transactions & Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Left (8 cols): Recent Transactions */}
+        <div className="lg:col-span-8 bg-white rounded-2xl p-5 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center justify-between pb-3">
+            <h2 className="text-base font-bold text-zinc-900">{t('recentTransactions')}</h2>
+            <button
+              onClick={() => onNavigate('transactions')}
+              className="text-xs font-semibold text-zinc-700 hover:text-black flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <span>{t('viewAll')}</span>
+              <span>→</span>
+            </button>
           </div>
-          <button
-            onClick={() => onNavigate('transactions')}
-            className="text-xs font-semibold text-black hover:text-zinc-600 bg-zinc-100 px-3.5 py-1.5 rounded-xl border border-zinc-200 transition-colors"
-          >
-            Full Ledger →
-          </button>
-        </div>
 
-        {summary.recent_transactions.length === 0 ? (
-          <div className="p-8 text-center text-xs text-zinc-400">
-            No transactions recorded yet.
-          </div>
-        ) : (
-          <div className="divide-y divide-zinc-200/60">
-            {summary.recent_transactions.map((tx) => (
-              <div key={tx.id} className="px-6 py-4 flex items-center justify-between hover:bg-zinc-50/70 transition-colors">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 font-bold bg-zinc-100 text-black border border-zinc-200">
-                    {tx.type === 'sale' ? (
-                      <ArrowUpRight className="w-4 h-4 text-black" />
-                    ) : (
-                      <ArrowDownLeft className="w-4 h-4 text-zinc-600" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-black leading-snug">
-                      {tx.description}
-                    </div>
-                    <div className="text-[11px] text-zinc-500 mt-0.5 flex items-center gap-1.5">
-                      <span>
-                        {new Date(tx.date).toLocaleDateString('en-IN', {
-                          day: 'numeric',
-                          month: 'short',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </span>
-                      {tx.payment_method && (
-                        <span className="bg-zinc-100 text-zinc-700 font-semibold px-2 py-0.2 rounded text-[10px]">
-                          {tx.payment_method}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+          <div className="overflow-x-auto">
+            {displayTransactions.length === 0 ? (
+              <div className="py-10 text-center">
+                <div className="w-10 h-10 rounded-full bg-zinc-100 text-zinc-400 mx-auto flex items-center justify-center mb-2.5">
+                  <Receipt className="w-5 h-5 text-zinc-400" />
                 </div>
-
-                <div className="text-right">
-                  <div className="text-xs font-extrabold font-mono text-black">
-                    {tx.type === 'sale' ? '+' : '-'}₹{Number(tx.amount).toLocaleString('en-IN')}
-                  </div>
-                  <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200">
-                    {tx.type.replace('_', ' ')}
-                  </span>
+                <div className="text-xs font-bold text-zinc-800">{t('noTransactionsYet')}</div>
+                <div className="text-[11px] text-zinc-400 mt-0.5 max-w-sm mx-auto">
+                  {t('noTransactionsSub')}
+                </div>
+                <div className="mt-3.5 flex items-center justify-center gap-2">
+                  <button
+                    onClick={onOpenQuickSale}
+                    className="px-3.5 py-1.5 text-xs font-semibold bg-black text-white rounded-xl hover:bg-zinc-800 transition-colors cursor-pointer"
+                  >
+                    {t('recordFirstSale')}
+                  </button>
+                  <button
+                    onClick={onOpenQuickPurchase}
+                    className="px-3.5 py-1.5 text-xs font-semibold bg-zinc-100 text-zinc-800 hover:bg-zinc-200 rounded-xl transition-colors cursor-pointer"
+                  >
+                    {t('restockStock')}
+                  </button>
                 </div>
               </div>
-            ))}
+            ) : (
+              <table className="w-full text-left text-xs">
+                <tbody className="divide-y divide-zinc-100">
+                  {displayTransactions.map((tx: any, idx: number) => {
+                    const type = tx.type?.toLowerCase() || 'sale';
+                    const isSale = type === 'sale';
+                    const isPurchase = type === 'purchase';
+                    const isExpense = type === 'expense';
+
+                    return (
+                      <tr key={tx.id || idx} className="hover:bg-zinc-50/60 transition-colors">
+                        {/* Badge Pill */}
+                        <td className="py-3 pr-3 w-24">
+                          <span
+                            className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                              isSale
+                                ? 'bg-zinc-900 text-white'
+                                : 'bg-zinc-100 text-zinc-800 border border-zinc-200'
+                            }`}
+                          >
+                            {isSale ? t('typeSale') : isPurchase ? t('typePurchase') : isExpense ? t('typeExpense') : t('typePayment')}
+                          </span>
+                        </td>
+
+                        {/* Description */}
+                        <td className="py-3 px-3 font-medium text-zinc-800 truncate max-w-[200px] sm:max-w-none">
+                          {tx.description || (isSale ? 'Store Sale' : 'Inventory')}
+                        </td>
+
+                        {/* Amount */}
+                        <td className="py-3 px-3 font-bold text-zinc-900 tabular-nums whitespace-nowrap">
+                          ₹{formatINR(tx.amount)}
+                        </td>
+
+                        {/* Payment Method */}
+                        <td className="py-3 px-3 text-zinc-500 whitespace-nowrap text-center">
+                          {tx.payment_method || 'Cash'}
+                        </td>
+
+                        {/* Time */}
+                        <td className="py-3 pl-3 text-zinc-400 whitespace-nowrap text-right">
+                          {formatTxTime(tx.date || tx.created_at)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
-        )}
+        </div>
+
+        {/* Right (4 cols): Quick Actions */}
+        <div className="lg:col-span-4 bg-white rounded-2xl p-5 border border-black shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col justify-between">
+          <div>
+            <h2 className="text-base font-bold text-zinc-900 pb-3">{t('quickActions')}</h2>
+            
+            {/* 5 Tiles Grid */}
+            <div className="grid grid-cols-5 gap-2 pt-1">
+              <button
+                onClick={() => onNavigate('inventory')}
+                className="aspect-square rounded-xl border border-black hover:bg-zinc-50 p-2 flex flex-col items-center justify-center text-center transition-all bg-white group cursor-pointer"
+              >
+                <Package className="w-5 h-5 text-black transition-colors" />
+                <span className="text-[11px] font-medium text-black mt-1.5 leading-tight text-center">
+                  {t('addProduct')}
+                </span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('suppliers')}
+                className="aspect-square rounded-xl border border-black hover:bg-zinc-50 p-2 flex flex-col items-center justify-center text-center transition-all bg-white group cursor-pointer"
+              >
+                <Users className="w-5 h-5 text-black transition-colors" />
+                <span className="text-[11px] font-medium text-black mt-1.5 leading-tight text-center">
+                  {t('addSupplier')}
+                </span>
+              </button>
+
+              <button
+                onClick={onOpenQuickPurchase}
+                className="aspect-square rounded-xl border border-black hover:bg-zinc-50 p-2 flex flex-col items-center justify-center text-center transition-all bg-white group cursor-pointer"
+              >
+                <ShoppingCart className="w-5 h-5 text-black transition-colors" />
+                <span className="text-[11px] font-medium text-black mt-1.5 leading-tight text-center">
+                  {t('recordPurchase')}
+                </span>
+              </button>
+
+              <button
+                onClick={onOpenQuickSale}
+                className="aspect-square rounded-xl border border-black hover:bg-zinc-50 p-2 flex flex-col items-center justify-center text-center transition-all bg-white group cursor-pointer"
+              >
+                <Tag className="w-5 h-5 text-black transition-colors" />
+                <span className="text-[11px] font-medium text-black mt-1.5 leading-tight text-center">
+                  {t('recordSale')}
+                </span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('expenses')}
+                className="aspect-square rounded-xl border border-black hover:bg-zinc-50 p-2 flex flex-col items-center justify-center text-center transition-all bg-white group cursor-pointer"
+              >
+                <Receipt className="w-5 h-5 text-black transition-colors" />
+                <span className="text-[11px] font-medium text-black mt-1.5 leading-tight text-center">
+                  {t('addExpense')}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,11 +1,23 @@
 const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/$/, '');
-const DEFAULT_BUSINESS_ID = 'b0000000-0000-0000-0000-000000000001';
+export const DEFAULT_BUSINESS_ID = 'b0000000-0000-0000-0000-000000000001';
+
+export function getActiveBusinessId(): string {
+  return localStorage.getItem('dukaanos_business_id') || DEFAULT_BUSINESS_ID;
+}
+
+export function setActiveBusinessId(id: string) {
+  localStorage.setItem('dukaanos_business_id', id);
+}
 
 async function fetchJson<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${endpoint}`;
+  const businessId = getActiveBusinessId();
+  const token = localStorage.getItem('dukaanos_token');
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'x-business-id': DEFAULT_BUSINESS_ID,
+    'x-business-id': businessId,
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     ...(options.headers as Record<string, string> || {})
   };
 
@@ -20,9 +32,24 @@ async function fetchJson<T>(endpoint: string, options: RequestInit = {}): Promis
 }
 
 export const api = {
-  // Business
+  // Auth & Onboarding
+  sendOtp: (data: { email: string; store_name?: string }) =>
+    fetchJson<{ success: boolean; message: string; devOtp?: string }>('/api/auth/send-otp', { method: 'POST', body: JSON.stringify(data) }),
+  verifyOtp: (data: { email: string; otp: string }) =>
+    fetchJson<{ success: boolean; message: string }>('/api/auth/verify-otp', { method: 'POST', body: JSON.stringify(data) }),
+  signup: (data: any) =>
+    fetchJson<any>('/api/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
+  login: (data: any) =>
+    fetchJson<any>('/api/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+  getAuthMe: () =>
+    fetchJson<any>('/api/auth/me'),
+
+  // Business Profile
   getBusiness: () => fetchJson<any>('/api/business/profile'),
+  updateBusiness: (data: any) => fetchJson<any>('/api/business/profile', { method: 'PUT', body: JSON.stringify(data) }),
   seedDemoData: () => fetchJson<any>('/api/business/seed', { method: 'POST' }),
+  autoConfigureClaude: () => fetchJson<{ configuredOnDisk: boolean; configPath: string; config: any; message: string }>('/api/business/claude-auto-configure', { method: 'POST' }),
+  deleteAccount: (businessId?: string) => fetchJson<{ success: boolean; message: string }>('/api/business/account', { method: 'DELETE', body: JSON.stringify({ business_id: businessId }) }),
 
   // Products
   getProducts: () => fetchJson<any[]>('/api/products'),
@@ -68,4 +95,3 @@ export const api = {
   // Insights
   getBusinessInsights: () => fetchJson<any[]>('/api/insights')
 };
-

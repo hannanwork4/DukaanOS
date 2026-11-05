@@ -2,13 +2,48 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { apiClient } from './apiClient.js';
 
+// Fuzzy Product Resolution Helper to prevent duplicate items from LLM naming variations
+function findBestProductMatch(products: any[], query: string): any | null {
+  if (!query) return null;
+  const q = query.toLowerCase().trim();
+
+  // 1. Exact Name or SKU Match
+  let match = products.find(p => p.name.toLowerCase() === q || (p.sku && p.sku.toLowerCase() === q));
+  if (match) return match;
+
+  // 2. Substring Match (e.g. "cooking oil" in "Refined Cooking Oil 1L")
+  match = products.find(p => p.name.toLowerCase().includes(q) || q.includes(p.name.toLowerCase()));
+  if (match) return match;
+
+  // 3. Word Token Intersection Match
+  const queryWords = q.split(/\s+/).filter(w => w.length > 2);
+  let bestScore = 0;
+  let bestProduct: any = null;
+
+  for (const p of products) {
+    const pWords = p.name.toLowerCase().split(/\s+/);
+    let score = 0;
+    for (const qw of queryWords) {
+      if (pWords.some((pw: string) => pw.includes(qw) || qw.includes(pw))) {
+        score++;
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestProduct = p;
+    }
+  }
+
+  return bestScore >= 1 ? bestProduct : null;
+}
+
 export function registerTools(server: McpServer) {
   // 1. add_product
   server.tool(
     'add_product',
     'Add a new product to inventory with name, selling price, unit, category, and minimum stock threshold.',
     {
-      name: z.string().describe('Product display name (e.g. "Cooking Oil 1L", "Fortune Sunlite Refined 1L")'),
+      name: z.string().describe('Product display name (e.g. "Fortune Sunlite Refined 1L", "Tata Salt 1kg")'),
       selling_price: z.number().positive().describe('Selling price per unit in ₹'),
       purchase_price: z.number().min(0).default(0).describe('Purchase cost per unit in ₹ (default: 0)'),
       unit: z.string().default('packets').describe('Packaging unit: "packets", "kg", "liters", "bags", "pieces", "boxes"'),
@@ -112,7 +147,7 @@ export function registerTools(server: McpServer) {
         let targetId = args.product_id;
         if (!targetId && args.product_name) {
           const products = await apiClient.getProducts();
-          const match = products.find(p => p.name.toLowerCase() === args.product_name!.toLowerCase());
+          const match = findBestProductMatch(products, args.product_name);
           if (!match) throw new Error(`Product "${args.product_name}" not found.`);
           targetId = match.id;
         }
@@ -356,104 +391,16 @@ export function registerTools(server: McpServer) {
     }
   );
 
-  // 9. list_purchases
-  server.tool(
-    'list_purchases',
-    'List purchase records showing date, supplier, items, amounts, and pending dues.',
-    {
-      limit: z.number().optional().describe('Number of recent purchases to return')
-    },
-    async (args) => {
-      try {
-        let purchases = await apiClient.getPurchases();
-        if (args.limit) {
-          purchases = purchases.slice(0, args.limit);
-        }
-
-        return {
-          content: [{
-            type: 'text',
-            text: JSON.stringify({
-              count: purchases.length,
-              purchases: purchases.map(p => ({
-                id: p.id,
-                date: p.purchase_date,
-                supplier: p.supplier_name,
-                total_amount: `₹${p.total_amount}`,
-                amount_paid: `₹${p.amount_paid}`,
-                outstanding: `₹${p.outstanding_amount}`,
-                payment_method: p.payment_method,
-                items: (p.items || []).map((it: any) => `${it.quantity}x ${it.product_name} @ ₹${it.unit_price}`)
-              }))
-            }, null, 2)
-          }]
-        };
-      } catch (err: any) {
-        return {
-          isError: true,
-          content: [{ type: 'text', text: `Error listing purchases: ${err.message}` }]
-        };
-      }
-    }
-  );
-
-  // 10. update_purchase
-  server.tool(
-    'update_purchase',
-    'Edit an existing purchase record. Safely reverses previously applied stock and supplier balances, then applies revised details.',
-    {
-      purchase_id: z.string().describe('Existing Purchase UUID'),
-      supplier_name: z.string().optional(),
-      items: z.array(z.object({
-        product_id: z.string().optional(),
-        product_name: z.string().optional(),
-        quantity: z.number().positive(),
-        unit_price: z.number().min(0)
-      })).min(1).describe('Updated list of items'),
-      amount_paid: z.number().min(0).optional().describe('Updated amount paid'),
-      payment_method: z.string().optional(),
-      notes: z.string().optional()
-    },
-    async (args) => {
-      try {
-        const { purchase_id, ...data } = args;
-        const result = await apiClient.updatePurchase(purchase_id, data);
-        return {
-          content: [{
-            type: 'text',
-            text: JSON.stringify({
-              status: 'success',
-              message: `Purchase ${purchase_id.slice(0, 8)} updated successfully with full reversal and recalculation.`,
-              purchase: {
-                id: result.purchase.id,
-                supplier: result.purchase.supplier_name,
-                total_amount: `₹${result.purchase.total_amount}`,
-                amount_paid: `₹${result.purchase.amount_paid}`,
-                outstanding_amount: `₹${result.purchase.outstanding_amount}`
-              },
-              updated_products: result.updated_products
-            }, null, 2)
-          }]
-        };
-      } catch (err: any) {
-        return {
-          isError: true,
-          content: [{ type: 'text', text: `Error updating purchase: ${err.message}` }]
-        };
-      }
-    }
-  );
-
-  // 11. record_sale
+  // 9. record_sale
   server.tool(
     'record_sale',
     'Record a customer sale. Decrements stock, calculates profit margin from purchase cost, and logs sales transaction.',
     {
       items: z.array(z.object({
         product_id: z.string().optional().describe('Product UUID'),
-        product_name: z.string().optional().describe('Product name (e.g. "Cooking Oil")'),
+        product_name: z.string().optional().describe('Product name (auto-fuzzy matched, e.g. "Cooking Oil")'),
         quantity: z.number().positive().describe('Quantity sold'),
-        unit_price: z.number().min(0).optional().describe('Selling price per unit in ₹ (defaults to product selling price)')
+        unit_price: z.number().min(0).optional().describe('Selling price per unit in ₹')
       })).min(1).describe('List of items sold'),
       payment_method: z.enum(['Cash', 'UPI', 'Credit']).default('Cash').describe('Payment method ("Cash", "UPI", "Credit")'),
       amount_received: z.number().min(0).optional().describe('Amount received (defaults to total amount for Cash/UPI)'),
@@ -462,7 +409,24 @@ export function registerTools(server: McpServer) {
     },
     async (args) => {
       try {
-        const result = await apiClient.recordSale(args);
+        // Apply fuzzy matching to any item missing product_id
+        const products = await apiClient.getProducts();
+        const resolvedItems = args.items.map(item => {
+          if (!item.product_id && item.product_name) {
+            const match = findBestProductMatch(products, item.product_name);
+            if (match) {
+              return {
+                ...item,
+                product_id: match.id,
+                product_name: match.name,
+                unit_price: item.unit_price || match.selling_price
+              };
+            }
+          }
+          return item;
+        });
+
+        const result = await apiClient.recordSale({ ...args, items: resolvedItems });
         return {
           content: [{
             type: 'text',
@@ -491,46 +455,7 @@ export function registerTools(server: McpServer) {
     }
   );
 
-  // 12. list_sales
-  server.tool(
-    'list_sales',
-    'List recent sales transactions with items sold, revenue, payment mode, and estimated profit.',
-    {
-      limit: z.number().optional().describe('Number of recent sales to return')
-    },
-    async (args) => {
-      try {
-        let sales = await apiClient.getSales();
-        if (args.limit) {
-          sales = sales.slice(0, args.limit);
-        }
-
-        return {
-          content: [{
-            type: 'text',
-            text: JSON.stringify({
-              count: sales.length,
-              sales: sales.map(s => ({
-                id: s.id,
-                date: s.sale_date,
-                total_amount: `₹${s.total_amount}`,
-                payment_method: s.payment_method,
-                profit: `₹${s.estimated_profit}`,
-                items: (s.items || []).map((it: any) => `${it.quantity}x ${it.product_name} @ ₹${it.unit_price}`)
-              }))
-            }, null, 2)
-          }]
-        };
-      } catch (err: any) {
-        return {
-          isError: true,
-          content: [{ type: 'text', text: `Error listing sales: ${err.message}` }]
-        };
-      }
-    }
-  );
-
-  // 13. record_expense
+  // 10. record_expense
   server.tool(
     'record_expense',
     'Record an operating shop expense such as Electricity, Rent, Transport, Wages, Maintenance, or Miscellaneous.',
@@ -568,58 +493,14 @@ export function registerTools(server: McpServer) {
     }
   );
 
-  // 14. list_expenses
-  server.tool(
-    'list_expenses',
-    'List recorded shop operating expenses filtered by category or recent limit.',
-    {
-      category: z.string().optional().describe('Filter by category name'),
-      limit: z.number().optional().describe('Number of records to return')
-    },
-    async (args) => {
-      try {
-        let expenses = await apiClient.getExpenses();
-        if (args.category) {
-          expenses = expenses.filter(e => e.category.toLowerCase() === args.category!.toLowerCase());
-        }
-        if (args.limit) {
-          expenses = expenses.slice(0, args.limit);
-        }
-
-        return {
-          content: [{
-            type: 'text',
-            text: JSON.stringify({
-              count: expenses.length,
-              total_amount: `₹${expenses.reduce((sum, e) => sum + Number(e.amount), 0)}`,
-              expenses: expenses.map(e => ({
-                id: e.id,
-                date: e.date,
-                description: e.description,
-                category: e.category,
-                amount: `₹${e.amount}`,
-                payment_method: e.payment_method
-              }))
-            }, null, 2)
-          }]
-        };
-      } catch (err: any) {
-        return {
-          isError: true,
-          content: [{ type: 'text', text: `Error listing expenses: ${err.message}` }]
-        };
-      }
-    }
-  );
-
-  // 15. record_supplier_payment
+  // 11. record_supplier_payment
   server.tool(
     'record_supplier_payment',
     'Record a payment made to clear a supplier\'s outstanding balance without creating a duplicate expense.',
     {
       supplier_id: z.string().optional().describe('Supplier UUID'),
       supplier_name: z.string().optional().describe('Supplier name (e.g. "Ramesh Traders")'),
-      amount: z.number().positive().describe('Payment amount in ₹ (e.g. 1000)'),
+      amount: z.number().positive().describe('Payment amount in ₹'),
       payment_method: z.enum(['Cash', 'UPI', 'Bank Transfer', 'Cheque']).default('Cash').describe('Payment method'),
       payment_date: z.string().optional().describe('Optional ISO date'),
       notes: z.string().optional()
@@ -667,7 +548,7 @@ export function registerTools(server: McpServer) {
     }
   );
 
-  // 16. get_dashboard_summary
+  // 12. get_dashboard_summary
   server.tool(
     'get_dashboard_summary',
     'Get comprehensive overview of the shop: Today\'s sales, purchases, expenses, outstanding dues, total stock valuation, and low stock alerts.',
@@ -701,7 +582,7 @@ export function registerTools(server: McpServer) {
     }
   );
 
-  // 17. get_business_insights
+  // 13. get_business_insights
   server.tool(
     'get_business_insights',
     'Get deterministic business insights: Low stock alerts, top sellers, dead stock, supplier liabilities, and expense trends.',
@@ -734,41 +615,124 @@ export function registerTools(server: McpServer) {
     }
   );
 
-  // 18. get_inventory_summary
+  // 14. get_business_pulse (THE MORNING BRIEFING TOOL)
   server.tool(
-    'get_inventory_summary',
-    'Get inventory summary report with total SKU count, total units, total inventory value, and category-wise breakdown.',
+    'get_business_pulse',
+    'Get executive morning briefing for the store owner. Summarizes overnight activity, pending supplier dues, depleted stock, and cash position so Claude can brief the owner conversationally.',
     {},
     async () => {
       try {
-        const products = await apiClient.getProducts();
-        const categoryMap: Record<string, { count: number; value: number }> = {};
-        let totalValuation = 0;
-        let totalUnits = 0;
+        const [summary, lowStock, suppliers, insights] = await Promise.all([
+          apiClient.getDashboardSummary(),
+          apiClient.getLowStockProducts(),
+          apiClient.getSuppliers(),
+          apiClient.getBusinessInsights()
+        ]);
 
-        for (const p of products) {
-          const val = Number(p.current_stock) * Number(p.purchase_price);
-          totalValuation += val;
-          totalUnits += Number(p.current_stock);
-
-          if (!categoryMap[p.category]) {
-            categoryMap[p.category] = { count: 0, value: 0 };
-          }
-          categoryMap[p.category].count += 1;
-          categoryMap[p.category].value += val;
-        }
+        const pendingSuppliers = suppliers.filter(s => Number(s.outstanding_balance) > 0);
 
         return {
           content: [{
             type: 'text',
             text: JSON.stringify({
-              total_skus: products.length,
-              total_stock_units: totalUnits,
-              total_inventory_valuation: `₹${Math.round(totalValuation * 100) / 100}`,
-              categories: Object.entries(categoryMap).map(([name, stat]) => ({
-                category: name,
-                product_count: stat.count,
-                inventory_value: `₹${Math.round(stat.value * 100) / 100}`
+              briefing_for_claude: 'Provide a warm, executive morning briefing to the store owner in bullet points. Highlight urgent stock alerts, pending dues, and revenue performance.',
+              store_pulse: {
+                today_revenue: `₹${summary.today_sales}`,
+                sales_growth_vs_yesterday: summary.sales_growth_percent !== null ? `${summary.sales_growth_percent}%` : 'N/A',
+                today_purchases: `₹${summary.today_purchases}`,
+                today_expenses: `₹${summary.today_expenses}`,
+                total_inventory_valuation: `₹${summary.total_inventory_value}`
+              },
+              urgent_attention: {
+                low_stock_count: lowStock.length,
+                low_stock_items: lowStock.slice(0, 5).map(p => `${p.name} (Only ${p.current_stock} ${p.unit} remaining, min: ${p.min_stock_threshold})`),
+                pending_supplier_dues: `₹${summary.outstanding_supplier_payments}`,
+                suppliers_waiting_payment: pendingSuppliers.map(s => `${s.name}: ₹${s.outstanding_balance}`)
+              },
+              key_recommendations: insights.slice(0, 3).map(i => i.message)
+            }, null, 2)
+          }]
+        };
+      } catch (err: any) {
+        return {
+          isError: true,
+          content: [{ type: 'text', text: `Error generating business pulse: ${err.message}` }]
+        };
+      }
+    }
+  );
+
+  // 15. record_bulk_invoice (KACCHA PARCHI & HANDWRITTEN SLIP INGESTION)
+  server.tool(
+    'record_bulk_invoice',
+    'Ingest an entire wholesale purchase bill or handwritten supplier slip in one atomic call. Auto-matches items, creates missing products, updates stock, and records supplier balance.',
+    {
+      supplier_name: z.string().describe('Supplier or distributor name (e.g. "Ramesh Traders", "Gupta Wholesalers")'),
+      invoice_number: z.string().optional().describe('Supplier bill / parchi invoice number (optional)'),
+      items: z.array(z.object({
+        name: z.string().describe('Product name extracted from bill'),
+        quantity: z.number().positive().describe('Quantity delivered'),
+        unit_price: z.number().min(0).describe('Wholesale purchase cost per unit in ₹'),
+        selling_price: z.number().positive().optional().describe('Retail selling price to customer (optional)'),
+        unit: z.string().default('packets').describe('Unit: "packets", "kg", "liters", "boxes"')
+      })).min(1).describe('Array of items parsed from the bill'),
+      amount_paid: z.number().min(0).default(0).describe('Amount paid upfront in cash or UPI'),
+      payment_method: z.enum(['Cash', 'UPI', 'Bank Transfer', 'Credit', 'Pending']).default('Credit'),
+      notes: z.string().optional().describe('Notes (e.g. "Parsed from handwritten parchi photo")')
+    },
+    async (args) => {
+      try {
+        const existingProducts = await apiClient.getProducts();
+        const purchaseItems: any[] = [];
+
+        // For each item, check if product already exists via fuzzy match, otherwise auto-create it
+        for (const it of args.items) {
+          let matched = findBestProductMatch(existingProducts, it.name);
+
+          if (!matched) {
+            // Auto create new product
+            matched = await apiClient.createProduct({
+              name: it.name.trim(),
+              selling_price: it.selling_price || Math.round(it.unit_price * 1.15), // Default 15% retail markup if omitted
+              purchase_price: it.unit_price,
+              unit: it.unit || 'packets',
+              category: 'General',
+              initial_stock: 0,
+              min_stock_threshold: 5
+            });
+          }
+
+          purchaseItems.push({
+            product_id: matched.id,
+            product_name: matched.name,
+            quantity: it.quantity,
+            unit_price: it.unit_price
+          });
+        }
+
+        // Record atomic purchase
+        const result = await apiClient.recordPurchase({
+          supplier_name: args.supplier_name.trim(),
+          items: purchaseItems,
+          amount_paid: args.amount_paid,
+          payment_method: args.payment_method,
+          notes: args.notes || (args.invoice_number ? `Invoice #${args.invoice_number}` : 'Bulk Wholesale Ingestion')
+        });
+
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              status: 'success',
+              message: `Wholesale bill from "${args.supplier_name}" successfully ingested into DukaanOS.`,
+              purchase_id: result.purchase.id,
+              total_bill_amount: `₹${result.purchase.total_amount}`,
+              amount_paid: `₹${result.purchase.amount_paid}`,
+              balance_added_to_supplier: `₹${result.purchase.outstanding_amount}`,
+              items_stocked: result.updated_products.map((p: any) => ({
+                product: p.name,
+                new_total_stock: p.new_stock,
+                cost_price: `₹${p.purchase_price}`
               }))
             }, null, 2)
           }]
@@ -776,10 +740,219 @@ export function registerTools(server: McpServer) {
       } catch (err: any) {
         return {
           isError: true,
-          content: [{ type: 'text', text: `Error generating inventory summary: ${err.message}` }]
+          content: [{ type: 'text', text: `Error ingesting bulk invoice: ${err.message}` }]
+        };
+      }
+    }
+  );
+
+  // 16. record_customer_credit (CUSTOMER KHATA / UDHAR LEDGER)
+  server.tool(
+    'record_customer_credit',
+    'Record credit (udhar) given to a customer for goods purchased. Deducts inventory stock and logs the credit obligation under customer\'s name.',
+    {
+      customer_name: z.string().describe('Customer full name (e.g. "Ramesh Sharma", "Pooja Verma")'),
+      amount: z.number().positive().describe('Credit amount in ₹ (e.g. 450)'),
+      phone: z.string().optional().describe('Customer phone number for WhatsApp reminders'),
+      items_summary: z.string().optional().describe('Summary of items taken (e.g. "2 packets oil, 1kg sugar")'),
+      notes: z.string().optional()
+    },
+    async (args) => {
+      try {
+        // Record as credit sale transaction
+        const saleRecord = await apiClient.recordSale({
+          items: [{
+            product_name: args.items_summary || 'Store Items on Credit',
+            quantity: 1,
+            unit_price: args.amount
+          }],
+          payment_method: 'Credit',
+          amount_received: 0,
+          customer_name: args.customer_name.trim(),
+          notes: `Customer Khata Udhar: ${args.items_summary || ''}${args.phone ? ` • Ph: ${args.phone}` : ''}`
+        });
+
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              status: 'success',
+              message: `Recorded ₹${args.amount} udhar credit for ${args.customer_name}.`,
+              customer: args.customer_name,
+              amount_owed: `₹${args.amount}`,
+              transaction_id: saleRecord.sale.id,
+              whatsapp_reminder_template: `Namaste ${args.customer_name}, your balance of ₹${args.amount} at the store has been recorded. Thank you!`
+            }, null, 2)
+          }]
+        };
+      } catch (err: any) {
+        return {
+          isError: true,
+          content: [{ type: 'text', text: `Error recording customer credit: ${err.message}` }]
+        };
+      }
+    }
+  );
+
+  // 17. record_customer_payment (CLEARING CUSTOMER KHATA UDHAR)
+  server.tool(
+    'record_customer_payment',
+    'Record payment received from a customer settling their khata / udhar credit balance.',
+    {
+      customer_name: z.string().describe('Customer name settling their credit balance'),
+      amount: z.number().positive().describe('Amount received in ₹ (e.g. 500)'),
+      payment_method: z.enum(['Cash', 'UPI', 'Bank Transfer']).default('Cash')
+    },
+    async (args) => {
+      try {
+        const sales = await apiClient.getSales();
+        const customerCreditSales = sales.filter((s: any) =>
+          s.payment_method === 'Credit' &&
+          s.customer_name?.toLowerCase().includes(args.customer_name.toLowerCase()) &&
+          Number(s.outstanding_amount) > 0
+        );
+
+        let remainingToApply = args.amount;
+        let clearedCount = 0;
+
+        for (const s of customerCreditSales) {
+          if (remainingToApply <= 0) break;
+          const due = Number(s.outstanding_amount);
+          const pay = Math.min(due, remainingToApply);
+          await apiClient.updateSale(s.id, {
+            amount_received: Number(s.amount_received) + pay,
+            outstanding_amount: due - pay,
+            payment_method: due - pay === 0 ? args.payment_method : 'Credit'
+          });
+          remainingToApply -= pay;
+          clearedCount++;
+        }
+
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              status: 'success',
+              message: `Received ₹${args.amount} from ${args.customer_name} via ${args.payment_method}.`,
+              amount_settled: `₹${args.amount}`,
+              cleared_bills_count: clearedCount
+            }, null, 2)
+          }]
+        };
+      } catch (err: any) {
+        return {
+          isError: true,
+          content: [{ type: 'text', text: `Error recording customer payment: ${err.message}` }]
+        };
+      }
+    }
+  );
+
+  // 18. generate_whatsapp_reminder (Polite Khata Debt Collection)
+  server.tool(
+    'generate_whatsapp_reminder',
+    'Generate a polite WhatsApp payment reminder message and 1-click link for a customer with pending udhar credit.',
+    {
+      customer_name: z.string().describe('Customer name (e.g. "Ramesh Kumar")'),
+      amount: z.number().positive().describe('Pending credit amount in ₹ (e.g. 450)'),
+      phone: z.string().optional().describe('Optional customer phone number (e.g. "9876543210")'),
+      language: z.enum(['Hindi', 'English', 'Telugu', 'Tamil', 'Kannada', 'Marathi', 'Gujarati', 'Bengali']).default('Hindi')
+    },
+    async (args) => {
+      try {
+        const business = await apiClient.getBusiness();
+        const storeName = business.name || 'Apna Kirana Store';
+
+        let msg = '';
+        if (args.language === 'Hindi') {
+          msg = `नमस्ते ${args.customer_name} जी, ${storeName} की तरफ से सादर प्रणाम। आपकी पुरानी दुकान उधारी राशि ₹${args.amount} बकाया है। कृपया सुविधानुसार भुगतान कर दें। धन्यवाद! 🙏`;
+        } else if (args.language === 'Telugu') {
+          msg = `నమస్కారం ${args.customer_name} గారు, ${storeName} నుండి. మీ దుకాణం బకాయి ₹${args.amount} ఉంది. దయచేసి చెల్లించగలరు. ధన్యవాదాలు! 🙏`;
+        } else {
+          msg = `Dear ${args.customer_name}, warm regards from ${storeName}. A gentle reminder regarding your store pending balance of ₹${args.amount}. Kindly clear at your earliest convenience. Thank you! 🙏`;
+        }
+
+        const phoneDigits = (args.phone || '').replace(/\D/g, '');
+        const phoneParam = phoneDigits.length >= 10 ? (phoneDigits.startsWith('91') ? phoneDigits : `91${phoneDigits}`) : '';
+        const whatsappUrl = `https://api.whatsapp.com/send?${phoneParam ? `phone=${phoneParam}&` : ''}text=${encodeURIComponent(msg)}`;
+
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              status: 'success',
+              customer: args.customer_name,
+              amount_due: `₹${args.amount}`,
+              reminder_text: msg,
+              whatsapp_link: whatsappUrl,
+              action: 'Click the link or share with the customer on WhatsApp'
+            }, null, 2)
+          }]
+        };
+      } catch (err: any) {
+        return {
+          isError: true,
+          content: [{ type: 'text', text: `Error generating reminder: ${err.message}` }]
+        };
+      }
+    }
+  );
+
+  // 19. draft_supplier_restock_order (Low Stock Restock Slip for Wholesalers)
+  server.tool(
+    'draft_supplier_restock_order',
+    'Generate a WhatsApp purchase order draft for wholesale suppliers to restock all depleted inventory items.',
+    {
+      supplier_name: z.string().optional().describe('Optional specific supplier name to filter items for'),
+      supplier_phone: z.string().optional().describe('Optional supplier WhatsApp number')
+    },
+    async (args) => {
+      try {
+        const [products, business] = await Promise.all([
+          apiClient.getProducts(),
+          apiClient.getBusiness()
+        ]);
+
+        const lowStock = products.filter((p: any) => Number(p.current_stock) <= Number(p.min_stock_threshold));
+
+        if (lowStock.length === 0) {
+          return {
+            content: [{
+              type: 'text',
+              text: 'All product inventory levels are currently above minimum safety thresholds. No urgent restock required.'
+            }]
+          };
+        }
+
+        const storeName = business.name || 'Sri Venkateshwara Store';
+        const lines = lowStock.map((p: any) => {
+          const reorderQty = Math.max(10, (p.min_stock_threshold || 5) * 3 - p.current_stock);
+          return `• ${p.name}: ${reorderQty} ${p.unit || 'packets'} (Current stock: ${p.current_stock})`;
+        }).join('\n');
+
+        const orderText = `📦 *RESTOCK PURCHASE ORDER*\nFrom: *${storeName}*\nDate: ${new Date().toLocaleDateString('en-IN')}\n\n*Required Items:*\n${lines}\n\nPlease dispatch at the earliest. Thank you!`;
+
+        const phoneDigits = (args.supplier_phone || '').replace(/\D/g, '');
+        const phoneParam = phoneDigits.length >= 10 ? (phoneDigits.startsWith('91') ? phoneDigits : `91${phoneDigits}`) : '';
+        const whatsappUrl = `https://api.whatsapp.com/send?${phoneParam ? `phone=${phoneParam}&` : ''}text=${encodeURIComponent(orderText)}`;
+
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              status: 'success',
+              low_stock_items_count: lowStock.length,
+              order_message: orderText,
+              whatsapp_link: whatsappUrl
+            }, null, 2)
+          }]
+        };
+      } catch (err: any) {
+        return {
+          isError: true,
+          content: [{ type: 'text', text: `Error drafting restock order: ${err.message}` }]
         };
       }
     }
   );
 }
-

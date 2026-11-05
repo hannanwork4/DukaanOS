@@ -9,13 +9,24 @@ import {
   Expense,
   SupplierPayment,
   StockMovement,
-  TransactionRecord
+  TransactionRecord,
+  User
 } from '../types.js';
 
 export interface IDatabase {
   // Business
   getBusiness(id: string): Promise<Business | null>;
   createBusiness(business: Business): Promise<Business>;
+  updateBusiness(id: string, updates: Partial<Business>): Promise<Business | null>;
+  deleteBusiness(id: string): Promise<boolean>;
+
+  // Users & Auth
+  getUserByEmail(email: string): Promise<User | null>;
+  getUserById(id: string): Promise<User | null>;
+  createUser(user: User): Promise<User>;
+  updateUser(id: string, updates: Partial<User>): Promise<User | null>;
+  saveOtp(email: string, otp: string, ttlMs?: number): Promise<void>;
+  verifyOtp(email: string, otp: string): Promise<boolean>;
 
   // Products
   getProducts(businessId: string): Promise<Product[]>;
