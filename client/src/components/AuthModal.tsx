@@ -281,7 +281,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="storeowner@gmail.com"
-                    className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-black rounded-xl text-sm text-black focus:outline-hidden focus:ring-1 focus:ring-black font-medium transition-all"
+                    className="w-full px-4 py-2.5 bg-[#f8f9fa] border-2 border-black rounded-xl text-sm text-black focus:outline-hidden focus:bg-white font-medium transition-all"
                   />
                 </div>
 
@@ -296,7 +296,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-black rounded-xl text-sm text-black focus:outline-hidden focus:ring-1 focus:ring-black font-medium transition-all"
+                    className="w-full px-4 py-2.5 bg-[#f8f9fa] border-2 border-black rounded-xl text-sm text-black focus:outline-hidden focus:bg-white font-medium transition-all"
                   />
                 </div>
               </div>
@@ -368,7 +368,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onChange={(e) => setStoreName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && nextStep()}
                     placeholder="e.g. Sri Venkateshwara General Stores"
-                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-base text-black font-semibold focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
+                    className="w-full px-4 py-3 bg-[#f8f9fa] border-2 border-black rounded-2xl text-base text-black font-semibold focus:outline-hidden focus:bg-white transition-all"
                   />
                 </div>
               )}
@@ -392,7 +392,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onChange={(e) => setOwnerName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && nextStep()}
                     placeholder="e.g. Ramesh Kumar"
-                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-base text-black font-semibold focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
+                    className="w-full px-4 py-3 bg-[#f8f9fa] border-2 border-black rounded-2xl text-base text-black font-semibold focus:outline-hidden focus:bg-white transition-all"
                   />
                 </div>
               )}
@@ -416,7 +416,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onChange={(e) => setLocation(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && nextStep()}
                     placeholder="e.g. Gajuwaka, Visakhapatnam"
-                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-base text-black font-semibold focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
+                    className="w-full px-4 py-3 bg-[#f8f9fa] border-2 border-black rounded-2xl text-base text-black font-semibold focus:outline-hidden focus:bg-white transition-all"
                   />
                 </div>
               )}
@@ -434,8 +434,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     </p>
                   </div>
 
-                  <div className="relative flex items-center">
-                    <div className="absolute left-3 flex items-center gap-1 text-xs font-bold text-black bg-zinc-100 px-2.5 py-1 rounded-lg border border-black pointer-events-none">
+                  <div className="flex items-center rounded-2xl border-2 border-black bg-[#f8f9fa] overflow-hidden focus-within:bg-white focus-within:ring-0 transition-all">
+                    <div className="px-3.5 py-3 bg-zinc-100 border-r-2 border-black flex items-center gap-1.5 text-xs font-bold text-black select-none shrink-0">
                       <span>🇮🇳</span>
                       <span>+91</span>
                     </div>
@@ -446,10 +446,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                       onKeyDown={(e) => e.key === 'Enter' && nextStep()}
-                      placeholder="9876543210"
-                      className="w-full pl-22 pr-16 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-base text-black font-bold tracking-wider focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
+                      placeholder="98765 43210"
+                      className="flex-1 min-w-0 px-4 py-3 bg-transparent text-base text-black font-bold tracking-wider placeholder:text-zinc-400 placeholder:font-normal focus:outline-hidden"
                     />
-                    <div className="absolute right-3.5 text-xs font-mono font-bold text-zinc-400">
+                    <div className="pr-4 text-xs font-mono font-bold text-zinc-500 shrink-0">
                       {phone.length}/10
                     </div>
                   </div>
@@ -478,7 +478,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="storeowner@gmail.com"
-                        className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-black rounded-xl text-sm text-black font-medium focus:outline-hidden focus:ring-1 focus:ring-black transition-all"
+                        className="w-full px-4 py-2.5 bg-[#f8f9fa] border-2 border-black rounded-xl text-sm text-black font-medium focus:outline-hidden focus:bg-white transition-all"
                       />
                     </div>
 
@@ -490,7 +490,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && nextStep()}
                         placeholder="••••••••"
-                        className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-black rounded-xl text-sm text-black font-medium focus:outline-hidden focus:ring-1 focus:ring-black transition-all"
+                        className="w-full px-4 py-2.5 bg-[#f8f9fa] border-2 border-black rounded-xl text-sm text-black font-medium focus:outline-hidden focus:bg-white transition-all"
                       />
 
                       {/* Password Strength Meter */}
@@ -566,7 +566,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                       onKeyDown={(e) => e.key === 'Enter' && nextStep()}
                       placeholder="• • • • • •"
-                      className="w-full px-4 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-center text-2xl font-bold tracking-widest text-black focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
+                      className="w-full px-4 py-3 bg-[#f8f9fa] border-2 border-black rounded-2xl text-center text-2xl font-bold tracking-widest text-black focus:outline-hidden focus:bg-white transition-all"
                     />
                     <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
                       <span>Enter the 6-digit code or auto-fill</span>
