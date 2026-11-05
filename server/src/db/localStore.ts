@@ -112,8 +112,23 @@ export class LocalStore implements IDatabase {
   }
 
   async updateBusiness(id: string, updates: Partial<Business>): Promise<Business | null> {
-    const index = this.data.businesses.findIndex(b => b.id === id);
-    if (index === -1) return null;
+    let index = this.data.businesses.findIndex(b => b.id === id);
+    if (index === -1) {
+      const newBiz: Business = {
+        id,
+        name: updates.name || 'My Kirana Store',
+        owner_name: updates.owner_name || 'Store Owner',
+        phone: updates.phone || '',
+        address: updates.address || '',
+        currency: updates.currency || 'INR',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        ...updates
+      };
+      this.data.businesses.push(newBiz);
+      this.saveData();
+      return newBiz;
+    }
     this.data.businesses[index] = {
       ...this.data.businesses[index],
       ...updates,
@@ -520,14 +535,18 @@ export class LocalStore implements IDatabase {
     const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString();
     const oneDayAgo = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString();
 
+    // Check if business already exists; if so, preserve all customized details
+    const existingIndex = this.data.businesses.findIndex(b => b.id === businessId);
+    const existingBiz = existingIndex >= 0 ? this.data.businesses[existingIndex] : null;
+
     const business: Business = {
       id: businessId,
-      name: 'Sharma General Store',
-      owner_name: 'Rajesh Sharma',
-      phone: '+91 98765 43210',
-      address: 'Shop No. 4, Main Market, Lajpat Nagar, New Delhi',
-      currency: 'INR',
-      created_at: twoDaysAgo,
+      name: existingBiz?.name || 'Sharma General Store',
+      owner_name: existingBiz?.owner_name || 'Rajesh Sharma',
+      phone: existingBiz?.phone || '+91 98765 43210',
+      address: existingBiz?.address || 'Shop No. 4, Main Market, Lajpat Nagar, New Delhi',
+      currency: existingBiz?.currency || 'INR',
+      created_at: existingBiz?.created_at || twoDaysAgo,
       updated_at: now.toISOString()
     };
 
@@ -733,17 +752,33 @@ export class LocalStore implements IDatabase {
       }
     ];
 
-    this.data.businesses = [business];
-    this.data.suppliers = suppliers;
-    this.data.products = products;
-    this.data.expenses = expenses;
-    this.data.purchases = [];
-    this.data.purchase_items = [];
-    this.data.sales = [];
-    this.data.sale_items = [];
-    this.data.supplier_payments = [];
-    this.data.stock_movements = [];
-    this.data.transactions = transactions;
+    // Safely update or add this business without destroying other stores
+    const otherBusinesses = (this.data.businesses || []).filter(b => b.id !== businessId);
+    this.data.businesses = [...otherBusinesses, business];
+
+    // Safely replace catalog and sample records specifically for this business
+    this.data.suppliers = [
+      ...(this.data.suppliers || []).filter(s => s.business_id !== businessId),
+      ...suppliers
+    ];
+    this.data.products = [
+      ...(this.data.products || []).filter(p => p.business_id !== businessId),
+      ...products
+    ];
+    this.data.expenses = [
+      ...(this.data.expenses || []).filter(e => e.business_id !== businessId),
+      ...expenses
+    ];
+    this.data.transactions = [
+      ...(this.data.transactions || []).filter(t => t.business_id !== businessId),
+      ...transactions
+    ];
+    this.data.purchases = (this.data.purchases || []).filter(p => p.business_id !== businessId);
+    this.data.purchase_items = (this.data.purchase_items || []).filter(pi => !this.data.purchases.some(p => p.id === pi.purchase_id));
+    this.data.sales = (this.data.sales || []).filter(s => s.business_id !== businessId);
+    this.data.sale_items = (this.data.sale_items || []).filter(si => !this.data.sales.some(s => s.id === si.sale_id));
+    this.data.supplier_payments = (this.data.supplier_payments || []).filter(sp => sp.business_id !== businessId);
+    this.data.stock_movements = (this.data.stock_movements || []).filter(sm => sm.business_id !== businessId);
 
     this.saveData();
   }

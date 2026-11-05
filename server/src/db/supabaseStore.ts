@@ -31,15 +31,27 @@ export class SupabaseStore implements IDatabase {
   }
 
   async getBusiness(id: string): Promise<Business | null> {
+    const local = await this.localStore.getBusiness(id);
     try {
       const { data, error } = await this.client
         .from('businesses')
         .select('*')
         .eq('id', id)
         .single();
-      if (!error && data) return data as Business;
+      if (!error && data) {
+        if (!local) return data as Business;
+        const remoteTime = new Date(data.updated_at || 0).getTime();
+        const localTime = new Date(local.updated_at || 0).getTime();
+        if (remoteTime >= localTime) {
+          return data as Business;
+        } else {
+          // Local store has newer user updates, sync to Supabase in background
+          Promise.resolve(this.client.from('businesses').upsert(local)).catch(() => {});
+          return local;
+        }
+      }
     } catch {}
-    return this.localStore.getBusiness(id);
+    return local;
   }
 
   async createBusiness(business: Business): Promise<Business> {
@@ -61,15 +73,22 @@ export class SupabaseStore implements IDatabase {
   }
 
   async updateBusiness(id: string, updates: Partial<Business>): Promise<Business | null> {
-    await this.localStore.updateBusiness(id, updates);
-    const { data, error } = await this.client
-      .from('businesses')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) return null;
-    return data as Business;
+    const local = await this.localStore.updateBusiness(id, updates);
+    try {
+      const { data, error } = await this.client
+        .from('businesses')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      if (!error && data) return data as Business;
+      if (local) {
+        await this.client.from('businesses').upsert(local);
+      }
+    } catch (e: any) {
+      console.warn(`Supabase updateBusiness fallback: ${e.message}`);
+    }
+    return local;
   }
 
   async deleteBusiness(id: string): Promise<boolean> {

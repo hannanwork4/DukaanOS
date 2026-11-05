@@ -75,6 +75,7 @@ export const Profile: React.FC<ProfileProps> = ({
     setIsSaving(true);
     try {
       await api.updateBusiness({
+        business_id: business?.id,
         name: formData.name.trim(),
         owner_name: formData.owner_name.trim(),
         phone: formData.phone.trim(),

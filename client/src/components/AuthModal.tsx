@@ -614,7 +614,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       className="w-full px-4 py-3 bg-[#f8f9fa] border-2 border-black rounded-2xl text-center text-2xl font-bold tracking-widest text-black focus:outline-hidden focus:bg-white transition-all"
                     />
                     <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
-                      <span>Enter the 6-digit code or auto-fill</span>
+                      <span>Enter the 6-digit verification code</span>
                       <button
                         type="button"
                         onClick={triggerSendOtp}

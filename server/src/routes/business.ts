@@ -8,7 +8,23 @@ const router = Router();
 
 router.get('/profile', async (req: Request, res: Response) => {
   try {
-    const businessId = (req.query.business_id as string) || (req.headers['x-business-id'] as string) || process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
+    let businessId = (req.query.business_id as string) || (req.headers['x-business-id'] as string);
+    
+    // Resolve from authenticated token if available
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.replace('Bearer ', '').trim();
+        const decoded = Buffer.from(token, 'base64').toString('utf-8');
+        const parts = decoded.split(':');
+        if (parts[1]) businessId = parts[1];
+      } catch {}
+    }
+
+    if (!businessId) {
+      businessId = process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
+    }
+
     let business = await db.getBusiness(businessId);
     if (!business) {
       // Auto seed/init default business
@@ -23,7 +39,25 @@ router.get('/profile', async (req: Request, res: Response) => {
 
 router.put('/profile', async (req: Request, res: Response) => {
   try {
-    const businessId = (req.body.business_id as string) || (req.query.business_id as string) || (req.headers['x-business-id'] as string) || process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
+    let businessId = (req.body.business_id as string) || (req.query.business_id as string) || (req.headers['x-business-id'] as string);
+    let userId: string | null = null;
+
+    // Resolve from authenticated token if available
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.replace('Bearer ', '').trim();
+        const decoded = Buffer.from(token, 'base64').toString('utf-8');
+        const parts = decoded.split(':');
+        if (parts[0]) userId = parts[0];
+        if (parts[1] && !businessId) businessId = parts[1];
+      } catch {}
+    }
+
+    if (!businessId) {
+      businessId = process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
+    }
+
     const { name, owner_name, phone, address, currency } = req.body;
     
     let business = await db.getBusiness(businessId);
@@ -38,6 +72,16 @@ router.put('/profile', async (req: Request, res: Response) => {
       ...(address !== undefined ? { address: address.trim() } : {}),
       ...(currency ? { currency: currency.trim() } : {})
     });
+
+    // Also update user profile to keep owner name and phone permanently synced
+    if (userId) {
+      try {
+        await db.updateUser(userId, {
+          ...(owner_name ? { name: owner_name.trim() } : {}),
+          ...(phone ? { phone: phone.trim() } : {})
+        });
+      } catch {}
+    }
 
     res.json({ success: true, message: 'Store profile updated successfully', data: updated });
   } catch (err: any) {

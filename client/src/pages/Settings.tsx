@@ -44,7 +44,6 @@ export const Settings: React.FC<SettingsProps> = ({
 
   // DPDP Account Deletion State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const handleAutoConfigureClaude = async () => {
@@ -88,17 +87,13 @@ export const Settings: React.FC<SettingsProps> = ({
   };
 
   const handleDeleteAccount = async () => {
-    if (deleteConfirmationText !== 'DELETE') {
-      showToast('error', 'Please type DELETE to confirm permanent account erasure.');
-      return;
-    }
-
     setIsDeletingAccount(true);
     try {
       const res = await api.deleteAccount(business?.id);
       showToast('success', res.message || 'Your store account and records have been permanently erased under the DPDP Act 2023.');
       setIsDeleteModalOpen(false);
       localStorage.removeItem('dukaanos_token');
+      localStorage.removeItem('dukaanos_business_id');
       if (onLogout) {
         onLogout();
       } else {
@@ -293,10 +288,7 @@ export const Settings: React.FC<SettingsProps> = ({
           )}
 
           <button
-            onClick={() => {
-              setDeleteConfirmationText('');
-              setIsDeleteModalOpen(true);
-            }}
+            onClick={() => setIsDeleteModalOpen(true)}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-black rounded-xl transition-all cursor-pointer"
           >
             <Trash2 className="w-4 h-4 text-rose-700" />
@@ -317,57 +309,17 @@ export const Settings: React.FC<SettingsProps> = ({
         onClose={() => setIsResetConfirmOpen(false)}
       />
 
-      {/* DPDP ACT ACCOUNT DELETION CONFIRMATION MODAL */}
-      <Modal
+      {/* DPDP ACT ACCOUNT DELETION CONFIRMATION DIALOG (YES / NO) */}
+      <ConfirmDialog
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title="Permanently Delete Store Account"
-        subtitle="Digital Personal Data Protection Act, 2023 — Right to Erasure"
-        maxWidth="max-w-md"
-      >
-        <div className="space-y-4">
-          <div className="p-3.5 bg-rose-50 border border-black rounded-2xl flex items-start gap-2.5 text-xs text-rose-800 leading-relaxed">
-            <AlertTriangle className="w-5 h-5 text-rose-700 shrink-0 mt-0.5" />
-            <div>
-              <strong className="font-bold block text-rose-900">Irreversible Action:</strong>
-              Under Section 12 of the DPDP Act 2023, confirming erasure will permanently delete your store 
-              profile, product inventories, counter sales, supplier dues, and customer ledgers from active storage.
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-black">
-              Type <span className="font-mono text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded border border-rose-300">DELETE</span> to confirm:
-            </label>
-            <input
-              type="text"
-              value={deleteConfirmationText}
-              onChange={(e) => setDeleteConfirmationText(e.target.value)}
-              placeholder="DELETE"
-              className="w-full px-3.5 py-2.5 text-sm bg-white border border-black rounded-xl font-mono font-bold focus:outline-hidden focus:ring-1 focus:ring-black"
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-black">
-            <button
-              type="button"
-              onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-2 text-xs font-bold text-black bg-zinc-100 hover:bg-zinc-200 border border-black rounded-xl cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              disabled={deleteConfirmationText !== 'DELETE' || isDeletingAccount}
-              onClick={handleDeleteAccount}
-              className="px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-50 border border-black rounded-xl cursor-pointer flex items-center gap-1.5"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>{isDeletingAccount ? 'Erasing...' : 'Confirm Erasure'}</span>
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onConfirm={handleDeleteAccount}
+        title="Permanently Delete Store Account?"
+        message="Are you sure you want to permanently delete your store and all associated records under the DPDP Act 2023? This will erase all products, counter sales, supplier dues, and customer ledgers. This action cannot be undone."
+        confirmText={isDeletingAccount ? "Erasing..." : "Yes, Delete Store"}
+        cancelText="No, Keep Store"
+        isDestructive={true}
+      />
     </div>
   );
 };

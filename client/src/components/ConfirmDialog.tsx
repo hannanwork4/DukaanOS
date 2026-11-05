@@ -35,7 +35,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-semibold text-zinc-700 bg-white border border-zinc-300 rounded-xl hover:bg-zinc-50 transition-colors"
+              className="px-4 py-2 text-sm font-bold text-zinc-700 bg-white border border-black rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer"
             >
               {cancelText}
             </button>
@@ -45,7 +45,9 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 onConfirm();
                 onClose();
               }}
-              className="px-5 py-2 text-sm font-bold text-white bg-black rounded-xl hover:bg-zinc-800 shadow-btn-3d transition-colors"
+              className={`px-5 py-2 text-sm font-bold text-white rounded-xl shadow-btn-3d transition-colors cursor-pointer border border-black ${
+                isDestructive ? 'bg-rose-600 hover:bg-rose-700' : 'bg-black hover:bg-zinc-800'
+              }`}
             >
               {confirmText}
             </button>
