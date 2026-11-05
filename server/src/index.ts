@@ -78,6 +78,26 @@ async function startServer() {
       await db.seedInitialData(defaultBusinessId);
     }
 
+    // Ensure official demo credentials (hannan@volopay.co / Hannan_Volopay) are always available
+    const demoEmail = 'hannan@volopay.co';
+    const demoUser = await db.getUserByEmail(demoEmail);
+    if (!demoUser) {
+      const crypto = await import('node:crypto');
+      const hash = crypto.createHash('sha256').update('Hannan_Volopay_dukaanos_salt_2026').digest('hex');
+      await db.createUser({
+        id: 'u-volopay-hannan-demo',
+        email: demoEmail,
+        password_hash: hash,
+        business_id: defaultBusinessId,
+        name: 'Abdul Hannan',
+        phone: '9848022338',
+        is_verified: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      console.log(`[Init] Seeded permanent demo credentials: ${demoEmail}`);
+    }
+
     app.listen(PORT, () => {
       console.log(`=========================================`);
       console.log(`🚀 DukaanOS Backend Server running on port ${PORT}`);

@@ -355,16 +355,40 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 )}
               </button>
 
+              {/* Demo Credentials Box & 1-Click Access */}
+              <div className="p-3 bg-zinc-50 border-2 border-black rounded-xl text-left space-y-1.5 mt-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-black flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    Demo Credentials
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginEmail('hannan@volopay.co');
+                      setLoginPassword('Hannan_Volopay');
+                    }}
+                    className="text-[11px] font-bold text-black underline hover:text-zinc-600 cursor-pointer"
+                  >
+                    Auto-Fill
+                  </button>
+                </div>
+                <div className="text-xs font-mono text-zinc-800 space-y-0.5">
+                  <div><span className="text-zinc-500">Email:</span> <strong>hannan@volopay.co</strong></div>
+                  <div><span className="text-zinc-500">Pw:</span> <strong>Hannan_Volopay</strong></div>
+                </div>
+              </div>
+
               {/* 1-Click Demo Login */}
-              <div className="pt-2">
+              <div className="pt-1">
                 <button
                   type="button"
                   onClick={handleDemoLogin}
                   disabled={isLoading}
-                  className="w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-2 border-emerald-600 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0"
+                  className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black border-2 border-black rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  <Sparkles className="w-4 h-4 text-emerald-600" />
-                  <span>⚡ Quick Demo Store Login (Instant Access)</span>
+                  <Sparkles className="w-4 h-4 text-black" />
+                  <span>⚡ 1-Click Login (hannan@volopay.co)</span>
                 </button>
               </div>
 

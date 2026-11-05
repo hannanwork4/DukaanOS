@@ -234,6 +234,28 @@
       "is_verified": true,
       "created_at": "2026-11-05T21:41:11.121Z",
       "updated_at": "2026-11-05T21:41:11.121Z"
+    },
+    {
+      "id": "u0000000-0000-0000-0000-000000000001",
+      "email": "demo@dukaanos.com",
+      "password_hash": "8b0d0c0dc1ce6eed08271269e209a0228da09ffbc31120c23fd2b1fbc247e91f",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "name": "Rajesh Sharma",
+      "phone": "+91 98765 43210",
+      "is_verified": true,
+      "created_at": "2026-11-05T21:53:09.575Z",
+      "updated_at": "2026-11-05T21:53:09.575Z"
+    },
+    {
+      "id": "u-volopay-hannan-demo",
+      "email": "hannan@volopay.co",
+      "password_hash": "82b30930dbcf3b754342e9cc1f645f06f5183dec913b29d560759ff9472227ad",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "name": "Abdul Hannan",
+      "phone": "9848022338",
+      "is_verified": true,
+      "created_at": "2026-11-05T21:58:39.551Z",
+      "updated_at": "2026-11-05T21:58:39.552Z"
     }
   ]
 }

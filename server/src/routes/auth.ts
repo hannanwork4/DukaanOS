@@ -179,6 +179,64 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+
+    // Official Demo Credentials: hannan@volopay.co / Hannan_Volopay
+    if (cleanEmail === 'hannan@volopay.co') {
+      if (password !== 'Hannan_Volopay') {
+        return res.status(401).json({ success: false, error: 'Incorrect password for demo account. Please use: Hannan_Volopay' });
+      }
+
+      const demoBizId = process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
+      let business = await db.getBusiness(demoBizId);
+      if (!business) {
+        business = {
+          id: demoBizId,
+          name: 'Sri Venkateshwara Store',
+          owner_name: 'Abdul Hannan',
+          phone: '9848022338',
+          address: 'Visakhapatnam, Andhra Pradesh',
+          currency: 'INR',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        await db.createBusiness(business);
+        await db.seedInitialData(demoBizId);
+      }
+
+      let demoUser = await db.getUserByEmail(cleanEmail);
+      if (!demoUser) {
+        demoUser = {
+          id: 'u-volopay-hannan-demo',
+          email: cleanEmail,
+          password_hash: hashPassword('Hannan_Volopay'),
+          business_id: demoBizId,
+          name: 'Abdul Hannan',
+          phone: '9848022338',
+          is_verified: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        await db.createUser(demoUser);
+      }
+
+      const token = generateToken(demoUser);
+      return res.json({
+        success: true,
+        message: 'Welcome Abdul Hannan! Demo store access granted.',
+        data: {
+          token,
+          user: {
+            id: demoUser.id,
+            email: demoUser.email,
+            name: demoUser.name,
+            phone: demoUser.phone,
+            business_id: demoUser.business_id
+          },
+          business
+        }
+      });
+    }
+
     const user = await db.getUserByEmail(cleanEmail);
 
     if (!user) {
@@ -272,7 +330,7 @@ router.post('/demo-login', async (_req: Request, res: Response) => {
       business = {
         id: demoBizId,
         name: 'Sri Venkateshwara Store',
-        owner_name: 'Venkatesh Rao',
+        owner_name: 'Abdul Hannan',
         phone: '9848022338',
         address: 'Visakhapatnam, Andhra Pradesh',
         currency: 'INR',
@@ -283,15 +341,16 @@ router.post('/demo-login', async (_req: Request, res: Response) => {
       await db.seedInitialData(demoBizId);
     }
 
-    let demoUser = await db.getUserByEmail('demo@dukaanos.com');
+    const demoEmail = 'hannan@volopay.co';
+    let demoUser = await db.getUserByEmail(demoEmail);
     if (!demoUser) {
       demoUser = {
-        id: 'u0000000-0000-0000-0000-000000000001',
-        email: 'demo@dukaanos.com',
-        password_hash: hashPassword('demo123'),
+        id: 'u-volopay-hannan-demo',
+        email: demoEmail,
+        password_hash: hashPassword('Hannan_Volopay'),
         business_id: demoBizId,
-        name: business.owner_name || 'Venkatesh Rao',
-        phone: business.phone || '9848022338',
+        name: 'Abdul Hannan',
+        phone: '9848022338',
         is_verified: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
