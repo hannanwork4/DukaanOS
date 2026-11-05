@@ -140,33 +140,38 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/70">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">Expense Management</h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Record shop overheads: rent, electricity, wages, freight, and maintenance.
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🧾</span>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              दुकान के खर्चे <span className="text-sm font-normal text-amber-800">/ Expense Management</span>
+            </h1>
+          </div>
+          <p className="text-xs text-amber-900/70 mt-0.5">
+            दुकान किराया, बिजली, चाय-नाश्ता, भाड़ा/पल्लेदारी और स्टाफ वेतन
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-slate-900 rounded hover:bg-slate-800 transition-colors shadow-xs"
+          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-md shadow-orange-500/25 active:scale-98"
         >
           <Plus className="w-3.5 h-3.5" />
-          Add Expense
+          + नया खर्चा दर्ज करें (Add Expense)
         </button>
       </div>
 
       {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-white p-3.5 rounded-2xl border border-amber-200/80 shadow-warm">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-amber-600 absolute left-3.5 top-2.5" />
           <input
             type="text"
-            placeholder="Search by expense description or notes..."
+            placeholder="खर्चे का विवरण या नोट खोजें..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded focus:outline-hidden focus:border-slate-400 focus:bg-white"
+            className="w-full pl-9 pr-3 py-2 text-xs bg-amber-50/40 border border-amber-200/80 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors"
           />
         </div>
 
@@ -174,41 +179,41 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
           <select
             value={selectedCat}
             onChange={(e) => setSelectedCat(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 focus:outline-hidden"
+            className="text-xs bg-amber-50/40 border border-amber-200/80 rounded-xl px-3 py-2 font-medium text-amber-950 focus:outline-hidden focus:border-amber-400"
           >
-            <option value="All">All Categories</option>
+            <option value="All">सभी खर्चे (All Categories)</option>
             {CATEGORIES.map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
-          <div className="text-xs font-mono font-bold text-slate-900 bg-slate-100 px-2.5 py-1.5 rounded border border-slate-200">
-            Total: ₹{totalExpenseVal.toLocaleString('en-IN')}
+          <div className="text-xs font-mono font-extrabold text-rose-900 bg-rose-50 px-3 py-2 rounded-xl border border-rose-200">
+            कुल: ₹{totalExpenseVal.toLocaleString('en-IN')}
           </div>
         </div>
       </div>
 
       {/* Expenses Table */}
-      <div className="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-amber-200/80 shadow-warm overflow-hidden">
         {filteredExpenses.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            No expenses recorded for this filter.
+            कोई खर्चा दर्ज नहीं है। नया खर्चा जोड़ने के लिए ऊपर बटन दबाएं।
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50/70 border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px]">
+              <thead className="bg-gradient-to-r from-amber-50/80 to-orange-50/40 border-b border-amber-200/70 text-amber-950 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Description</th>
-                  <th className="px-3 py-3 font-medium">Category</th>
-                  <th className="px-3 py-3 font-medium">Payment Mode</th>
-                  <th className="px-3 py-3 font-medium text-right">Amount</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
+                  <th className="px-4 py-3 font-bold">दिनांक</th>
+                  <th className="px-4 py-3 font-bold">खर्चे का विवरण (Description)</th>
+                  <th className="px-3 py-3 font-bold">मद (Category)</th>
+                  <th className="px-3 py-3 font-bold">भुगतान माध्यम</th>
+                  <th className="px-3 py-3 font-bold text-right">रकम (Amount)</th>
+                  <th className="px-4 py-3 font-bold text-right">कार्रवाई</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-amber-100/70">
                 {filteredExpenses.map((exp) => (
-                  <tr key={exp.id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr key={exp.id} className="hover:bg-amber-50/40 transition-colors">
                     <td className="px-4 py-3 text-slate-500 font-mono text-[11px]">
                       {new Date(exp.date).toLocaleDateString('en-IN', {
                         day: 'numeric',
@@ -217,22 +222,22 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
                       })}
                     </td>
 
-                    <td className="px-4 py-3 font-medium text-slate-900">
+                    <td className="px-4 py-3 font-bold text-slate-900">
                       <div>{exp.description}</div>
                       {exp.notes && <div className="text-[10px] text-slate-400 font-normal">{exp.notes}</div>}
                     </td>
 
                     <td className="px-3 py-3">
-                      <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700">
+                      <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-rose-50 text-rose-800 border border-rose-200">
                         {exp.category}
                       </span>
                     </td>
 
-                    <td className="px-3 py-3 text-slate-600">
+                    <td className="px-3 py-3 text-slate-700">
                       {exp.payment_method}
                     </td>
 
-                    <td className="px-3 py-3 text-right font-mono font-bold text-slate-900">
+                    <td className="px-3 py-3 text-right font-mono font-extrabold text-rose-700">
                       ₹{exp.amount.toFixed(2)}
                     </td>
 
@@ -240,15 +245,15 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => openEditModal(exp)}
-                          title="Edit expense"
-                          className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                          title="खर्चा बदलें (Edit)"
+                          className="p-1.5 rounded-lg text-amber-700 hover:text-amber-900 hover:bg-amber-100 transition-colors"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(exp)}
-                          title="Delete expense"
-                          className="p-1 rounded text-slate-400 hover:text-red-600 hover:bg-red-50"
+                          title="हटाएं (Delete)"
+                          className="p-1.5 rounded-lg text-amber-700 hover:text-red-700 hover:bg-red-50 transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>

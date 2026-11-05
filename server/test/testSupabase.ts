@@ -5,15 +5,19 @@ const key = 'sb_publishable_YUpfKPXA2F3B7OZRypDZqg_dg_Jzrco';
 
 const client = createClient(url, key);
 
-async function testConnection() {
-  console.log('Testing Supabase connection...');
-  const { data, error } = await client.from('businesses').select('*').limit(1);
-  if (error) {
-    console.log('Query result error:', error);
-  } else {
-    console.log('Query result data:', data);
-  }
+async function checkCloudStatus() {
+  const { data: businesses } = await client.from('businesses').select('*');
+  const { data: products } = await client.from('products').select('*');
+  const { data: suppliers } = await client.from('suppliers').select('*');
+  const { data: purchases } = await client.from('purchases').select('*');
+  const { data: sales } = await client.from('sales').select('*');
+
+  console.log(`Cloud DB Status:
+  Businesses: ${businesses?.length || 0}
+  Products: ${products?.length || 0}
+  Suppliers: ${suppliers?.length || 0}
+  Purchases: ${purchases?.length || 0}
+  Sales: ${sales?.length || 0}`);
 }
 
-testConnection();
-
+checkCloudStatus();

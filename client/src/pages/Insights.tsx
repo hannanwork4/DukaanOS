@@ -8,7 +8,8 @@ import {
   Receipt,
   DollarSign,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Sparkles
 } from 'lucide-react';
 import { BusinessInsight } from '../types';
 
@@ -22,26 +23,31 @@ export const Insights: React.FC<InsightsProps> = ({ insights, onNavigate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="pb-2 border-b border-slate-200">
-        <h1 className="text-xl font-bold tracking-tight text-slate-900">Deterministic Business Insights</h1>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Calculated strictly from actual recorded stock, sales, expenses, and supplier transactions.
+      <div className="pb-3 border-b border-amber-200/70">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">💡</span>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            दुकान की तरक्की व विश्लेषण <span className="text-sm font-normal text-amber-800">/ Store Insights</span>
+          </h1>
+        </div>
+        <p className="text-xs text-amber-900/70 mt-0.5">
+          दुकान के वास्तविक लेजर और इन्वेंट्री डेटा पर आधारित 100% सटीक विश्लेषण
         </p>
       </div>
 
       {/* Explanatory Banner */}
-      <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-600 flex items-start gap-2.5">
-        <ShieldCheck className="w-4 h-4 text-slate-700 shrink-0 mt-0.5" />
+      <div className="p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl text-xs text-amber-950 flex items-start gap-2.5 shadow-warm">
+        <ShieldCheck className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
         <div>
-          <span className="font-semibold text-slate-900">100% Deterministic Arithmetic: </span>
-          All metrics and alerts shown below are evaluated directly against your ledger entries and inventory thresholds without external AI APIs or predictive speculation.
+          <span className="font-bold text-amber-950">100% शुद्ध गणितीय हिसाब (Deterministic Intelligence): </span>
+          नीचे दिए गए सभी आंकड़े और सुझाव दुकान की असली खरीद, बिक्री, खर्चे और स्टॉक के आधार पर गिने गए हैं — बिना किसी अंदाज़े या बाहरी AI निर्भरता के।
         </div>
       </div>
 
       {/* Insights Grid */}
       {insights.length === 0 ? (
-        <div className="p-12 text-center text-xs text-slate-400 bg-white rounded-lg border border-slate-200">
-          No insights generated yet. Record inventory purchases and sales to generate shop analytics.
+        <div className="p-12 text-center text-xs text-slate-400 bg-white rounded-2xl border border-amber-200 shadow-warm">
+          अभी तक कोई इनसाइट नहीं बनी है। दुकान में खरीद और बिक्री दर्ज करें।
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -53,52 +59,52 @@ export const Insights: React.FC<InsightsProps> = ({ insights, onNavigate }) => {
             return (
               <div
                 key={ins.id}
-                className={`p-5 rounded-lg border shadow-xs bg-white flex flex-col justify-between transition-all ${
+                className={`p-5 rounded-2xl border shadow-warm bg-white flex flex-col justify-between transition-all hover:shadow-warm-hover ${
                   isAlert
-                    ? 'border-red-200 bg-red-50/20'
+                    ? 'border-red-300 bg-red-50/30'
                     : isWarning
-                    ? 'border-amber-200 bg-amber-50/20'
+                    ? 'border-amber-300 bg-amber-50/30'
                     : isPositive
-                    ? 'border-emerald-200 bg-emerald-50/20'
-                    : 'border-slate-200'
+                    ? 'border-emerald-300 bg-emerald-50/30'
+                    : 'border-amber-200'
                 }`}
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className={`p-1.5 rounded ${
+                    <div className="flex items-center gap-2.5">
+                      <div className={`p-2 rounded-xl ${
                         isAlert
                           ? 'bg-red-100 text-red-700'
                           : isWarning
-                          ? 'bg-amber-100 text-amber-700'
+                          ? 'bg-amber-100 text-amber-800'
                           : isPositive
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-slate-100 text-slate-700'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-amber-100 text-amber-900'
                       }`}>
                         {isAlert && <AlertTriangle className="w-4 h-4" />}
                         {isWarning && <AlertTriangle className="w-4 h-4" />}
                         {isPositive && <TrendingUp className="w-4 h-4" />}
-                        {!isAlert && !isWarning && !isPositive && <Lightbulb className="w-4 h-4" />}
+                        {!isAlert && !isWarning && !isPositive && <Sparkles className="w-4 h-4" />}
                       </div>
-                      <h3 className="font-semibold text-xs text-slate-900">{ins.title}</h3>
+                      <h3 className="font-bold text-xs text-slate-900">{ins.title}</h3>
                     </div>
 
                     {ins.metric && (
-                      <span className="font-mono text-xs font-bold text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200 shadow-xs">
+                      <span className="font-mono text-xs font-extrabold text-amber-950 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-300 shadow-2xs">
                         {ins.metric}
                       </span>
                     )}
                   </div>
 
-                  <p className="mt-3 text-xs text-slate-600 leading-relaxed">
+                  <p className="mt-3 text-xs text-slate-700 leading-relaxed font-normal">
                     {ins.message}
                   </p>
                 </div>
 
                 {ins.action_suggested && (
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                    <span className="text-slate-500 font-medium">Recommendation:</span>
-                    <span className="text-slate-700 font-medium">{ins.action_suggested}</span>
+                  <div className="mt-4 pt-3 border-t border-amber-100 flex items-center justify-between text-[11px]">
+                    <span className="text-amber-900/70 font-semibold">सुझाव (Tip):</span>
+                    <span className="text-amber-950 font-bold">{ins.action_suggested}</span>
                   </div>
                 )}
               </div>
@@ -109,4 +115,3 @@ export const Insights: React.FC<InsightsProps> = ({ insights, onNavigate }) => {
     </div>
   );
 };
-

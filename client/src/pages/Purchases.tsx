@@ -205,99 +205,107 @@ export const Purchases: React.FC<PurchasesProps> = ({
   return (
     <div className="space-y-5">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/70">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">Purchase Management</h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Log inventory restocks from suppliers. Increases stock and tracks dues.
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🛒</span>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              खरीद बही <span className="text-sm font-normal text-amber-800">/ Purchase Register</span>
+            </h1>
+          </div>
+          <p className="text-xs text-amber-900/70 mt-0.5">
+            सप्लायर से आया हुआ माल, गोदाम स्टॉक में बढ़ोतरी और व्यापारी उधारी
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-slate-900 rounded hover:bg-slate-800 transition-colors shadow-xs"
+          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-md shadow-orange-500/25 active:scale-98"
         >
           <Plus className="w-3.5 h-3.5" />
-          Record Purchase
+          + नया माल आया (Record Purchase)
         </button>
       </div>
 
       {/* Claude Photo Billing Tip Banner */}
-      <div className="p-3 bg-emerald-50/60 border border-emerald-200 rounded-lg flex items-start gap-3 text-xs text-emerald-950">
-        <div className="p-1.5 bg-emerald-100 rounded text-emerald-800 font-bold shrink-0">
+      <div className="p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50/50 border border-emerald-300 rounded-2xl flex items-start gap-3 text-xs text-emerald-950 shadow-xs">
+        <div className="p-2 bg-emerald-100/80 rounded-xl text-emerald-800 font-bold shrink-0 border border-emerald-200 text-base">
           📸
         </div>
         <div>
-          <span className="font-semibold text-emerald-950">Zero-Typing Restock via Claude: </span>
-          Snap a photo of your wholesale distributor's paper bill (parchi / challan) in Claude and say:
-          <span className="font-mono bg-white px-1.5 py-0.5 rounded text-[11px] text-emerald-900 border border-emerald-200 ml-1">
-            "Add this delivery to my shop"
-          </span>.
-          Claude's vision reads the quantities & prices, calls the DukaanOS MCP server, and populates your stock here automatically!
+          <div className="font-bold text-emerald-950 flex items-center gap-1.5">
+            होलसेल पर्ची की फोटो खींचें (Zero-Typing Restock):
+            <span className="text-[10px] font-extrabold bg-emerald-200/80 text-emerald-900 px-2 py-0.2 rounded-full uppercase">
+              Claude Vision
+            </span>
+          </div>
+          <p className="text-emerald-900/90 mt-0.5 leading-relaxed">
+            डिस्ट्रिब्यूटर या मंडी की पर्ची का फोटो खींचकर Claude में भेजें और कहें: <span className="font-mono bg-white px-2 py-0.5 rounded text-[11px] text-emerald-950 border border-emerald-200 font-semibold">"यह माल दुकान में जोड़ दो"</span>। Claude सामान का नाम, मात्रा व दाम पढ़कर DukaanOS में सीधे दर्ज कर देगा!
+          </p>
         </div>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs flex items-center justify-between gap-3">
+      <div className="bg-white p-3.5 rounded-2xl border border-amber-200/80 shadow-warm flex items-center justify-between gap-3">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-amber-600 absolute left-3.5 top-2.5" />
           <input
             type="text"
-            placeholder="Search by supplier or purchased item..."
+            placeholder="व्यापारी (सप्लायर) या खरीदे गए सामान से खोजें..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded focus:outline-hidden focus:border-slate-400 focus:bg-white"
+            className="w-full pl-9 pr-3 py-2 text-xs bg-amber-50/40 border border-amber-200/80 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors"
           />
         </div>
       </div>
 
       {/* Purchases List Table */}
-      <div className="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-amber-200/80 shadow-warm overflow-hidden">
         {filteredPurchases.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            No purchase records found. Record a purchase to restock inventory.
+            कोई खरीद रिकॉर्ड नहीं मिला। गोदाम में माल जोड़ने के लिए ऊपर बटन दबाएं।
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50/70 border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px]">
+              <thead className="bg-gradient-to-r from-amber-50/80 to-orange-50/40 border-b border-amber-200/70 text-amber-950 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Date / ID</th>
-                  <th className="px-4 py-3 font-medium">Supplier</th>
-                  <th className="px-4 py-3 font-medium">Items Purchased</th>
-                  <th className="px-3 py-3 font-medium text-right">Total Amount</th>
-                  <th className="px-3 py-3 font-medium text-right">Paid</th>
-                  <th className="px-3 py-3 font-medium text-right">Outstanding</th>
-                  <th className="px-3 py-3 font-medium text-center">Payment Mode</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
+                  <th className="px-4 py-3 font-bold">दिनांक / ID</th>
+                  <th className="px-4 py-3 font-bold">व्यापारी (Supplier)</th>
+                  <th className="px-4 py-3 font-bold">खरीदा गया सामान</th>
+                  <th className="px-3 py-3 font-bold text-right">कुल बिल (Total)</th>
+                  <th className="px-3 py-3 font-bold text-right">चुकाया (Paid)</th>
+                  <th className="px-3 py-3 font-bold text-right">बाकी उधारी (Due)</th>
+                  <th className="px-3 py-3 font-bold text-center">पेमेंट माध्यम</th>
+                  <th className="px-4 py-3 font-bold text-right">कार्रवाई</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-amber-100/70">
                 {filteredPurchases.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr key={p.id} className="hover:bg-amber-50/40 transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-semibold text-slate-900">
+                      <div className="font-bold text-slate-900">
                         {new Date(p.purchase_date).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'
                         })}
                       </div>
-                      <div className="text-[10px] font-mono text-slate-400">
+                      <div className="text-[10px] font-mono text-amber-900/60">
                         #{p.id.slice(0, 8)}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 font-medium text-slate-900">
-                      {p.supplier_name || 'Unknown Supplier'}
+                    <td className="px-4 py-3 font-bold text-slate-900">
+                      {p.supplier_name || 'होलसेल व्यापारी'}
                     </td>
 
-                    <td className="px-4 py-3 text-slate-600">
+                    <td className="px-4 py-3 text-slate-700">
                       <div className="max-w-xs space-y-0.5">
                         {(p.items || []).map((it, idx) => (
                           <div key={idx} className="text-[11px] truncate">
-                            <span className="font-semibold text-slate-800">{it.quantity}x</span> {it.product_name}
-                            <span className="text-slate-400 font-mono ml-1">(@ ₹{it.unit_price})</span>
+                            <span className="font-bold text-amber-950">{it.quantity}x</span> {it.product_name}
+                            <span className="text-slate-500 font-mono ml-1">(@ ₹{it.unit_price})</span>
                           </div>
                         ))}
                       </div>
@@ -307,31 +315,37 @@ export const Purchases: React.FC<PurchasesProps> = ({
                       ₹{p.total_amount.toFixed(2)}
                     </td>
 
-                    <td className="px-3 py-3 text-right font-mono text-emerald-700">
+                    <td className="px-3 py-3 text-right font-mono font-semibold text-emerald-800">
                       ₹{p.amount_paid.toFixed(2)}
                     </td>
 
                     <td className="px-3 py-3 text-right font-mono">
                       {p.outstanding_amount > 0 ? (
-                        <span className="font-bold text-amber-600">
-                          ₹{p.outstanding_amount.toFixed(2)}
+                        <span className="font-extrabold text-orange-700 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                          ₹{p.outstanding_amount.toFixed(2)} बाकी
                         </span>
                       ) : (
-                        <span className="text-slate-400">₹0.00</span>
+                        <span className="text-emerald-700 font-medium">चुकता ✓</span>
                       )}
                     </td>
 
                     <td className="px-3 py-3 text-center">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">
-                        {p.payment_method}
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        p.payment_method === 'Cash'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          : p.payment_method === 'UPI'
+                          ? 'bg-indigo-100 text-indigo-800 border border-indigo-300'
+                          : 'bg-amber-100 text-amber-900 border border-amber-300'
+                      }`}>
+                        {p.payment_method === 'Cash' ? 'नकद (Cash)' : p.payment_method === 'UPI' ? 'UPI (PhonePe/GPay)' : p.payment_method}
                       </span>
                     </td>
 
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => openEditModal(p)}
-                        title="Edit purchase (reverses and recalculates inventory)"
-                        className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                        title="खरीद सुधारें (Edit purchase)"
+                        className="p-1.5 rounded-lg text-amber-700 hover:text-amber-900 hover:bg-amber-100 transition-colors"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
