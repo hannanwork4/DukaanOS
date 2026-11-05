@@ -1,0 +1,156 @@
+{
+  "businesses": [],
+  "products": [
+    {
+      "id": "d0e44773-2399-43f8-aaac-9f748ced7146",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "name": "Cooking Oil 1L",
+      "category": "General",
+      "sku": "SKU-657683",
+      "unit": "packets",
+      "current_stock": 15,
+      "min_stock_threshold": 5,
+      "purchase_price": 100,
+      "selling_price": 130,
+      "is_archived": false,
+      "created_at": "2026-11-05T12:27:37.683Z",
+      "updated_at": "2026-11-05T12:27:37.734Z"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": "1cb1ba2f-6c67-4ae1-b4b9-eef82a47a72c",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "name": "Ramesh Traders",
+      "phone": "+91 98112 34567",
+      "total_purchases": 2000,
+      "amount_paid": 1000,
+      "outstanding_balance": 1000,
+      "created_at": "2026-11-05T12:27:37.652Z",
+      "updated_at": "2026-11-05T12:27:37.710Z"
+    }
+  ],
+  "purchases": [
+    {
+      "id": "f48a9a58-cbd4-4b21-b297-5572f2abd261",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "supplier_id": "1cb1ba2f-6c67-4ae1-b4b9-eef82a47a72c",
+      "supplier_name": "Ramesh Traders",
+      "purchase_date": "2026-11-05T12:27:37.700Z",
+      "total_amount": 2000,
+      "amount_paid": 1000,
+      "outstanding_amount": 1000,
+      "payment_method": "Cash",
+      "notes": "Purchased 20 packets from Ramesh Traders",
+      "status": "completed",
+      "created_at": "2026-11-05T12:27:37.700Z",
+      "updated_at": "2026-11-05T12:27:37.700Z"
+    }
+  ],
+  "purchase_items": [
+    {
+      "id": "f12b717c-d95c-413e-ae9b-86e8b4a19df2",
+      "purchase_id": "f48a9a58-cbd4-4b21-b297-5572f2abd261",
+      "product_id": "d0e44773-2399-43f8-aaac-9f748ced7146",
+      "product_name": "Cooking Oil 1L",
+      "quantity": 20,
+      "unit_price": 100,
+      "total_price": 2000
+    }
+  ],
+  "sales": [
+    {
+      "id": "2fbf4bcc-9b8d-4110-94dd-dcd78724025c",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "sale_date": "2026-11-05T12:27:37.730Z",
+      "total_amount": 650,
+      "amount_received": 650,
+      "outstanding_amount": 0,
+      "payment_method": "UPI",
+      "estimated_profit": 150,
+      "status": "completed",
+      "created_at": "2026-11-05T12:27:37.730Z",
+      "updated_at": "2026-11-05T12:27:37.730Z"
+    }
+  ],
+  "sale_items": [
+    {
+      "id": "f7fbaa7b-fda0-456a-b0c3-f6af33c6ac6e",
+      "sale_id": "2fbf4bcc-9b8d-4110-94dd-dcd78724025c",
+      "product_id": "d0e44773-2399-43f8-aaac-9f748ced7146",
+      "product_name": "Cooking Oil 1L",
+      "quantity": 5,
+      "unit_price": 130,
+      "total_price": 650,
+      "unit_cost": 100
+    }
+  ],
+  "expenses": [],
+  "supplier_payments": [
+    {
+      "id": "b95f72ec-cb36-4138-9e75-27183c8a36a6",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "supplier_id": "1cb1ba2f-6c67-4ae1-b4b9-eef82a47a72c",
+      "purchase_id": "f48a9a58-cbd4-4b21-b297-5572f2abd261",
+      "amount": 1000,
+      "payment_date": "2026-11-05T12:27:37.700Z",
+      "payment_method": "Cash",
+      "notes": "Paid at time of purchase f48a9a58",
+      "created_at": "2026-11-05T12:27:37.700Z"
+    }
+  ],
+  "stock_movements": [
+    {
+      "id": "2ffed836-58ae-4dbd-aff2-03bcd345d1a4",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "product_id": "d0e44773-2399-43f8-aaac-9f748ced7146",
+      "product_name": "Cooking Oil 1L",
+      "type": "purchase",
+      "quantity": 20,
+      "stock_before": 0,
+      "stock_after": 20,
+      "reference_id": "f48a9a58-cbd4-4b21-b297-5572f2abd261",
+      "notes": "Purchase from Ramesh Traders (f48a9a58)",
+      "created_at": "2026-11-05T12:27:37.700Z"
+    },
+    {
+      "id": "5c0a12ed-434a-4baa-9cfb-2614c57acbe8",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "product_id": "d0e44773-2399-43f8-aaac-9f748ced7146",
+      "product_name": "Cooking Oil 1L",
+      "type": "sale",
+      "quantity": -5,
+      "stock_before": 20,
+      "stock_after": 15,
+      "reference_id": "2fbf4bcc-9b8d-4110-94dd-dcd78724025c",
+      "notes": "Sale (UPI) - Sale ID: 2fbf4bcc",
+      "created_at": "2026-11-05T12:27:37.730Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "491937e7-6d8e-4a7f-b031-3fa6cb161520",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "type": "purchase",
+      "amount": 2000,
+      "date": "2026-11-05T12:27:37.700Z",
+      "description": "Purchase from Ramesh Traders [20x Cooking Oil 1L] - Paid: ₹1000, Pending: ₹1000",
+      "reference_id": "f48a9a58-cbd4-4b21-b297-5572f2abd261",
+      "payment_method": "Cash",
+      "status": "completed",
+      "created_at": "2026-11-05T12:27:37.700Z"
+    },
+    {
+      "id": "3cde2a57-4969-44bd-95e5-9de0e4d6b56e",
+      "business_id": "b0000000-0000-0000-0000-000000000001",
+      "type": "sale",
+      "amount": 650,
+      "date": "2026-11-05T12:27:37.730Z",
+      "description": "Sale [5x Cooking Oil 1L] - Mode: UPI",
+      "reference_id": "2fbf4bcc-9b8d-4110-94dd-dcd78724025c",
+      "payment_method": "UPI",
+      "status": "completed",
+      "created_at": "2026-11-05T12:27:37.730Z"
+    }
+  ]
+}

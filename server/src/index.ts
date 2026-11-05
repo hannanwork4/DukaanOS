@@ -1,0 +1,83 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'node:path';
+import productsRouter from './routes/products.js';
+import suppliersRouter from './routes/suppliers.js';
+import purchasesRouter from './routes/purchases.js';
+import salesRouter from './routes/sales.js';
+import expensesRouter from './routes/expenses.js';
+import ledgerRouter from './routes/ledger.js';
+import insightsRouter from './routes/insights.js';
+import businessRouter from './routes/business.js';
+import { db } from './db/index.js';
+
+dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 4000;
+const defaultBusinessId = process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-business-id', 'x-mcp-secret']
+}));
+
+app.use(express.json());
+
+// Request logger
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    if (req.path !== '/health') {
+      console.log(`[API] ${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
+    }
+  });
+  next();
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'DukaanOS Backend API',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Mount Routes
+app.use('/api/products', productsRouter);
+app.use('/api/suppliers', suppliersRouter);
+app.use('/api/purchases', purchasesRouter);
+app.use('/api/sales', salesRouter);
+app.use('/api/expenses', expensesRouter);
+app.use('/api/ledger', ledgerRouter);
+app.use('/api/insights', insightsRouter);
+app.use('/api/business', businessRouter);
+
+// Initialize DB and start server
+async function startServer() {
+  try {
+    const existing = await db.getBusiness(defaultBusinessId);
+    if (!existing) {
+      console.log(`[Init] Seeding initial Kirana store data for: ${defaultBusinessId}`);
+      await db.seedInitialData(defaultBusinessId);
+    }
+
+    app.listen(PORT, () => {
+      console.log(`=========================================`);
+      console.log(`🚀 DukaanOS Backend Server running on port ${PORT}`);
+      console.log(`📡 Health Check: http://localhost:${PORT}/health`);
+      console.log(`🏬 Default Business: ${defaultBusinessId}`);
+      console.log(`=========================================`);
+    });
+  } catch (err) {
+    console.error('Failed to start DukaanOS server:', err);
+    process.exit(1);
+  }
+}
+
+startServer();
