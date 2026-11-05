@@ -7,6 +7,7 @@ import {
   Mail,
   Lock,
   ArrowRight,
+  ArrowLeft,
   CheckCircle2,
   X,
   KeyRound,
@@ -117,7 +118,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   };
 
-  // Step Navigation in Conversational Signup (Forward Progression, No Back Button)
+  // Step Navigation in Conversational Signup
+  const prevStep = () => {
+    setErrorMessage('');
+    if (signupStep > 1) {
+      setSignupStep((prev) => (prev - 1));
+    } else {
+      setMode('login');
+    }
+  };
+
   const nextStep = async () => {
     setErrorMessage('');
 
@@ -329,20 +339,46 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </form>
           )}
 
-          {/* MODE 2: STEP-BY-STEP SIGNUP (FORWARD PROGRESSION ONLY, NO BACK BUTTON) */}
+          {/* MODE 2: STEP-BY-STEP SIGNUP */}
           {mode === 'signup' && (
             <div className="space-y-5">
               {/* Progress Stepper Indicator */}
-              <div className="flex items-center justify-between text-xs text-zinc-500 font-bold border-b border-zinc-200 pb-3">
-                <span className="text-black">Step {signupStep} of 6</span>
-                <span className="text-[11px] text-zinc-400">
-                  {signupStep === 1 && 'Store Identity'}
-                  {signupStep === 2 && 'Owner Name'}
-                  {signupStep === 3 && 'Location'}
-                  {signupStep === 4 && 'Mobile Number'}
-                  {signupStep === 5 && 'Mail ID & Password'}
-                  {signupStep === 6 && 'Verification Code'}
-                </span>
+              <div className="space-y-2 border-b border-zinc-200 pb-3">
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-black">Step {signupStep} of 6</span>
+                  <span className="text-[11px] text-zinc-500 font-semibold">
+                    {signupStep === 1 && 'Store Identity'}
+                    {signupStep === 2 && 'Owner Name'}
+                    {signupStep === 3 && 'Location'}
+                    {signupStep === 4 && 'Mobile Number'}
+                    {signupStep === 5 && 'Mail ID & Password'}
+                    {signupStep === 6 && 'Verification Code'}
+                  </span>
+                </div>
+                {/* Visual Step Progress Bar */}
+                <div className="grid grid-cols-6 gap-1.5">
+                  {[1, 2, 3, 4, 5, 6].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      disabled={s > signupStep}
+                      onClick={() => {
+                        if (s < signupStep) {
+                          setErrorMessage('');
+                          setSignupStep(s);
+                        }
+                      }}
+                      title={s < signupStep ? `Go back to step ${s}` : `Step ${s}`}
+                      className={`h-1.5 rounded-full transition-all ${
+                        s === signupStep
+                          ? 'bg-black'
+                          : s < signupStep
+                          ? 'bg-emerald-500 hover:bg-emerald-600 cursor-pointer'
+                          : 'bg-zinc-200 cursor-not-allowed'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Step 1: Store Name */}
@@ -563,13 +599,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
               )}
 
-              {/* Action Buttons for Signup (Forward progression only, NO BACK BUTTON) */}
-              <div className="flex items-center justify-end pt-4 border-t border-black">
+              {/* Action Buttons for Signup */}
+              <div className="flex items-center justify-between pt-4 border-t border-black gap-3">
+                <button
+                  type="button"
+                  onClick={prevStep}
+                  disabled={isLoading || isSendingOtp}
+                  className="inline-flex items-center gap-1.5 px-4 py-3 rounded-xl text-xs font-bold text-black bg-zinc-100 hover:bg-zinc-200 border-2 border-black transition-all cursor-pointer shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <ArrowLeft className="w-4 h-4 text-black" />
+                  <span>{signupStep === 1 ? 'Back to Sign In' : 'Back'}</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={nextStep}
                   disabled={isLoading || isSendingOtp}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 bg-black hover:bg-zinc-800 text-white font-extrabold text-sm rounded-xl transition-all shadow-btn-3d cursor-pointer border border-black hover:-translate-y-0.5 active:translate-y-0"
+                  className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-black hover:bg-zinc-800 text-white font-extrabold text-sm rounded-xl transition-all shadow-btn-3d cursor-pointer border border-black hover:-translate-y-0.5 active:translate-y-0 ml-auto"
                 >
                   {isLoading ? (
                     <span>Setting up Dukaan...</span>
