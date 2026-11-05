@@ -116,3 +116,4 @@ app.listen(MCP_PORT, () => {
   console.log(`🛠️ 18 Business Management Tools Registered`);
   console.log(`=========================================`);
 });
+

@@ -212,3 +212,4 @@ CREATE POLICY "Service role full access on expenses" ON expenses FOR ALL USING (
 CREATE POLICY "Service role full access on supplier_payments" ON supplier_payments FOR ALL USING (true);
 CREATE POLICY "Service role full access on stock_movements" ON stock_movements FOR ALL USING (true);
 CREATE POLICY "Service role full access on transactions" ON transactions FOR ALL USING (true);
+

@@ -166,3 +166,4 @@ export class InsightsService {
 }
 
 export const insightsService = new InsightsService();
+

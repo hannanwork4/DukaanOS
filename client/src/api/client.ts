@@ -68,3 +68,4 @@ export const api = {
   // Insights
   getBusinessInsights: () => fetchJson<any[]>('/api/insights')
 };
+

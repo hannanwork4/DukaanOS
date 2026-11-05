@@ -106,3 +106,4 @@ export const TrendChart: React.FC<TrendChartProps> = ({ data }) => {
     </div>
   );
 };
+

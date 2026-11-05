@@ -276,3 +276,4 @@ All tests execute deterministically and verify stock safeguards, reversal arithm
 4. Build Command: `npm run build`.
 5. Environment Variable:
    - `VITE_API_URL`: URL of the deployed backend server.
+

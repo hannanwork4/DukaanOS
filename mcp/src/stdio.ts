@@ -19,3 +19,4 @@ runStdio().catch(err => {
   console.error('[MCP Stdio Error]:', err);
   process.exit(1);
 });
+

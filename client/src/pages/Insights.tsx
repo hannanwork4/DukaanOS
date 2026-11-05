@@ -109,3 +109,4 @@ export const Insights: React.FC<InsightsProps> = ({ insights, onNavigate }) => {
     </div>
   );
 };
+

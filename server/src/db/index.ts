@@ -12,8 +12,9 @@ let dbInstance: IDatabase;
 
 const supabaseUrl = process.env.SUPABASE_URL?.trim();
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || process.env.SUPABASE_ANON_KEY?.trim();
+const useLocalDb = process.env.USE_LOCAL_DB === 'true';
 
-if (supabaseUrl && supabaseKey && supabaseUrl.startsWith('http')) {
+if (!useLocalDb && supabaseUrl && supabaseKey && supabaseUrl.startsWith('http') && !supabaseKey.includes('your-supabase')) {
   console.log(`[Database] Connecting to Supabase at: ${supabaseUrl}`);
   dbInstance = new SupabaseStore(supabaseUrl, supabaseKey);
 } else {
@@ -23,3 +24,4 @@ if (supabaseUrl && supabaseKey && supabaseUrl.startsWith('http')) {
 
 export const db = dbInstance;
 export * from './interface.js';
+

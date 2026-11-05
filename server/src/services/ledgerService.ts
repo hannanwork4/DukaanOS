@@ -18,20 +18,37 @@ export class LedgerService {
       db.getTransactions(businessId)
     ]);
 
-    // 1. Today's Sales
-    const todaySales = sales
-      .filter(s => s.sale_date.startsWith(todayStr))
+    // 1. Today's Sales & Gross Profit
+    const todaySalesRecords = sales.filter(s => s.sale_date.startsWith(todayStr));
+    const todaySales = todaySalesRecords.reduce((sum, s) => sum + Number(s.total_amount), 0);
+    const todayProfit = todaySalesRecords.reduce((sum, s) => sum + Number(s.estimated_profit || 0), 0);
+
+    // Yesterday's Sales & Growth Percentage
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toISOString().slice(0, 10);
+    const yesterdaySales = sales
+      .filter(s => s.sale_date.startsWith(yesterdayStr))
       .reduce((sum, s) => sum + Number(s.total_amount), 0);
+
+    let salesGrowthPercent: number | null = null;
+    if (yesterdaySales > 0) {
+      salesGrowthPercent = Math.round(((todaySales - yesterdaySales) / yesterdaySales) * 100);
+    } else if (todaySales > 0) {
+      salesGrowthPercent = 100;
+    }
 
     // 2. Today's Purchases
     const todayPurchases = purchases
       .filter(p => p.purchase_date.startsWith(todayStr))
       .reduce((sum, p) => sum + Number(p.total_amount), 0);
 
-    // 3. Today's Expenses
+    // 3. Today's Expenses & Net Profit
     const todayExpenses = expenses
       .filter(e => e.date.startsWith(todayStr))
       .reduce((sum, e) => sum + Number(e.amount), 0);
+
+    const todayNetProfit = todayProfit - todayExpenses;
 
     // 4. Outstanding Supplier Payments
     const outstandingSupplierPayments = suppliers
@@ -66,8 +83,11 @@ export class LedgerService {
 
     return {
       today_sales: Math.round(todaySales * 100) / 100,
+      yesterday_sales: Math.round(yesterdaySales * 100) / 100,
+      sales_growth_percent: salesGrowthPercent,
       today_purchases: Math.round(todayPurchases * 100) / 100,
       today_expenses: Math.round(todayExpenses * 100) / 100,
+      today_net_profit: Math.round(todayNetProfit * 100) / 100,
       outstanding_supplier_payments: Math.round(outstandingSupplierPayments * 100) / 100,
       total_inventory_value: Math.round(totalInventoryValue * 100) / 100,
       low_stock_count: lowStockCount,
@@ -78,3 +98,4 @@ export class LedgerService {
 }
 
 export const ledgerService = new LedgerService();
+

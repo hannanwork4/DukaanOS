@@ -171,3 +171,4 @@ fullSystemTest().catch(err => {
   console.error('\n❌ Full system test error:', err);
   process.exit(1);
 });
+

@@ -608,3 +608,4 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onRefresh, showT
     </div>
   );
 };
+

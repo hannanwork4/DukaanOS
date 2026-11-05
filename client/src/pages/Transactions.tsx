@@ -147,3 +147,4 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions }) => {
     </div>
   );
 };
+

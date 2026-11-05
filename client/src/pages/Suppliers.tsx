@@ -492,3 +492,4 @@ export const Suppliers: React.FC<SuppliersProps> = ({ suppliers, onRefresh, show
     </div>
   );
 };
+

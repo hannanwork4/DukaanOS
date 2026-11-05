@@ -492,3 +492,4 @@ export class SupabaseStore implements IDatabase {
     console.log(`Supabase seed requested for business: ${businessId}`);
   }
 }
+

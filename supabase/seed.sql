@@ -184,3 +184,4 @@ VALUES
     'Cash',
     'completed'
 ) ON CONFLICT (id) DO NOTHING;
+

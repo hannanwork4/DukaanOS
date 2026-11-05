@@ -222,6 +222,21 @@ export const Purchases: React.FC<PurchasesProps> = ({
         </button>
       </div>
 
+      {/* Claude Photo Billing Tip Banner */}
+      <div className="p-3 bg-emerald-50/60 border border-emerald-200 rounded-lg flex items-start gap-3 text-xs text-emerald-950">
+        <div className="p-1.5 bg-emerald-100 rounded text-emerald-800 font-bold shrink-0">
+          📸
+        </div>
+        <div>
+          <span className="font-semibold text-emerald-950">Zero-Typing Restock via Claude: </span>
+          Snap a photo of your wholesale distributor's paper bill (parchi / challan) in Claude and say:
+          <span className="font-mono bg-white px-1.5 py-0.5 rounded text-[11px] text-emerald-900 border border-emerald-200 ml-1">
+            "Add this delivery to my shop"
+          </span>.
+          Claude's vision reads the quantities & prices, calls the DukaanOS MCP server, and populates your stock here automatically!
+        </div>
+      </div>
+
       {/* Search Bar */}
       <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs flex items-center justify-between gap-3">
         <div className="flex-1 relative">
@@ -521,3 +536,4 @@ export const Purchases: React.FC<PurchasesProps> = ({
     </div>
   );
 };
+

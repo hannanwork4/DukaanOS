@@ -149,8 +149,11 @@ export interface TransactionRecord {
 
 export interface DashboardSummary {
   today_sales: number;
+  yesterday_sales: number;
+  sales_growth_percent: number | null;
   today_purchases: number;
   today_expenses: number;
+  today_net_profit: number;
   outstanding_supplier_payments: number;
   total_inventory_value: number;
   low_stock_count: number;
@@ -167,3 +170,4 @@ export interface BusinessInsight {
   metric?: string | number;
   action_suggested?: string;
 }
+

@@ -7,15 +7,18 @@ import {
   Calendar,
   AlertCircle,
   Search,
-  CheckCircle2
+  CheckCircle2,
+  Printer
 } from 'lucide-react';
-import { Sale, Product } from '../types';
+import { Sale, Product, Business } from '../types';
 import { Modal } from '../components/Modal';
+import { ReceiptModal } from '../components/ReceiptModal';
 import { api } from '../api/client';
 
 interface SalesProps {
   sales: Sale[];
   products: Product[];
+  business?: Business | null;
   onRefresh: () => void;
   showToast: (type: 'success' | 'error' | 'info', message: string) => void;
 }
@@ -29,12 +32,14 @@ interface SaleLineItem {
 export const Sales: React.FC<SalesProps> = ({
   sales,
   products,
+  business,
   onRefresh,
   showToast
 }) => {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSale, setEditingSale] = useState<Sale | null>(null);
+  const [receiptTarget, setReceiptTarget] = useState<Sale | null>(null);
 
   // Form State
   const [saleDate, setSaleDate] = useState(new Date().toISOString().slice(0, 10));
@@ -315,13 +320,23 @@ export const Sales: React.FC<SalesProps> = ({
                     </td>
 
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => openEditModal(s)}
-                        title="Edit sale (safely recalculates inventory)"
-                        className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => setReceiptTarget(s)}
+                          title="Print customer receipt"
+                          className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 transition-colors"
+                        >
+                          <Printer className="w-3 h-3 text-slate-500" />
+                          Receipt
+                        </button>
+                        <button
+                          onClick={() => openEditModal(s)}
+                          title="Edit sale (safely recalculates inventory)"
+                          className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -501,6 +516,14 @@ export const Sales: React.FC<SalesProps> = ({
           </div>
         </form>
       </Modal>
+
+      {/* Customer Bill / Receipt Modal */}
+      <ReceiptModal
+        sale={receiptTarget}
+        business={business || null}
+        onClose={() => setReceiptTarget(null)}
+      />
     </div>
   );
 };
+

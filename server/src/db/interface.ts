@@ -67,3 +67,4 @@ export interface IDatabase {
   // Seed & Reset
   seedInitialData(businessId: string): Promise<void>;
 }
+

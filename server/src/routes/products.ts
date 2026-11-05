@@ -86,3 +86,4 @@ router.get('/:id/movements', async (req: Request, res: Response) => {
 });
 
 export default router;
+

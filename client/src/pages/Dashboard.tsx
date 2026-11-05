@@ -116,9 +116,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="mt-2 text-xl font-bold text-slate-900">
             ₹{summary.today_sales.toLocaleString('en-IN')}
           </div>
-          <div className="mt-1 text-[11px] text-emerald-600 font-medium flex items-center gap-0.5">
-            <ArrowUpRight className="w-3 h-3" />
-            Revenue
+          <div className="mt-1 flex items-center gap-1 text-[11px] font-medium">
+            {summary.sales_growth_percent !== undefined && summary.sales_growth_percent !== null ? (
+              <span className={`inline-flex items-center gap-0.5 ${
+                summary.sales_growth_percent >= 0 ? 'text-emerald-700' : 'text-red-600'
+              }`}>
+                {summary.sales_growth_percent >= 0 ? (
+                  <ArrowUpRight className="w-3 h-3" />
+                ) : (
+                  <ArrowDownLeft className="w-3 h-3" />
+                )}
+                {summary.sales_growth_percent > 0 ? `+${summary.sales_growth_percent}%` : `${summary.sales_growth_percent}%`} vs yest.
+              </span>
+            ) : (
+              <span className="text-emerald-600 flex items-center gap-0.5">
+                <ArrowUpRight className="w-3 h-3" />
+                Live Revenue
+              </span>
+            )}
           </div>
         </div>
 
@@ -347,3 +362,4 @@ export const Dashboard: React.FC<DashboardProps> = ({
     </div>
   );
 };
+

@@ -9,6 +9,7 @@
     "start": "node dist/index.js",
     "test": "tsx test/api.test.ts",
     "test:demo": "tsx test/demoWorkflow.test.ts",
+    "test:supabase": "tsx test/testSupabase.ts",
     "test:full": "tsx test/runFullSystemTest.ts"
   },
   "dependencies": {

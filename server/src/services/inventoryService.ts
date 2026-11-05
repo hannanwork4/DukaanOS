@@ -126,3 +126,4 @@ export class InventoryService {
 }
 
 export const inventoryService = new InventoryService();
+

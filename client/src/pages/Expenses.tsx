@@ -384,3 +384,4 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
     </div>
   );
 };
+

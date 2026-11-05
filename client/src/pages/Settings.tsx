@@ -224,3 +224,4 @@ export const Settings: React.FC<SettingsProps> = ({ business, onRefresh, showToa
     </div>
   );
 };
+

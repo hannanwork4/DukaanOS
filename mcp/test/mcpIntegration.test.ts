@@ -46,3 +46,4 @@ testMcpOverNetwork().catch(err => {
   console.error('❌ MCP integration test error:', err);
   process.exit(1);
 });
+

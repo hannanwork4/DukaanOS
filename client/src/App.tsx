@@ -142,6 +142,7 @@ export function App() {
         <Sales
           sales={sales}
           products={products}
+          business={business}
           onRefresh={() => loadAllData(false)}
           showToast={showToast}
         />
@@ -192,3 +193,4 @@ export function App() {
 }
 
 export default App;
+
