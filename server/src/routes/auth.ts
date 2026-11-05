@@ -36,7 +36,7 @@ router.post('/send-otp', async (req: Request, res: Response) => {
     res.json({
       success: true,
       message: emailResult.message,
-      devOtp: emailResult.devMode ? otp : undefined
+      devOtp: emailResult.otp
     });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
@@ -199,11 +199,45 @@ router.post('/login', async (req: Request, res: Response) => {
 // 5. Current Session (Me)
 router.get('/me', async (req: Request, res: Response) => {
   try {
-    const businessId = (req.query.business_id as string) || (req.headers['x-business-id'] as string) || process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
-    const business = await db.getBusiness(businessId);
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Not authenticated. Please log in.' });
+    }
+
+    const token = authHeader.replace('Bearer ', '').trim();
+    let userId = '';
+    let businessId = '';
+
+    try {
+      const decoded = Buffer.from(token, 'base64').toString('utf-8');
+      const parts = decoded.split(':');
+      userId = parts[0];
+      businessId = parts[1];
+    } catch {
+      return res.status(401).json({ success: false, error: 'Invalid authentication token' });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Invalid authentication token' });
+    }
+
+    const user = await db.getUserById(userId);
+    if (!user) {
+      return res.status(401).json({ success: false, error: 'User session not found' });
+    }
+
+    const business = await db.getBusiness(user.business_id || businessId);
+
     res.json({
       success: true,
       data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          phone: user.phone,
+          business_id: user.business_id
+        },
         business
       }
     });

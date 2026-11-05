@@ -99,7 +99,11 @@ export function App() {
   const [insights, setInsights] = useState<BusinessInsight[]>([]);
 
   // Auth States
+  const [authToken, setAuthToken] = useState<string | null>(() => {
+    return typeof window !== 'undefined' ? localStorage.getItem('dukaanos_token') : null;
+  });
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   // Toast System
@@ -163,15 +167,42 @@ export function App() {
     }
   }, [showToast]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('dukaanos_token');
+    localStorage.removeItem('dukaanos_business_id');
+    setAuthToken(null);
     setCurrentUser(null);
+    setBusiness(null);
     showToast('info', 'Logged out of store account.');
-    setIsAuthOpen(true);
-  };
+  }, [showToast]);
 
+  // Initial Authentication Verification
   useEffect(() => {
-    loadAllData(true);
+    const token = localStorage.getItem('dukaanos_token');
+    if (!token) {
+      setIsCheckingAuth(false);
+      return;
+    }
+
+    api.getAuthMe()
+      .then((res: any) => {
+        if (res?.user) {
+          setCurrentUser(res.user);
+          setBusiness(res.business);
+          setAuthToken(token);
+          loadAllData(false);
+        } else {
+          localStorage.removeItem('dukaanos_token');
+          setAuthToken(null);
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('dukaanos_token');
+        setAuthToken(null);
+      })
+      .finally(() => {
+        setIsCheckingAuth(false);
+      });
   }, [loadAllData]);
 
   // Derived notification items
@@ -182,6 +213,44 @@ export function App() {
   const pendingSuppliersList = suppliers
     .filter(s => Number(s.outstanding_balance) > 0)
     .map(s => ({ id: s.id, name: s.name, outstanding_balance: s.outstanding_balance }));
+
+  // 1. Initial Auth Verification Loader
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-[#0e0f11] flex flex-col items-center justify-center p-6 text-white">
+        <div className="w-12 h-12 rounded-2xl bg-white text-black font-extrabold text-xl flex items-center justify-center shadow-2xl border-2 border-black animate-pulse mb-3">
+          D
+        </div>
+        <div className="text-base font-bold text-white tracking-tight">DukaanOS</div>
+        <div className="text-xs text-zinc-500 mt-1">Verifying store session...</div>
+      </div>
+    );
+  }
+
+  // 2. Authentication Gate: Email & Password Required by Default to Access Website
+  if (!authToken || !currentUser) {
+    return (
+      <div className="min-h-screen bg-[#0e0f11] flex flex-col items-center justify-center p-4 text-white relative">
+        <AuthModal
+          isOpen={true}
+          isGate={true}
+          initialMode="login"
+          onClose={() => {}}
+          onSuccess={(user, biz) => {
+            setCurrentUser(user);
+            setBusiness(biz);
+            setAuthToken(localStorage.getItem('dukaanos_token'));
+            loadAllData(false);
+          }}
+          showToast={showToast}
+          onOpenDoc={(doc) => {
+            handleTabChange(doc);
+          }}
+        />
+        <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+      </div>
+    );
+  }
 
   return (
     <Layout

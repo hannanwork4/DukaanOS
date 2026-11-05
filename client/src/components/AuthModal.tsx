@@ -7,7 +7,6 @@ import {
   Mail,
   Lock,
   ArrowRight,
-  ArrowLeft,
   CheckCircle2,
   X,
   KeyRound,
@@ -25,6 +24,7 @@ interface AuthModalProps {
   onSuccess: (user: User, business: Business) => void;
   showToast: (type: 'success' | 'error' | 'info', message: string) => void;
   initialMode?: 'login' | 'signup';
+  isGate?: boolean;
   onOpenDoc?: (doc: 'terms' | 'privacy') => void;
 }
 
@@ -33,7 +33,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   onSuccess,
   showToast,
-  initialMode = 'signup',
+  initialMode = 'login',
+  isGate = false,
   onOpenDoc
 }) => {
   const { t } = useTranslation();
@@ -61,6 +62,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   if (!isOpen) return null;
 
+  // Calculate password strength
+  const getPasswordStrength = (pass: string) => {
+    if (!pass) return { score: 0, label: '', barColor: 'bg-zinc-200', textColor: 'text-zinc-400' };
+    let score = 0;
+    if (pass.length >= 6) score++;
+    if (pass.length >= 8) score++;
+    if (/[0-9]/.test(pass)) score++;
+    if (/[A-Z]/.test(pass) || /[^A-Za-z0-9]/.test(pass)) score++;
+
+    if (score <= 1) return { score: 1, label: 'Weak', barColor: 'bg-rose-500', textColor: 'text-rose-600' };
+    if (score === 2) return { score: 2, label: 'Fair', barColor: 'bg-amber-500', textColor: 'text-amber-600' };
+    if (score === 3) return { score: 3, label: 'Good', barColor: 'bg-blue-600', textColor: 'text-blue-600' };
+    return { score: 4, label: 'Strong', barColor: 'bg-emerald-600', textColor: 'text-emerald-600' };
+  };
+
+  const pwdStrength = getPasswordStrength(password);
+
   // Handle Login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +97,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onSuccess(res.user, res.business);
       onClose();
     } catch (err: any) {
-      setErrorMessage(err.message || 'Login failed. Please check your credentials.');
+      setErrorMessage(err.message || 'Login failed. Please verify your Email ID and Password.');
     } finally {
       setIsLoading(false);
     }
@@ -95,15 +113,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (res.devOtp) {
         setDevOtpHint(res.devOtp);
       }
-      showToast('info', res.message || 'Verification code sent!');
+      showToast('info', res.message || 'Verification code dispatched!');
     } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to send OTP.');
+      setErrorMessage(err.message || 'Failed to dispatch verification code.');
     } finally {
       setIsSendingOtp(false);
     }
   };
 
-  // Step Navigation in Conversational Signup
+  // Step Navigation in Conversational Signup (Forward Progression, No Back Button)
   const nextStep = async () => {
     setErrorMessage('');
 
@@ -137,10 +155,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       return;
     }
 
-    // Step 4: Phone
+    // Step 4: Phone (Strictly 10 digits)
     if (signupStep === 4) {
-      if (!phone.trim()) {
-        setErrorMessage('Please provide a contact phone number.');
+      const cleanDigits = phone.replace(/\D/g, '');
+      if (cleanDigits.length !== 10) {
+        setErrorMessage('Please enter a valid 10-digit mobile number.');
         return;
       }
       setSignupStep(5);
@@ -196,82 +215,80 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         onSuccess(res.user, res.business);
         onClose();
       } catch (err: any) {
-        setErrorMessage(err.message || 'Verification or signup failed.');
+        setErrorMessage(err.message || 'Verification or signup failed. Please try again.');
       } finally {
         setIsLoading(false);
       }
     }
   };
 
-  const prevStep = () => {
-    setErrorMessage('');
-    if (signupStep > 1) {
-      setSignupStep(prev => prev - 1);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border-2 border-black overflow-hidden flex flex-col max-h-[90vh]">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${isGate ? 'bg-black/85' : 'bg-black/60'} backdrop-blur-sm animate-fade-in`}>
+      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border-2 border-black overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header Bar */}
         <div className="px-6 sm:px-8 pt-6 pb-4 flex items-center justify-between border-b border-black bg-white">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#0e0f11] text-white flex items-center justify-center font-bold text-sm">
+            <div className="w-10 h-10 rounded-2xl bg-[#0e0f11] text-white flex items-center justify-center font-bold text-sm border border-black">
               <Store className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="text-base font-bold text-zinc-900 leading-none">DukaanOS</div>
-              <div className="text-[11px] text-zinc-400 mt-0.5 font-medium">Store Owner Authentication</div>
+              <div className="text-base font-extrabold text-black leading-none">DukaanOS</div>
+              <div className="text-[11px] text-zinc-500 mt-0.5 font-medium">
+                {isGate ? 'Sign in required to access store' : 'Store Owner Authentication'}
+              </div>
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {!isGate && (
+            <button
+              onClick={onClose}
+              className="p-2 text-zinc-400 hover:text-black hover:bg-zinc-100 rounded-full transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Modal Body */}
         <div className="p-6 sm:p-8 overflow-y-auto">
           {errorMessage && (
-            <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-black text-rose-700 text-xs flex items-center gap-2 animate-fade-in font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          {/* MODE 1: LOGIN */}
+          {/* MODE 1: LOGIN (EMAIL & PASSWORD REQUIRED) */}
           {mode === 'login' && (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <h3 className="text-xl font-extrabold text-zinc-900 tracking-tight">{t('welcomeBack')}</h3>
+                <h3 className="text-xl font-extrabold text-black tracking-tight">{t('welcomeBack') || 'Sign In to Your Store'}</h3>
                 <p className="text-xs text-zinc-500 mt-1">
-                  {t('signInSubtitle')}
+                  Enter your registered Mail ID and password to open DukaanOS.
                 </p>
               </div>
 
               <div className="space-y-3.5 pt-2">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-700 flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5 text-zinc-400" />
-                    {t('emailAddress')}
+                  <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-black" />
+                    Mail ID (Email Address) *
                   </label>
                   <input
                     type="email"
                     required
+                    autoFocus
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="storeowner@gmail.com"
-                    className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-hidden focus:ring-1 focus:ring-black focus:border-black font-medium transition-all"
+                    className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-black rounded-xl text-sm text-black focus:outline-hidden focus:ring-1 focus:ring-black font-medium transition-all"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-700 flex items-center gap-1.5">
-                    <Lock className="w-3.5 h-3.5 text-zinc-400" />
-                    {t('passwordLabel')}
+                  <label className="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-black" />
+                    Password *
                   </label>
                   <input
                     type="password"
@@ -279,7 +296,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-hidden focus:ring-1 focus:ring-black focus:border-black font-medium transition-all"
+                    className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-black rounded-xl text-sm text-black focus:outline-hidden focus:ring-1 focus:ring-black font-medium transition-all"
                   />
                 </div>
               </div>
@@ -287,69 +304,61 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 bg-[#111214] hover:bg-zinc-800 text-white font-bold text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer mt-4"
+                className="w-full py-3 bg-black hover:bg-zinc-800 text-white font-extrabold text-sm rounded-xl transition-all shadow-btn-3d flex items-center justify-center gap-2 cursor-pointer mt-4 border border-black hover:-translate-y-0.5 active:translate-y-0"
               >
                 {isLoading ? (
                   <span>Signing in...</span>
                 ) : (
                   <>
-                    <span>{t('signInBtn')}</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>{t('signInBtn') || 'Sign In to Store'}</span>
+                    <ArrowRight className="w-4 h-4 text-white" />
                   </>
                 )}
               </button>
 
-              <div className="pt-4 text-center border-t border-zinc-100">
-                <span className="text-xs text-zinc-500">{t('dontHaveAccount')} </span>
+              <div className="pt-4 text-center border-t border-black">
+                <span className="text-xs text-zinc-500">New to DukaanOS? </span>
                 <button
                   type="button"
                   onClick={() => {
                     setMode('signup');
+                    setSignupStep(1);
                     setErrorMessage('');
                   }}
                   className="text-xs font-bold text-black hover:underline cursor-pointer"
                 >
-                  {t('registerStore')}
+                  Create New Store (Sign Up)
                 </button>
               </div>
             </form>
           )}
 
-          {/* MODE 2: CONVERSATIONAL MULTI-STEP SIGNUP */}
+          {/* MODE 2: STEP-BY-STEP SIGNUP (FORWARD PROGRESSION ONLY, NO BACK BUTTON) */}
           {mode === 'signup' && (
-            <div className="space-y-6">
-              {/* Progress Indicator */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold text-zinc-400">
-                  <span>Step {signupStep} of 6</span>
-                  <span className="text-zinc-800 font-bold">
-                    {signupStep === 1 && 'Store Name'}
-                    {signupStep === 2 && 'Owner Name'}
-                    {signupStep === 3 && 'Location'}
-                    {signupStep === 4 && 'Contact Phone'}
-                    {signupStep === 5 && 'Account Credentials'}
-                    {signupStep === 6 && 'Verification OTP'}
-                  </span>
-                </div>
-                {/* Visual Progress Bar */}
-                <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-black transition-all duration-300"
-                    style={{ width: `${(signupStep / 6) * 100}%` }}
-                  ></div>
-                </div>
+            <div className="space-y-5">
+              {/* Progress Stepper Indicator */}
+              <div className="flex items-center justify-between text-xs text-zinc-500 font-bold border-b border-zinc-200 pb-3">
+                <span className="text-black">Step {signupStep} of 6</span>
+                <span className="text-[11px] text-zinc-400">
+                  {signupStep === 1 && 'Store Identity'}
+                  {signupStep === 2 && 'Owner Name'}
+                  {signupStep === 3 && 'Location'}
+                  {signupStep === 4 && 'Mobile Number'}
+                  {signupStep === 5 && 'Mail ID & Password'}
+                  {signupStep === 6 && 'Verification Code'}
+                </span>
               </div>
 
               {/* Step 1: Store Name */}
               {signupStep === 1 && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 text-zinc-900 flex items-center justify-center">
-                    <Store className="w-6 h-6 text-zinc-800" />
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-black text-black flex items-center justify-center">
+                    <Store className="w-6 h-6 text-black" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-zinc-900 tracking-tight">What is your store name?</h3>
+                    <h3 className="text-xl font-bold text-black tracking-tight">What is your store name?</h3>
                     <p className="text-xs text-zinc-500 mt-1">
-                      Enter the name of your dukaan, retail shop, or supermarket.
+                      This will appear on all your counter receipts, bills, and ledgers.
                     </p>
                   </div>
                   <input
@@ -358,8 +367,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={storeName}
                     onChange={(e) => setStoreName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && nextStep()}
-                    placeholder="e.g. Sri Venkateshwara General Store"
-                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-zinc-200 rounded-2xl text-base text-zinc-900 font-medium focus:outline-hidden focus:ring-2 focus:ring-black focus:border-black transition-all"
+                    placeholder="e.g. Sri Venkateshwara General Stores"
+                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-base text-black font-semibold focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
                   />
                 </div>
               )}
@@ -367,13 +376,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {/* Step 2: Owner Name */}
               {signupStep === 2 && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 text-zinc-900 flex items-center justify-center">
-                    <UserIcon className="w-6 h-6 text-zinc-800" />
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-black text-black flex items-center justify-center">
+                    <UserIcon className="w-6 h-6 text-black" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Who is running this dukaan?</h3>
+                    <h3 className="text-xl font-bold text-black tracking-tight">Who manages this store?</h3>
                     <p className="text-xs text-zinc-500 mt-1">
-                      Enter the store owner or primary manager's name.
+                      Enter the proprietor or store manager's name.
                     </p>
                   </div>
                   <input
@@ -382,8 +391,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={ownerName}
                     onChange={(e) => setOwnerName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && nextStep()}
-                    placeholder="e.g. Abdul Hannan"
-                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-zinc-200 rounded-2xl text-base text-zinc-900 font-medium focus:outline-hidden focus:ring-2 focus:ring-black focus:border-black transition-all"
+                    placeholder="e.g. Ramesh Kumar"
+                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-base text-black font-semibold focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
                   />
                 </div>
               )}
@@ -391,13 +400,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {/* Step 3: Location */}
               {signupStep === 3 && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 text-zinc-900 flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-zinc-800" />
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-black text-black flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-black" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Where is your store located?</h3>
+                    <h3 className="text-xl font-bold text-black tracking-tight">Where is your store located?</h3>
                     <p className="text-xs text-zinc-500 mt-1">
-                      Provide city, neighborhood or market area for receipts.
+                      Enter your market area, city, or locality.
                     </p>
                   </div>
                   <input
@@ -406,98 +415,144 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && nextStep()}
-                    placeholder="e.g. Visakhapatnam, Andhra Pradesh"
-                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-zinc-200 rounded-2xl text-base text-zinc-900 font-medium focus:outline-hidden focus:ring-2 focus:ring-black focus:border-black transition-all"
+                    placeholder="e.g. Gajuwaka, Visakhapatnam"
+                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-base text-black font-semibold focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
                   />
                 </div>
               )}
 
-              {/* Step 4: Phone */}
+              {/* Step 4: Phone (Strict 10-digit limit) */}
               {signupStep === 4 && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 text-zinc-900 flex items-center justify-center">
-                    <Phone className="w-6 h-6 text-zinc-800" />
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-black text-black flex items-center justify-center">
+                    <Phone className="w-6 h-6 text-black" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-zinc-900 tracking-tight">What is your phone number?</h3>
+                    <h3 className="text-xl font-bold text-black tracking-tight">What is your contact phone number?</h3>
                     <p className="text-xs text-zinc-500 mt-1">
-                      Used for customer bills and supplier communication.
+                      Enter your 10-digit mobile number for supplier orders & billing.
                     </p>
                   </div>
-                  <input
-                    type="tel"
-                    autoFocus
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && nextStep()}
-                    placeholder="e.g. +91 98765 43210"
-                    className="w-full px-4 py-3 bg-[#f8f9fa] border border-zinc-200 rounded-2xl text-base text-zinc-900 font-medium focus:outline-hidden focus:ring-2 focus:ring-black focus:border-black transition-all"
-                  />
+
+                  <div className="relative flex items-center">
+                    <div className="absolute left-3 flex items-center gap-1 text-xs font-bold text-black bg-zinc-100 px-2.5 py-1 rounded-lg border border-black pointer-events-none">
+                      <span>🇮🇳</span>
+                      <span>+91</span>
+                    </div>
+                    <input
+                      type="tel"
+                      autoFocus
+                      maxLength={10}
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      onKeyDown={(e) => e.key === 'Enter' && nextStep()}
+                      placeholder="9876543210"
+                      className="w-full pl-22 pr-16 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-base text-black font-bold tracking-wider focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
+                    />
+                    <div className="absolute right-3.5 text-xs font-mono font-bold text-zinc-400">
+                      {phone.length}/10
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* Step 5: Email & Password */}
+              {/* Step 5: Email & Password with Real-Time Strength Meter */}
               {signupStep === 5 && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 text-zinc-900 flex items-center justify-center">
-                    <KeyRound className="w-6 h-6 text-zinc-800" />
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-black text-black flex items-center justify-center">
+                    <KeyRound className="w-6 h-6 text-black" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Set your login credentials</h3>
+                    <h3 className="text-xl font-bold text-black tracking-tight">Set your login credentials</h3>
                     <p className="text-xs text-zinc-500 mt-1">
-                      You will use this email and password to log in securely.
+                      You will use this Mail ID and password to log in to DukaanOS.
                     </p>
                   </div>
 
                   <div className="space-y-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-zinc-600">Email Address</label>
+                      <label className="text-xs font-bold text-zinc-800">Mail ID (Email Address) *</label>
                       <input
                         type="email"
                         autoFocus
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="storeowner@gmail.com"
-                        className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-zinc-200 rounded-xl text-sm text-zinc-900 font-medium focus:outline-hidden focus:ring-1 focus:ring-black focus:border-black transition-all"
+                        className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-black rounded-xl text-sm text-black font-medium focus:outline-hidden focus:ring-1 focus:ring-black transition-all"
                       />
                     </div>
+
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-zinc-600">Password (min 6 chars)</label>
+                      <label className="text-xs font-bold text-zinc-800">Password (min 6 characters) *</label>
                       <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && nextStep()}
                         placeholder="••••••••"
-                        className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-zinc-200 rounded-xl text-sm text-zinc-900 font-medium focus:outline-hidden focus:ring-1 focus:ring-black focus:border-black transition-all"
+                        className="w-full px-4 py-2.5 bg-[#f8f9fa] border border-black rounded-xl text-sm text-black font-medium focus:outline-hidden focus:ring-1 focus:ring-black transition-all"
                       />
+
+                      {/* Password Strength Meter */}
+                      {password && (
+                        <div className="space-y-1.5 pt-1.5 animate-fade-in">
+                          <div className="flex items-center justify-between text-xs font-bold">
+                            <span className="text-zinc-500">Password Strength:</span>
+                            <span className={pwdStrength.textColor}>{pwdStrength.label}</span>
+                          </div>
+                          <div className="grid grid-cols-4 gap-1.5 h-1.5">
+                            {[1, 2, 3, 4].map((seg) => (
+                              <div
+                                key={seg}
+                                className={`h-full rounded-full transition-all duration-300 ${
+                                  pwdStrength.score >= seg ? pwdStrength.barColor : 'bg-zinc-200'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <div className="flex items-center gap-3 text-[11px] text-zinc-500 pt-0.5">
+                            <span className={password.length >= 6 ? 'text-black font-bold' : 'text-zinc-400'}>
+                              {password.length >= 6 ? '✓' : '○'} Min 6 chars
+                            </span>
+                            <span className={/[0-9]/.test(password) ? 'text-black font-bold' : 'text-zinc-400'}>
+                              {/[0-9]/.test(password) ? '✓' : '○'} Number
+                            </span>
+                            <span className={/[A-Z]/.test(password) || /[^A-Za-z0-9]/.test(password) ? 'text-black font-bold' : 'text-zinc-400'}>
+                              {/[A-Z]/.test(password) || /[^A-Za-z0-9]/.test(password) ? '✓' : '○'} Uppercase/Symbol
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Step 6: Verification OTP (Resend Integrated) */}
+              {/* Step 6: Verification Code */}
               {signupStep === 6 && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-zinc-200/80 text-black flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-black text-black flex items-center justify-center">
                     <ShieldCheck className="w-6 h-6 text-black" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Verify your email</h3>
+                    <h3 className="text-xl font-bold text-black tracking-tight">Verify your email address</h3>
                     <p className="text-xs text-zinc-500 mt-1">
-                      A single-use verification code was dispatched to <strong className="text-zinc-900">{email}</strong>.
+                      A single-use 6-digit verification code was sent to <strong className="text-black">{email}</strong>.
                     </p>
                   </div>
 
                   {devOtpHint && (
-                    <div className="p-3 bg-zinc-100 border border-zinc-200 rounded-xl text-xs text-zinc-800 flex items-center justify-between">
-                      <span>💡 <strong>Dev Code:</strong> {devOtpHint} (or test with 123456)</span>
+                    <div className="p-3.5 bg-zinc-50 border-2 border-black rounded-2xl flex items-center justify-between shadow-xs">
+                      <div>
+                        <span className="text-[11px] text-zinc-500 font-bold block uppercase tracking-wider">Verification Code:</span>
+                        <span className="text-lg font-mono font-extrabold tracking-widest text-black">{devOtpHint}</span>
+                      </div>
                       <button
                         type="button"
                         onClick={() => setOtp(devOtpHint)}
-                        className="text-[11px] font-bold text-black underline cursor-pointer"
+                        className="px-3.5 py-1.5 bg-black hover:bg-zinc-800 text-white rounded-xl text-xs font-bold transition-all shadow-btn-3d cursor-pointer"
                       >
-                        Auto-Fill
+                        1-Click Auto-Fill
                       </button>
                     </div>
                   )}
@@ -511,15 +566,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                       onKeyDown={(e) => e.key === 'Enter' && nextStep()}
                       placeholder="• • • • • •"
-                      className="w-full px-4 py-3 bg-[#f8f9fa] border border-zinc-200 rounded-2xl text-center text-2xl font-bold tracking-widest text-zinc-900 focus:outline-hidden focus:ring-2 focus:ring-black focus:border-black transition-all"
+                      className="w-full px-4 py-3 bg-[#f8f9fa] border border-black rounded-2xl text-center text-2xl font-bold tracking-widest text-black focus:outline-hidden focus:ring-2 focus:ring-black transition-all"
                     />
                     <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
-                      <span>Resend powered email verification</span>
+                      <span>Enter the 6-digit code or auto-fill</span>
                       <button
                         type="button"
                         onClick={triggerSendOtp}
                         disabled={isSendingOtp}
-                        className="text-xs font-semibold text-black hover:underline cursor-pointer"
+                        className="text-xs font-bold text-black hover:underline cursor-pointer"
                       >
                         {isSendingOtp ? 'Sending...' : 'Resend Code'}
                       </button>
@@ -528,26 +583,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
               )}
 
-              {/* Action Buttons for Signup */}
-              <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
-                {signupStep > 1 ? (
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-zinc-600 hover:text-black hover:bg-zinc-100 transition-colors cursor-pointer"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Back</span>
-                  </button>
-                ) : (
-                  <div></div>
-                )}
-
+              {/* Action Buttons for Signup (Forward progression only, NO BACK BUTTON) */}
+              <div className="flex items-center justify-end pt-4 border-t border-black">
                 <button
                   type="button"
                   onClick={nextStep}
                   disabled={isLoading || isSendingOtp}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#111214] hover:bg-zinc-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-sm cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 bg-black hover:bg-zinc-800 text-white font-extrabold text-sm rounded-xl transition-all shadow-btn-3d cursor-pointer border border-black hover:-translate-y-0.5 active:translate-y-0"
                 >
                   {isLoading ? (
                     <span>Setting up Dukaan...</span>
@@ -559,14 +601,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   ) : (
                     <>
                       <span>Continue</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 text-white" />
                     </>
                   )}
                 </button>
               </div>
 
               {/* Terms & Conditions and Privacy Policy titles only */}
-              <div className="text-center pt-3 text-[11px] text-zinc-500 border-t border-zinc-100">
+              <div className="text-center pt-3 text-[11px] text-zinc-500 border-t border-zinc-200">
                 <span>By continuing, you agree to our </span>
                 <button
                   type="button"
@@ -601,7 +643,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               {/* Switch to Login */}
               <div className="text-center pt-1">
-                <span className="text-xs text-zinc-500">{t('alreadyHaveAccount')} </span>
+                <span className="text-xs text-zinc-500">{t('alreadyHaveAccount') || 'Already have a store account?'} </span>
                 <button
                   type="button"
                   onClick={() => {
@@ -610,7 +652,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   }}
                   className="text-xs font-bold text-black hover:underline cursor-pointer"
                 >
-                  {t('signInBtn')}
+                  {t('signInBtn') || 'Sign In'}
                 </button>
               </div>
             </div>
@@ -657,7 +699,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 onClick={() => setSelectedDoc(null)}
                 className="px-4 py-2 bg-black text-white text-xs font-bold rounded-xl cursor-pointer"
               >
-                Close & Return to Signup
+                Close & Return
               </button>
             </div>
           </div>
@@ -666,4 +708,3 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     </div>
   );
 };
-
