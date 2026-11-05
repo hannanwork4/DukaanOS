@@ -24,19 +24,25 @@ router.post('/send-otp', async (req: Request, res: Response) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    // 6-digit cryptographically secure or pseudo-random OTP
+    // 6-digit verification code
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save to local store with 10 min expiry
+    // Save to database with 10 min expiry
     await db.saveOtp(cleanEmail, otp, 10 * 60 * 1000);
 
-    // Dispatch via Resend or Dev mode
+    // Dispatch via Resend API
     const emailResult = await emailService.sendOtpEmail(cleanEmail, otp, store_name);
+
+    if (!emailResult.success) {
+      return res.status(400).json({
+        success: false,
+        error: emailResult.error || 'Failed to deliver verification code to your email.'
+      });
+    }
 
     res.json({
       success: true,
-      message: emailResult.message,
-      devOtp: emailResult.otp
+      message: emailResult.message
     });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });

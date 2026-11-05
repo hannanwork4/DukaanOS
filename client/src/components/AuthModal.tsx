@@ -56,7 +56,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
-  const [devOtpHint, setDevOtpHint] = useState<string | null>(null);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
 
@@ -110,12 +109,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     try {
       const res = await api.sendOtp({ email: email.trim(), store_name: storeName.trim() });
       setOtpSent(true);
-      if (res.devOtp) {
-        setDevOtpHint(res.devOtp);
-      }
-      showToast('info', res.message || 'Verification code dispatched!');
+      showToast('info', res.message || `Verification code sent to ${email.trim()}! Please check your Gmail.`);
     } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to dispatch verification code.');
+      setErrorMessage(err.message || 'Failed to dispatch verification code to your email.');
     } finally {
       setIsSendingOtp(false);
     }
@@ -537,25 +533,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <div>
                     <h3 className="text-xl font-bold text-black tracking-tight">Verify your email address</h3>
                     <p className="text-xs text-zinc-500 mt-1">
-                      A single-use 6-digit verification code was sent to <strong className="text-black">{email}</strong>.
+                      A single-use 6-digit verification code was sent to your Gmail <strong className="text-black">{email}</strong>. Please check your inbox and enter it below:
                     </p>
                   </div>
-
-                  {devOtpHint && (
-                    <div className="p-3.5 bg-zinc-50 border-2 border-black rounded-2xl flex items-center justify-between shadow-xs">
-                      <div>
-                        <span className="text-[11px] text-zinc-500 font-bold block uppercase tracking-wider">Verification Code:</span>
-                        <span className="text-lg font-mono font-extrabold tracking-widest text-black">{devOtpHint}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setOtp(devOtpHint)}
-                        className="px-3.5 py-1.5 bg-black hover:bg-zinc-800 text-white rounded-xl text-xs font-bold transition-all shadow-btn-3d cursor-pointer"
-                      >
-                        1-Click Auto-Fill
-                      </button>
-                    </div>
-                  )}
 
                   <div className="space-y-2">
                     <input
