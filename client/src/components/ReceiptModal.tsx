@@ -152,3 +152,4 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ sale, business, onCl
     </div>
   );
 };
+

@@ -227,44 +227,7 @@ export class PurchaseService {
     const existingItems = existing.items || [];
     const oldSupplier = await supplierService.getSupplierById(businessId, existing.supplier_id);
 
-    // 2. REVERSAL STEP
-    // Revert stock from old items
-    for (const oldItem of existingItems) {
-      const product = await inventoryService.getProductById(businessId, oldItem.product_id);
-      if (product) {
-        const stockBefore = product.current_stock;
-        const stockAfter = stockBefore - oldItem.quantity;
-
-        await inventoryService.updateProduct(businessId, product.id, {
-          current_stock: stockAfter
-        });
-
-        await db.createStockMovement({
-          id: uuidv4(),
-          business_id: businessId,
-          product_id: product.id,
-          product_name: product.name,
-          type: 'purchase_reversal',
-          quantity: -oldItem.quantity,
-          stock_before: stockBefore,
-          stock_after: stockAfter,
-          reference_id: purchaseId,
-          notes: `Reversal for edited purchase ${purchaseId.slice(0, 8)}`,
-          created_at: new Date().toISOString()
-        });
-      }
-    }
-
-    // Revert supplier balance
-    if (oldSupplier) {
-      await db.updateSupplier(businessId, oldSupplier.id, {
-        total_purchases: Math.max(0, Number(oldSupplier.total_purchases) - existing.total_amount),
-        amount_paid: Math.max(0, Number(oldSupplier.amount_paid) - existing.amount_paid),
-        outstanding_balance: Math.max(0, Number(oldSupplier.outstanding_balance) - existing.outstanding_amount)
-      });
-    }
-
-    // 3. APPLY NEW DATA
+    // 2. Parse and resolve new items
     let supplierId = input.supplier_id || existing.supplier_id;
     if (!supplierId && input.supplier_name) {
       const s = await supplierService.getSupplierByName(businessId, input.supplier_name);
@@ -274,7 +237,6 @@ export class PurchaseService {
 
     let newTotalAmount = 0;
     const newResolvedItems: PurchaseItem[] = [];
-    const updatedProducts: { id: string; name: string; new_stock: number }[] = [];
     const now = input.purchase_date || existing.purchase_date;
 
     for (const it of input.items) {
@@ -316,44 +278,93 @@ export class PurchaseService {
     const newOutstanding = Math.max(0, newTotalAmount - newAmountPaid);
     const newPaymentMethod = input.payment_method || existing.payment_method;
 
-    // Apply stock additions
-    for (const item of newResolvedItems) {
-      const product = (await inventoryService.getProductById(businessId, item.product_id))!;
-      const stockBefore = product.current_stock;
-      const stockAfter = stockBefore + item.quantity;
-
-      await inventoryService.updateProduct(businessId, product.id, {
-        current_stock: stockAfter,
-        purchase_price: item.unit_price
-      });
-
-      await db.createStockMovement({
-        id: uuidv4(),
-        business_id: businessId,
-        product_id: product.id,
-        product_name: product.name,
-        type: 'purchase',
-        quantity: item.quantity,
-        stock_before: stockBefore,
-        stock_after: stockAfter,
-        reference_id: purchaseId,
-        notes: `Updated purchase from ${currentSupplier.name} (${purchaseId.slice(0, 8)})`,
-        created_at: new Date().toISOString()
-      });
-
-      updatedProducts.push({
-        id: product.id,
-        name: product.name,
-        new_stock: stockAfter
-      });
+    // 3. ATOMIC DELTA RECALCULATION FOR INVENTORY
+    // Map existing quantities by product_id
+    const oldQtyMap: Record<string, number> = {};
+    for (const item of existingItems) {
+      oldQtyMap[item.product_id] = (oldQtyMap[item.product_id] || 0) + Number(item.quantity);
     }
 
-    // Apply new supplier balance
-    await db.updateSupplier(businessId, currentSupplier.id, {
-      total_purchases: Number(currentSupplier.total_purchases) + newTotalAmount,
-      amount_paid: Number(currentSupplier.amount_paid) + newAmountPaid,
-      outstanding_balance: Number(currentSupplier.outstanding_balance) + newOutstanding
-    });
+    // Map new quantities by product_id
+    const newQtyMap: Record<string, { qty: number; unit_price: number }> = {};
+    for (const item of newResolvedItems) {
+      newQtyMap[item.product_id] = {
+        qty: (newQtyMap[item.product_id]?.qty || 0) + Number(item.quantity),
+        unit_price: Number(item.unit_price)
+      };
+    }
+
+    const allProductIds = Array.from(new Set([...Object.keys(oldQtyMap), ...Object.keys(newQtyMap)]));
+    const updatedProducts: { id: string; name: string; new_stock: number }[] = [];
+
+    for (const pId of allProductIds) {
+      const product = await inventoryService.getProductById(businessId, pId);
+      if (product) {
+        const oldQty = oldQtyMap[pId] || 0;
+        const newInfo = newQtyMap[pId];
+        const newQty = newInfo ? newInfo.qty : 0;
+        const netChange = newQty - oldQty;
+
+        const stockBefore = product.current_stock;
+        const stockAfter = stockBefore + netChange;
+        if (stockAfter < 0) {
+          throw new Error(`Cannot update purchase: stock for "${product.name}" would become negative (${stockAfter}).`);
+        }
+
+        await inventoryService.updateProduct(businessId, product.id, {
+          current_stock: stockAfter,
+          ...(newInfo ? { purchase_price: newInfo.unit_price } : {})
+        });
+
+        await db.createStockMovement({
+          id: uuidv4(),
+          business_id: businessId,
+          product_id: product.id,
+          product_name: product.name,
+          type: netChange >= 0 ? 'purchase' : 'purchase_reversal',
+          quantity: netChange,
+          stock_before: stockBefore,
+          stock_after: stockAfter,
+          reference_id: purchaseId,
+          notes: `Updated purchase edit adjustment (${purchaseId.slice(0, 8)})`,
+          created_at: new Date().toISOString()
+        });
+
+        updatedProducts.push({
+          id: product.id,
+          name: product.name,
+          new_stock: stockAfter
+        });
+      }
+    }
+
+    // 4. ATOMIC DELTA RECALCULATION FOR SUPPLIERS
+    if (oldSupplier && oldSupplier.id === currentSupplier.id) {
+      const netTotalChange = newTotalAmount - existing.total_amount;
+      const netPaidChange = newAmountPaid - existing.amount_paid;
+      const netOutstandingChange = newOutstanding - existing.outstanding_amount;
+
+      await db.updateSupplier(businessId, currentSupplier.id, {
+        total_purchases: Number(currentSupplier.total_purchases) + netTotalChange,
+        amount_paid: Number(currentSupplier.amount_paid) + netPaidChange,
+        outstanding_balance: Number(currentSupplier.outstanding_balance) + netOutstandingChange
+      });
+    } else {
+      // Revert old supplier if supplier was changed
+      if (oldSupplier) {
+        await db.updateSupplier(businessId, oldSupplier.id, {
+          total_purchases: Math.max(0, Number(oldSupplier.total_purchases) - existing.total_amount),
+          amount_paid: Math.max(0, Number(oldSupplier.amount_paid) - existing.amount_paid),
+          outstanding_balance: Math.max(0, Number(oldSupplier.outstanding_balance) - existing.outstanding_amount)
+        });
+      }
+      // Apply to new supplier
+      await db.updateSupplier(businessId, currentSupplier.id, {
+        total_purchases: Number(currentSupplier.total_purchases) + newTotalAmount,
+        amount_paid: Number(currentSupplier.amount_paid) + newAmountPaid,
+        outstanding_balance: Number(currentSupplier.outstanding_balance) + newOutstanding
+      });
+    }
 
     const updatedPurchaseRecord: Purchase = {
       id: purchaseId,

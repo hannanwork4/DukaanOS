@@ -1,4 +1,5 @@
 import assert from 'node:assert';
+import { v4 as uuidv4 } from 'uuid';
 import { inventoryService } from '../src/services/inventoryService.js';
 import { supplierService } from '../src/services/supplierService.js';
 import { purchaseService } from '../src/services/purchaseService.js';
@@ -6,7 +7,7 @@ import { saleService } from '../src/services/saleService.js';
 import { ledgerService } from '../src/services/ledgerService.js';
 import { db } from '../src/db/index.js';
 
-const DEMO_BIZ = 'b-demo-' + Date.now();
+const DEMO_BIZ = uuidv4();
 
 async function runDemoWorkflowVerification() {
   console.log('🎬 Running Official 5-Step Volopay Demo Workflow Verification...\n');

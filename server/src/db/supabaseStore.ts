@@ -222,11 +222,13 @@ export class SupabaseStore implements IDatabase {
   }
 
   async createPurchase(purchase: Purchase, items: PurchaseItem[]): Promise<Purchase> {
-    const { error: pErr } = await this.client.from('purchases').insert(purchase);
+    const { supplier_name, items: _i, ...purchaseRow } = purchase as any;
+    const { error: pErr } = await this.client.from('purchases').insert(purchaseRow);
     if (pErr) throw new Error(`Failed to insert purchase: ${pErr.message}`);
 
     if (items.length > 0) {
-      const { error: iErr } = await this.client.from('purchase_items').insert(items);
+      const cleanItems = items.map(({ product_name, ...it }: any) => it);
+      const { error: iErr } = await this.client.from('purchase_items').insert(cleanItems);
       if (iErr) throw new Error(`Failed to insert purchase items: ${iErr.message}`);
     }
 
@@ -256,7 +258,8 @@ export class SupabaseStore implements IDatabase {
 
     // Insert new items
     if (items.length > 0) {
-      const { error: iErr } = await this.client.from('purchase_items').insert(items);
+      const cleanItems = items.map(({ product_name, ...it }: any) => it);
+      const { error: iErr } = await this.client.from('purchase_items').insert(cleanItems);
       if (iErr) throw new Error(`Failed to replace purchase items: ${iErr.message}`);
     }
 
@@ -307,11 +310,13 @@ export class SupabaseStore implements IDatabase {
   }
 
   async createSale(sale: Sale, items: SaleItem[]): Promise<Sale> {
-    const { error: sErr } = await this.client.from('sales').insert(sale);
+    const { items: _i, ...saleRow } = sale as any;
+    const { error: sErr } = await this.client.from('sales').insert(saleRow);
     if (sErr) throw new Error(`Failed to insert sale: ${sErr.message}`);
 
     if (items.length > 0) {
-      const { error: iErr } = await this.client.from('sale_items').insert(items);
+      const cleanItems = items.map(({ product_name, ...it }: any) => it);
+      const { error: iErr } = await this.client.from('sale_items').insert(cleanItems);
       if (iErr) throw new Error(`Failed to insert sale items: ${iErr.message}`);
     }
 
@@ -342,7 +347,8 @@ export class SupabaseStore implements IDatabase {
 
     // Insert new items
     if (items.length > 0) {
-      const { error: iErr } = await this.client.from('sale_items').insert(items);
+      const cleanItems = items.map(({ product_name, ...it }: any) => it);
+      const { error: iErr } = await this.client.from('sale_items').insert(cleanItems);
       if (iErr) throw new Error(`Failed to replace sale items: ${iErr.message}`);
     }
 
@@ -425,9 +431,10 @@ export class SupabaseStore implements IDatabase {
   }
 
   async createSupplierPayment(payment: SupplierPayment): Promise<SupplierPayment> {
+    const { supplier_name, ...paymentRow } = payment as any;
     const { data, error } = await this.client
       .from('supplier_payments')
-      .insert(payment)
+      .insert(paymentRow)
       .select()
       .single();
     if (error) throw new Error(`Supabase createSupplierPayment error: ${error.message}`);
@@ -458,9 +465,10 @@ export class SupabaseStore implements IDatabase {
   }
 
   async createStockMovement(movement: StockMovement): Promise<StockMovement> {
+    const { product_name, ...movementRow } = movement as any;
     const { data, error } = await this.client
       .from('stock_movements')
-      .insert(movement)
+      .insert(movementRow)
       .select()
       .single();
     if (error) throw new Error(`Supabase createStockMovement error: ${error.message}`);
