@@ -217,106 +217,103 @@ export const Sales: React.FC<SalesProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-amber-200/50">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">💰</span>
-            <h1 className="text-xl font-black tracking-tight text-slate-900">
-              बिक्री बही <span className="text-sm font-bold text-slate-600">/ Sales Register</span>
-            </h1>
-          </div>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
-            दुकान काउंटर बिक्री, स्टॉक कटौती और तुरंत ग्रॉस मुनाफा (Gross Profit) हिसाब
+          <h1 className="text-xl font-bold tracking-tight text-black">
+            Sales & Billing
+          </h1>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            Record customer counter sales, deduct inventory stock, and track gross profit margins.
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          + नया ग्राहक बिल (New Sale)
+          + New Sale
         </button>
       </div>
 
       {/* 3D Filter Bar */}
-      <div className="bg-white/80 glass-panel p-4 rounded-2xl border border-white/80 shadow-card-3d flex items-center justify-between gap-3">
+      <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d flex items-center justify-between gap-3">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
           <input
             type="text"
-            placeholder="ग्राहक का नाम या बेचे गए सामान से खोजें..."
+            placeholder="Search by customer name or product sold..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/70 border border-slate-200 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors font-medium"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-zinc-200 rounded-xl focus:outline-hidden focus:border-black focus:bg-white transition-colors"
           />
         </div>
       </div>
 
       {/* 3D Glass Sales List Table */}
-      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d overflow-hidden">
+      <div className="glass-panel rounded-3xl border border-zinc-200 shadow-card-3d overflow-hidden">
         {filteredSales.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-400">
-            अभी तक कोई बिक्री दर्ज नहीं हुई है। नया बिल बनाने के लिए ऊपर बटन दबाएं।
+          <div className="p-12 text-center text-xs text-zinc-400">
+            No sales recorded yet. Record a sale to track revenue and profit.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-white/60 border-b border-amber-200/50 text-slate-800 uppercase tracking-wider text-[10px]">
+              <thead className="bg-zinc-50/80 border-b border-zinc-200 text-zinc-600 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-5 py-3.5 font-black">दिनांक / ID</th>
-                  <th className="px-4 py-3.5 font-black">ग्राहक (Customer)</th>
-                  <th className="px-4 py-3.5 font-black">बिका हुआ सामान</th>
-                  <th className="px-4 py-3.5 font-black text-right">कुल बिल (Total)</th>
-                  <th className="px-4 py-3.5 font-black text-right">मुनाफा (Margin)</th>
-                  <th className="px-4 py-3.5 font-black text-center">पेमेंट माध्यम</th>
-                  <th className="px-5 py-3.5 font-black text-right">रसीद व कार्रवाई</th>
+                  <th className="px-5 py-3.5 font-bold">Date / ID</th>
+                  <th className="px-4 py-3.5 font-bold">Customer</th>
+                  <th className="px-4 py-3.5 font-bold">Items Sold</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Total Amount</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Gross Profit</th>
+                  <th className="px-4 py-3.5 font-bold text-center">Payment Mode</th>
+                  <th className="px-5 py-3.5 font-bold text-right">Receipt & Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-amber-100/40">
+              <tbody className="divide-y divide-zinc-200/60">
                 {filteredSales.map((s) => (
-                  <tr key={s.id} className="hover:bg-white/50 transition-colors">
+                  <tr key={s.id} className="hover:bg-zinc-50/70 transition-colors">
                     <td className="px-5 py-3.5">
-                      <div className="font-bold text-slate-900">
+                      <div className="font-bold text-black">
                         {new Date(s.sale_date).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'
                         })}
                       </div>
-                      <div className="text-[10px] font-mono text-slate-400">
+                      <div className="text-[10px] font-mono text-zinc-400">
                         #{s.id.slice(0, 8)}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3.5 font-bold text-slate-900">
-                      {s.customer_name || 'दुकान ग्राहक (Walk-in)'}
+                    <td className="px-4 py-3.5 font-bold text-black">
+                      {s.customer_name || 'Walk-in Customer'}
                     </td>
 
-                    <td className="px-4 py-3.5 text-slate-700">
+                    <td className="px-4 py-3.5 text-zinc-700">
                       <div className="max-w-xs space-y-0.5">
                         {(s.items || []).map((it, idx) => (
                           <div key={idx} className="text-[11px] truncate">
-                            <span className="font-black text-slate-900">{it.quantity}x</span> {it.product_name}
-                            <span className="text-slate-400 font-mono ml-1">(@ ₹{it.unit_price})</span>
+                            <span className="font-bold text-black">{it.quantity}x</span> {it.product_name}
+                            <span className="text-zinc-400 font-mono ml-1">(@ ₹{it.unit_price})</span>
                           </div>
                         ))}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono font-black text-slate-900">
+                    <td className="px-4 py-3.5 text-right font-mono font-bold text-black">
                       ₹{s.total_amount.toFixed(2)}
                     </td>
 
                     <td className="px-4 py-3.5 text-right font-mono">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full font-black text-amber-950 bg-amber-100 border border-amber-300">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full font-semibold text-black bg-zinc-100 border border-zinc-200">
                         +₹{s.estimated_profit.toFixed(2)}
                       </span>
                     </td>
 
                     <td className="px-4 py-3.5 text-center">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
-                        {s.payment_method === 'UPI' ? 'UPI' : s.payment_method === 'Cash' ? 'नकद (Cash)' : 'उधारी (Khata)'}
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 text-zinc-800 border border-zinc-200">
+                        {s.payment_method}
                       </span>
                     </td>
 
@@ -324,16 +321,16 @@ export const Sales: React.FC<SalesProps> = ({
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setReceiptTarget(s)}
-                          title="पक्का बिल प्रिंट करें"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-slate-900 bg-white/90 border border-slate-200 rounded-xl hover:bg-amber-50 hover:border-amber-300 transition-all shadow-2xs cursor-pointer"
+                          title="Print cash receipt"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-black bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-all shadow-xs cursor-pointer"
                         >
-                          <Printer className="w-3.5 h-3.5 text-amber-700" />
-                          पर्चा प्रिंट
+                          <Printer className="w-3.5 h-3.5 text-zinc-600" />
+                          Receipt
                         </button>
                         <button
                           onClick={() => openEditModal(s)}
-                          title="बिक्री सुधारें"
-                          className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                          title="Edit sale"
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>

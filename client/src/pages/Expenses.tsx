@@ -140,38 +140,35 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-amber-200/50">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🧾</span>
-            <h1 className="text-xl font-black tracking-tight text-slate-900">
-              दुकान के खर्चे <span className="text-sm font-bold text-slate-600">/ Expense Management</span>
-            </h1>
-          </div>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
-            दुकान किराया, बिजली, चाय-नाश्ता, भाड़ा/पल्लेदारी और दैनिक खर्चे
+          <h1 className="text-xl font-bold tracking-tight text-black">
+            Operating Expenses
+          </h1>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            Record shop overheads: electricity, rent, freight, wages, and maintenance.
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          + नया खर्चा (Add Expense)
+          + Add Expense
         </button>
       </div>
 
       {/* 3D Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between glass-panel p-4 rounded-2xl border border-white/80 shadow-card-3d">
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
           <input
             type="text"
-            placeholder="खर्चे का विवरण या नोट खोजें..."
+            placeholder="Search by expense description or notes..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/70 border border-slate-200 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors font-medium"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-zinc-200 rounded-xl focus:outline-hidden focus:border-black focus:bg-white transition-colors"
           />
         </div>
 
@@ -179,42 +176,42 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
           <select
             value={selectedCat}
             onChange={(e) => setSelectedCat(e.target.value)}
-            className="text-xs bg-white/70 border border-slate-200 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-hidden focus:border-amber-400"
+            className="text-xs bg-white border border-zinc-200 rounded-xl px-3.5 py-2.5 font-semibold text-zinc-800 focus:outline-hidden focus:border-black"
           >
-            <option value="All">सभी खर्चे</option>
+            <option value="All">All Categories</option>
             {CATEGORIES.map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
-          <div className="text-xs font-mono font-black text-slate-900 bg-white/80 px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs">
-            कुल: ₹{totalExpenseVal.toLocaleString('en-IN')}
+          <div className="text-xs font-mono font-bold text-black bg-zinc-100 px-3.5 py-2 rounded-xl border border-zinc-200">
+            Total: ₹{totalExpenseVal.toLocaleString('en-IN')}
           </div>
         </div>
       </div>
 
       {/* 3D Glass Expenses Table */}
-      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d overflow-hidden">
+      <div className="glass-panel rounded-3xl border border-zinc-200 shadow-card-3d overflow-hidden">
         {filteredExpenses.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-400">
-            कोई खर्चा दर्ज नहीं है। नया खर्चा जोड़ने के लिए ऊपर बटन दबाएं।
+          <div className="p-12 text-center text-xs text-zinc-400">
+            No expenses recorded for this filter.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-white/60 border-b border-amber-200/50 text-slate-800 uppercase tracking-wider text-[10px]">
+              <thead className="bg-zinc-50/80 border-b border-zinc-200 text-zinc-600 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-5 py-3.5 font-black">दिनांक</th>
-                  <th className="px-4 py-3.5 font-black">खर्चे का विवरण</th>
-                  <th className="px-4 py-3.5 font-black">मद (Category)</th>
-                  <th className="px-4 py-3.5 font-black">भुगतान माध्यम</th>
-                  <th className="px-4 py-3.5 font-black text-right">रकम</th>
-                  <th className="px-5 py-3.5 font-black text-right">कार्रवाई</th>
+                  <th className="px-5 py-3.5 font-bold">Date</th>
+                  <th className="px-4 py-3.5 font-bold">Description</th>
+                  <th className="px-4 py-3.5 font-bold">Category</th>
+                  <th className="px-4 py-3.5 font-bold">Payment Mode</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Amount</th>
+                  <th className="px-5 py-3.5 font-bold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-amber-100/40">
+              <tbody className="divide-y divide-zinc-200/60">
                 {filteredExpenses.map((exp) => (
-                  <tr key={exp.id} className="hover:bg-white/50 transition-colors">
-                    <td className="px-5 py-3.5 text-slate-500 font-mono text-[11px]">
+                  <tr key={exp.id} className="hover:bg-zinc-50/70 transition-colors">
+                    <td className="px-5 py-3.5 text-zinc-500 font-mono text-[11px]">
                       {new Date(exp.date).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
@@ -222,22 +219,22 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
                       })}
                     </td>
 
-                    <td className="px-4 py-3.5 font-bold text-slate-900">
+                    <td className="px-4 py-3.5 font-bold text-black">
                       <div>{exp.description}</div>
-                      {exp.notes && <div className="text-[10px] text-slate-400 font-normal">{exp.notes}</div>}
+                      {exp.notes && <div className="text-[10px] text-zinc-400 font-normal">{exp.notes}</div>}
                     </td>
 
                     <td className="px-4 py-3.5">
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-800 border border-zinc-200">
                         {exp.category}
                       </span>
                     </td>
 
-                    <td className="px-4 py-3.5 text-slate-700">
+                    <td className="px-4 py-3.5 text-zinc-700">
                       {exp.payment_method}
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono font-black text-slate-900">
+                    <td className="px-4 py-3.5 text-right font-mono font-bold text-black">
                       ₹{exp.amount.toFixed(2)}
                     </td>
 
@@ -245,15 +242,15 @@ export const Expenses: React.FC<ExpensesProps> = ({ expenses, onRefresh, showToa
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => openEditModal(exp)}
-                          title="बदलें"
-                          className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                          title="Edit expense"
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(exp)}
-                          title="हटाएं"
-                          className="p-1.5 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                          title="Delete expense"
+                          className="p-1.5 rounded-lg text-zinc-400 hover:text-black hover:bg-zinc-100 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

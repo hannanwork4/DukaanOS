@@ -152,104 +152,101 @@ export const Suppliers: React.FC<SuppliersProps> = ({ suppliers, onRefresh, show
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-amber-200/50">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🤝</span>
-            <h1 className="text-xl font-black tracking-tight text-slate-900">
-              व्यापारी खाता <span className="text-sm font-bold text-slate-600">/ Supplier Khata</span>
-            </h1>
-          </div>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
-            कुल {suppliers.length} व्यापारी • कुल बाकी उधारी: <span className="font-black text-slate-900 font-mono">₹{totalOutstanding.toLocaleString('en-IN')}</span>
+          <h1 className="text-xl font-bold tracking-tight text-black">
+            Suppliers & Accounts Payable
+          </h1>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            {suppliers.length} active suppliers • Total outstanding balance: <span className="font-bold text-black font-mono">₹{totalOutstanding.toLocaleString('en-IN')}</span>
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          + नया सप्लायर जोड़ें (Add Supplier)
+          + Add Supplier
         </button>
       </div>
 
       {/* 3D Filter Bar */}
-      <div className="bg-white/80 glass-panel p-4 rounded-2xl border border-white/80 shadow-card-3d flex items-center justify-between gap-3">
+      <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d flex items-center justify-between gap-3">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
           <input
             type="text"
-            placeholder="व्यापारी का नाम, फर्म का नाम या फोन नंबर से खोजें..."
+            placeholder="Search by supplier name, company or phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/70 border border-slate-200 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors font-medium"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-zinc-200 rounded-xl focus:outline-hidden focus:border-black focus:bg-white transition-colors"
           />
         </div>
       </div>
 
       {/* 3D Glass Supplier Table */}
-      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d overflow-hidden">
+      <div className="glass-panel rounded-3xl border border-zinc-200 shadow-card-3d overflow-hidden">
         {filteredSuppliers.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-400">
-            कोई व्यापारी नहीं मिला। नया व्यापारी जोड़ने के लिए ऊपर बटन दबाएं।
+          <div className="p-12 text-center text-xs text-zinc-400">
+            No suppliers found. Add a supplier to begin tracking restocks and payments.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-white/60 border-b border-amber-200/50 text-slate-800 uppercase tracking-wider text-[10px]">
+              <thead className="bg-zinc-50/80 border-b border-zinc-200 text-zinc-600 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-5 py-3.5 font-black">व्यापारी / फर्म</th>
-                  <th className="px-4 py-3.5 font-black">फोन नंबर</th>
-                  <th className="px-4 py-3.5 font-black text-right">कुल खरीद</th>
-                  <th className="px-4 py-3.5 font-black text-right">चुकाया गया</th>
-                  <th className="px-4 py-3.5 font-black text-right">बाकी उधारी</th>
-                  <th className="px-4 py-3.5 font-black text-center">स्थिति</th>
-                  <th className="px-5 py-3.5 font-black text-right">कार्रवाई</th>
+                  <th className="px-5 py-3.5 font-bold">Supplier / Business</th>
+                  <th className="px-4 py-3.5 font-bold">Contact Phone</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Total Purchases</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Amount Paid</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Outstanding Balance</th>
+                  <th className="px-4 py-3.5 font-bold text-center">Status</th>
+                  <th className="px-5 py-3.5 font-bold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-amber-100/40">
+              <tbody className="divide-y divide-zinc-200/60">
                 {filteredSuppliers.map((s) => {
                   const hasDue = s.outstanding_balance > 0;
 
                   return (
-                    <tr key={s.id} className="hover:bg-white/50 transition-colors">
+                    <tr key={s.id} className="hover:bg-zinc-50/70 transition-colors">
                       <td className="px-5 py-3.5">
-                        <div className="font-bold text-slate-900">{s.name}</div>
+                        <div className="font-bold text-black">{s.name}</div>
                         {s.business_name && (
-                          <div className="text-[11px] font-semibold text-slate-600">{s.business_name}</div>
+                          <div className="text-[11px] font-medium text-zinc-500">{s.business_name}</div>
                         )}
                         {s.address && (
-                          <div className="text-[10px] text-slate-400 truncate max-w-xs">{s.address}</div>
+                          <div className="text-[10px] text-zinc-400 truncate max-w-xs">{s.address}</div>
                         )}
                       </td>
 
-                      <td className="px-4 py-3.5 text-slate-700 font-mono text-[11px]">
+                      <td className="px-4 py-3.5 text-zinc-600 font-mono text-[11px]">
                         {s.phone || '—'}
                       </td>
 
-                      <td className="px-4 py-3.5 text-right font-mono text-slate-700 font-medium">
+                      <td className="px-4 py-3.5 text-right font-mono text-zinc-700">
                         ₹{s.total_purchases.toFixed(2)}
                       </td>
 
-                      <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-700">
+                      <td className="px-4 py-3.5 text-right font-mono text-zinc-700">
                         ₹{s.amount_paid.toFixed(2)}
                       </td>
 
                       <td className="px-4 py-3.5 text-right font-mono">
-                        <span className={`font-black ${hasDue ? 'text-amber-900' : 'text-slate-400'}`}>
+                        <span className={`font-bold ${hasDue ? 'text-black underline' : 'text-zinc-400'}`}>
                           ₹{s.outstanding_balance.toFixed(2)}
                         </span>
                       </td>
 
                       <td className="px-4 py-3.5 text-center">
                         {hasDue ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-950 border border-amber-300">
-                            उधारी बाकी
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-zinc-900 text-white">
+                            Payment Due
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                            चुकता
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 text-zinc-700 border border-zinc-200">
+                            Settled
                           </span>
                         )}
                       </td>
@@ -263,22 +260,22 @@ export const Suppliers: React.FC<SuppliersProps> = ({ suppliers, onRefresh, show
                                 setPayAmount(s.outstanding_balance.toString());
                                 setPayNotes('');
                               }}
-                              className="px-3 py-1.5 text-[11px] font-black text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+                              className="px-3 py-1.5 text-[11px] font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
                             >
-                              उधारी चुकाएं (Pay)
+                              Settle Payment
                             </button>
                           )}
                           <button
                             onClick={() => openHistoryModal(s)}
-                            title="पेमेंट इतिहास"
-                            className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                            title="Payment history"
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
                           >
                             <History className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => openEditModal(s)}
-                            title="बदलें"
-                            className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                            title="Edit details"
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>

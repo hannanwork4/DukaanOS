@@ -205,123 +205,120 @@ export const Purchases: React.FC<PurchasesProps> = ({
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-amber-200/50">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🛒</span>
-            <h1 className="text-xl font-black tracking-tight text-slate-900">
-              खरीद बही <span className="text-sm font-bold text-slate-600">/ Purchase Register</span>
-            </h1>
-          </div>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
-            सप्लायर से आया हुआ माल, गोदाम स्टॉक में वृद्धि और व्यापारी उधारी का शुद्ध हिसाब
+          <h1 className="text-xl font-bold tracking-tight text-black">
+            Purchases & Restocks
+          </h1>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            Log inventory restocks from distributors, auto-increment stock, and track payable credit.
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          + नया माल आया (Record Purchase)
+          + Record Purchase
         </button>
       </div>
 
       {/* 3D Filter Bar */}
-      <div className="bg-white/80 glass-panel p-4 rounded-2xl border border-white/80 shadow-card-3d flex items-center justify-between gap-3">
+      <div className="glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d flex items-center justify-between gap-3">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
           <input
             type="text"
-            placeholder="व्यापारी (सप्लायर) या खरीदे गए सामान से खोजें..."
+            placeholder="Search by supplier or purchased item..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/70 border border-slate-200 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors font-medium"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-zinc-200 rounded-xl focus:outline-hidden focus:border-black focus:bg-white transition-colors"
           />
         </div>
       </div>
 
       {/* 3D Glass Purchases Table */}
-      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d overflow-hidden">
+      <div className="glass-panel rounded-3xl border border-zinc-200 shadow-card-3d overflow-hidden">
         {filteredPurchases.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-400">
-            कोई खरीद रिकॉर्ड नहीं मिला। गोदाम में माल जोड़ने के लिए ऊपर बटन दबाएं।
+          <div className="p-12 text-center text-xs text-zinc-400">
+            No purchase records found. Record a purchase to restock inventory.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-white/60 border-b border-amber-200/50 text-slate-800 uppercase tracking-wider text-[10px]">
+              <thead className="bg-zinc-50/80 border-b border-zinc-200 text-zinc-600 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-5 py-3.5 font-black">दिनांक / ID</th>
-                  <th className="px-4 py-3.5 font-black">व्यापारी (Supplier)</th>
-                  <th className="px-4 py-3.5 font-black">खरीदा गया सामान</th>
-                  <th className="px-4 py-3.5 font-black text-right">कुल बिल (Total)</th>
-                  <th className="px-4 py-3.5 font-black text-right">चुकाया (Paid)</th>
-                  <th className="px-4 py-3.5 font-black text-right">बाकी उधारी (Due)</th>
-                  <th className="px-4 py-3.5 font-black text-center">पेमेंट माध्यम</th>
-                  <th className="px-5 py-3.5 font-black text-right">कार्रवाई</th>
+                  <th className="px-5 py-3.5 font-bold">Date / ID</th>
+                  <th className="px-4 py-3.5 font-bold">Supplier</th>
+                  <th className="px-4 py-3.5 font-bold">Items Purchased</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Total Amount</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Amount Paid</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Outstanding Due</th>
+                  <th className="px-4 py-3.5 font-bold text-center">Payment Mode</th>
+                  <th className="px-5 py-3.5 font-bold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-amber-100/40">
+              <tbody className="divide-y divide-zinc-200/60">
                 {filteredPurchases.map((p) => (
-                  <tr key={p.id} className="hover:bg-white/50 transition-colors">
+                  <tr key={p.id} className="hover:bg-zinc-50/70 transition-colors">
                     <td className="px-5 py-3.5">
-                      <div className="font-bold text-slate-900">
+                      <div className="font-bold text-black">
                         {new Date(p.purchase_date).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'
                         })}
                       </div>
-                      <div className="text-[10px] font-mono text-slate-400">
+                      <div className="text-[10px] font-mono text-zinc-400">
                         #{p.id.slice(0, 8)}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3.5 font-bold text-slate-900">
-                      {p.supplier_name || 'होलसेल व्यापारी'}
+                    <td className="px-4 py-3.5 font-bold text-black">
+                      {p.supplier_name || 'Wholesale Supplier'}
                     </td>
 
-                    <td className="px-4 py-3.5 text-slate-700">
+                    <td className="px-4 py-3.5 text-zinc-700">
                       <div className="max-w-xs space-y-0.5">
                         {(p.items || []).map((it, idx) => (
                           <div key={idx} className="text-[11px] truncate">
-                            <span className="font-black text-slate-900">{it.quantity}x</span> {it.product_name}
-                            <span className="text-slate-400 font-mono ml-1">(@ ₹{it.unit_price})</span>
+                            <span className="font-bold text-black">{it.quantity}x</span> {it.product_name}
+                            <span className="text-zinc-400 font-mono ml-1">(@ ₹{it.unit_price})</span>
                           </div>
                         ))}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono font-black text-slate-900">
+                    <td className="px-4 py-3.5 text-right font-mono font-bold text-black">
                       ₹{p.total_amount.toFixed(2)}
                     </td>
 
-                    <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-700">
+                    <td className="px-4 py-3.5 text-right font-mono text-zinc-600">
                       ₹{p.amount_paid.toFixed(2)}
                     </td>
 
                     <td className="px-4 py-3.5 text-right font-mono">
                       {p.outstanding_amount > 0 ? (
-                        <span className="font-black text-amber-950 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
-                          ₹{p.outstanding_amount.toFixed(2)} बाकी
+                        <span className="font-bold text-black underline">
+                          ₹{p.outstanding_amount.toFixed(2)}
                         </span>
                       ) : (
-                        <span className="text-slate-500 font-bold">चुकता</span>
+                        <span className="text-zinc-400">Settled</span>
                       )}
                     </td>
 
                     <td className="px-4 py-3.5 text-center">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
-                        {p.payment_method === 'Cash' ? 'नकद (Cash)' : p.payment_method === 'UPI' ? 'UPI' : p.payment_method}
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 text-zinc-800 border border-zinc-200">
+                        {p.payment_method}
                       </span>
                     </td>
 
                     <td className="px-5 py-3.5 text-right">
                       <button
                         onClick={() => openEditModal(p)}
-                        title="खरीद सुधारें"
-                        className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                        title="Edit purchase"
+                        className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>

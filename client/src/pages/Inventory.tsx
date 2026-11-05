@@ -194,38 +194,35 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onRefresh, showT
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-amber-200/50">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">📦</span>
-            <h1 className="text-xl font-black tracking-tight text-slate-900">
-              सामान और स्टॉक <span className="text-sm font-bold text-slate-600">/ Inventory Management</span>
-            </h1>
-          </div>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
-            कुल {products.length} सामान • कुल स्टॉक लागत मूल्य: <span className="font-black text-slate-900 font-mono">₹{Math.round(totalInventoryVal).toLocaleString('en-IN')}</span>
+          <h1 className="text-xl font-bold tracking-tight text-black">
+            Inventory & Catalog
+          </h1>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            {products.length} products total • Current inventory valuation: <span className="font-bold text-black font-mono">₹{Math.round(totalInventoryVal).toLocaleString('en-IN')}</span>
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-black rounded-xl shadow-btn-3d hover:bg-zinc-800 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          + नया सामान जोड़ें (Add Product)
+          + Add Product
         </button>
       </div>
 
       {/* 3D Filter Bar */}
-      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between glass-panel p-4 rounded-2xl border border-white/80 shadow-card-3d">
+      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between glass-panel p-4 rounded-2xl border border-zinc-200 shadow-card-3d">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
           <input
             type="text"
-            placeholder="सामान का नाम या बारकोड/SKU से खोजें..."
+            placeholder="Search by product name or SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/70 border border-slate-200 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors font-medium"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white border border-zinc-200 rounded-xl focus:outline-hidden focus:border-black focus:bg-white transition-colors"
           />
         </div>
 
@@ -234,88 +231,88 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onRefresh, showT
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="text-xs bg-white/70 border border-slate-200 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-hidden focus:border-amber-400"
+            className="text-xs bg-white border border-zinc-200 rounded-xl px-3.5 py-2.5 font-semibold text-zinc-800 focus:outline-hidden focus:border-black"
           >
             {categories.map((c) => (
-              <option key={c} value={c}>कैटेगरी: {c}</option>
+              <option key={c} value={c}>Category: {c}</option>
             ))}
           </select>
 
           {/* Low Stock Toggle */}
           <button
             onClick={() => setFilterLowStockOnly(!filterLowStockOnly)}
-            className={`inline-flex items-center gap-1.5 px-4 py-2.5 text-xs rounded-xl border transition-all cursor-pointer font-bold ${
+            className={`inline-flex items-center gap-1.5 px-4 py-2.5 text-xs rounded-xl border transition-all cursor-pointer font-semibold ${
               filterLowStockOnly
-                ? 'bg-amber-100 text-amber-950 border-amber-300 shadow-2xs'
-                : 'bg-white/70 text-slate-700 border-slate-200 hover:bg-white'
+                ? 'bg-black text-white border-black shadow-xs'
+                : 'bg-white text-zinc-700 border-zinc-200 hover:bg-zinc-50'
             }`}
           >
-            <AlertTriangle className={`w-3.5 h-3.5 ${filterLowStockOnly ? 'text-amber-700' : 'text-slate-400'}`} />
-            कम स्टॉक वाले (Low Stock)
+            <AlertTriangle className={`w-3.5 h-3.5 ${filterLowStockOnly ? 'text-white' : 'text-zinc-400'}`} />
+            Low Stock Only
           </button>
         </div>
       </div>
 
       {/* 3D Glass Products Table */}
-      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d overflow-hidden">
+      <div className="glass-panel rounded-3xl border border-zinc-200 shadow-card-3d overflow-hidden">
         {filteredProducts.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-400">
-            कोई सामान नहीं मिला। नया सामान जोड़ने के लिए ऊपर बटन दबाएं।
+          <div className="p-12 text-center text-xs text-zinc-400">
+            No products match the selected filters.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-white/60 border-b border-amber-200/50 text-slate-800 uppercase tracking-wider text-[10px]">
+              <thead className="bg-zinc-50/80 border-b border-zinc-200 text-zinc-600 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-5 py-3.5 font-black">सामान का नाम</th>
-                  <th className="px-4 py-3.5 font-black">कैटेगरी</th>
-                  <th className="px-4 py-3.5 font-black text-right">खरीद भाव (Cost)</th>
-                  <th className="px-4 py-3.5 font-black text-right">बिक्री भाव (MRP)</th>
-                  <th className="px-4 py-3.5 font-black text-right">मौजूदा स्टॉक</th>
-                  <th className="px-4 py-3.5 font-black text-right">कुल माल मूल्य</th>
-                  <th className="px-4 py-3.5 font-black text-center">स्थिति</th>
-                  <th className="px-5 py-3.5 font-black text-right">कार्रवाई</th>
+                  <th className="px-5 py-3.5 font-bold">Product Name</th>
+                  <th className="px-4 py-3.5 font-bold">Category</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Cost Price</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Selling Price</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Current Stock</th>
+                  <th className="px-4 py-3.5 font-bold text-right">Stock Value</th>
+                  <th className="px-4 py-3.5 font-bold text-center">Status</th>
+                  <th className="px-5 py-3.5 font-bold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-amber-100/40">
+              <tbody className="divide-y divide-zinc-200/60">
                 {filteredProducts.map((p) => {
                   const isLow = p.current_stock <= p.min_stock_threshold;
                   const stockValue = p.current_stock * p.purchase_price;
 
                   return (
-                    <tr key={p.id} className="hover:bg-white/50 transition-colors">
+                    <tr key={p.id} className="hover:bg-zinc-50/70 transition-colors">
                       <td className="px-5 py-3.5">
-                        <div className="font-bold text-slate-900">{p.name}</div>
-                        {p.sku && <div className="text-[10px] font-mono text-slate-400">{p.sku}</div>}
+                        <div className="font-bold text-black">{p.name}</div>
+                        {p.sku && <div className="text-[10px] font-mono text-zinc-400">{p.sku}</div>}
                       </td>
-                      <td className="px-4 py-3.5 text-slate-700">
-                        <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 font-semibold text-[11px] border border-slate-200">
+                      <td className="px-4 py-3.5 text-zinc-600">
+                        <span className="px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 font-medium text-[11px] border border-zinc-200">
                           {p.category}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-right font-mono text-slate-600 font-medium">
+                      <td className="px-4 py-3.5 text-right font-mono text-zinc-500">
                         ₹{p.purchase_price.toFixed(2)}
                       </td>
-                      <td className="px-4 py-3.5 text-right font-mono font-black text-slate-900">
+                      <td className="px-4 py-3.5 text-right font-mono font-bold text-black">
                         ₹{p.selling_price.toFixed(2)}
                       </td>
                       <td className="px-4 py-3.5 text-right font-mono">
-                        <span className={`font-black ${isLow ? 'text-amber-800' : 'text-slate-900'}`}>
+                        <span className={`font-bold ${isLow ? 'text-black underline' : 'text-black'}`}>
                           {p.current_stock}
                         </span>
-                        <span className="text-[10px] text-slate-500 ml-1">{p.unit}</span>
+                        <span className="text-[10px] text-zinc-400 ml-1">{p.unit}</span>
                       </td>
-                      <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-800">
+                      <td className="px-4 py-3.5 text-right font-mono font-semibold text-zinc-800">
                         ₹{stockValue.toFixed(2)}
                       </td>
                       <td className="px-4 py-3.5 text-center">
                         {isLow ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-950 border border-amber-300">
-                            कम स्टॉक ({p.min_stock_threshold})
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-zinc-900 text-white">
+                            Low (min {p.min_stock_threshold})
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
-                            उपलब्ध
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-100 text-zinc-800 border border-zinc-200">
+                            In Stock
                           </span>
                         )}
                       </td>
@@ -327,29 +324,29 @@ export const Inventory: React.FC<InventoryProps> = ({ products, onRefresh, showT
                               setNewStockVal(p.current_stock.toString());
                               setAdjustReason('');
                             }}
-                            title="स्टॉक गिनती सुधारें"
-                            className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                            title="Adjust physical stock"
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
                           >
                             <SlidersHorizontal className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => openMovementsDrawer(p)}
-                            title="इतिहास देखें"
-                            className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                            title="Movement history"
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
                           >
                             <History className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => openEditModal(p)}
-                            title="बदलें"
-                            className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                            title="Edit product"
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-black hover:bg-zinc-100 transition-colors"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setDeleteProductTarget(p)}
-                            title="हटाएं"
-                            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                            title="Archive product"
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-black hover:bg-zinc-100 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

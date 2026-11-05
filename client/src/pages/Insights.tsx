@@ -3,11 +3,7 @@ import {
   BarChart3,
   AlertTriangle,
   TrendingUp,
-  Boxes,
-  Truck,
-  Receipt,
-  ShieldCheck,
-  ChevronRight
+  ShieldCheck
 } from 'lucide-react';
 import { BusinessInsight } from '../types';
 
@@ -21,31 +17,28 @@ export const Insights: React.FC<InsightsProps> = ({ insights, onNavigate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="pb-3 border-b border-amber-200/50">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">📊</span>
-          <h1 className="text-xl font-black tracking-tight text-slate-900">
-            दुकान विश्लेषण <span className="text-sm font-bold text-slate-600">/ Store Analytics</span>
-          </h1>
-        </div>
-        <p className="text-xs text-slate-600 mt-1 font-medium">
-          दुकान के वास्तविक लेजर और स्टॉक डेटा पर आधारित 100% सटीक विश्लेषण
+      <div className="pb-3 border-b border-zinc-200/80">
+        <h1 className="text-xl font-bold tracking-tight text-black">
+          Deterministic Store Intelligence
+        </h1>
+        <p className="text-xs text-zinc-500 mt-0.5">
+          Calculated strictly from actual recorded stock, sales, expenses, and supplier transactions.
         </p>
       </div>
 
       {/* 3D Glass Banner */}
-      <div className="p-4 glass-panel rounded-2xl border border-white/80 shadow-card-3d text-xs text-slate-700 flex items-start gap-3">
-        <ShieldCheck className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+      <div className="p-4 glass-panel rounded-2xl border border-zinc-200 shadow-card-3d text-xs text-zinc-600 flex items-start gap-3">
+        <ShieldCheck className="w-5 h-5 text-black shrink-0 mt-0.5" />
         <div>
-          <span className="font-black text-slate-900">100% शुद्ध गणितीय हिसाब: </span>
-          नीचे दिए गए सभी आंकड़े और सुझाव दुकान की असली खरीद, बिक्री, खर्चे और स्टॉक के आधार पर गिने गए हैं — बिना किसी अंदाज़े के।
+          <span className="font-bold text-black">100% Deterministic Arithmetic: </span>
+          All metrics and recommendations shown below are evaluated directly against your ledger entries and inventory thresholds without external AI model speculation.
         </div>
       </div>
 
       {/* Insights Grid */}
       {insights.length === 0 ? (
-        <div className="p-12 text-center text-xs text-slate-400 glass-panel rounded-3xl border border-white/80 shadow-card-3d">
-          अभी तक कोई इनसाइट नहीं बनी है। दुकान में खरीद और बिक्री दर्ज करें।
+        <div className="p-12 text-center text-xs text-zinc-400 glass-panel rounded-3xl border border-zinc-200 shadow-card-3d">
+          No insights generated yet. Record inventory restocks and sales to generate analytics.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -57,44 +50,36 @@ export const Insights: React.FC<InsightsProps> = ({ insights, onNavigate }) => {
             return (
               <div
                 key={ins.id}
-                className={`p-5 rounded-3xl border shadow-card-3d hover:shadow-card-3d-hover hover:-translate-y-0.5 transition-all flex flex-col justify-between ${
-                  isAlert || isWarning
-                    ? 'border-amber-300 bg-amber-50/70'
-                    : 'glass-panel border-white/80'
-                }`}
+                className="glass-panel p-5 rounded-3xl border border-zinc-200 shadow-card-3d hover:shadow-card-3d-hover hover:-translate-y-0.5 transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2.5">
-                      <div className={`p-2 rounded-2xl shadow-2xs ${
-                        isAlert || isWarning
-                          ? 'bg-amber-200 text-amber-950 font-black'
-                          : 'bg-slate-100 text-slate-900 font-bold'
-                      }`}>
-                        {isAlert && <AlertTriangle className="w-4 h-4" />}
-                        {isWarning && <AlertTriangle className="w-4 h-4" />}
-                        {isPositive && <TrendingUp className="w-4 h-4" />}
-                        {!isAlert && !isWarning && !isPositive && <BarChart3 className="w-4 h-4" />}
+                      <div className="p-2 rounded-xl bg-zinc-100 text-black">
+                        {isAlert && <AlertTriangle className="w-4 h-4 text-black" />}
+                        {isWarning && <AlertTriangle className="w-4 h-4 text-black" />}
+                        {isPositive && <TrendingUp className="w-4 h-4 text-black" />}
+                        {!isAlert && !isWarning && !isPositive && <BarChart3 className="w-4 h-4 text-black" />}
                       </div>
-                      <h3 className="font-black text-xs text-slate-900">{ins.title}</h3>
+                      <h3 className="font-bold text-xs text-black">{ins.title}</h3>
                     </div>
 
                     {ins.metric && (
-                      <span className="font-mono text-xs font-black text-slate-900 bg-white/90 px-3 py-1 rounded-xl border border-slate-200 shadow-2xs">
+                      <span className="font-mono text-xs font-bold text-black bg-zinc-100 px-3 py-1 rounded-xl border border-zinc-200">
                         {ins.metric}
                       </span>
                     )}
                   </div>
 
-                  <p className="mt-3 text-xs text-slate-700 leading-relaxed font-medium">
+                  <p className="mt-3 text-xs text-zinc-600 leading-relaxed font-normal">
                     {ins.message}
                   </p>
                 </div>
 
                 {ins.action_suggested && (
-                  <div className="mt-4 pt-3 border-t border-amber-200/40 flex items-center justify-between text-[11px]">
-                    <span className="text-slate-500 font-bold">सुझाव:</span>
-                    <span className="text-slate-900 font-black">{ins.action_suggested}</span>
+                  <div className="mt-4 pt-3 border-t border-zinc-200/80 flex items-center justify-between text-[11px]">
+                    <span className="text-zinc-500 font-medium">Recommendation:</span>
+                    <span className="text-black font-semibold">{ins.action_suggested}</span>
                   </div>
                 )}
               </div>
