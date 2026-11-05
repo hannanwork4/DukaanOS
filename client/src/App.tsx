@@ -13,6 +13,7 @@ import { Profile } from './pages/Profile';
 import { TermsAndConditions } from './pages/TermsAndConditions';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { AuthModal } from './components/AuthModal';
+import { ConfirmDialog } from './components/ConfirmDialog';
 import { ToastContainer, ToastMessage } from './components/Toast';
 import { api, setActiveBusinessId } from './api/client';
 import {
@@ -105,6 +106,7 @@ export function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   // Toast System
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -167,7 +169,7 @@ export function App() {
     }
   }, [showToast]);
 
-  const handleLogout = useCallback(() => {
+  const executeLogout = useCallback(() => {
     localStorage.removeItem('dukaanos_token');
     localStorage.removeItem('dukaanos_business_id');
     setAuthToken(null);
@@ -183,6 +185,10 @@ export function App() {
     setActiveTab('overview');
     showToast('info', 'Logged out of store. Sign in required to access DukaanOS.');
   }, [showToast]);
+
+  const handleLogout = useCallback(() => {
+    setIsLogoutConfirmOpen(true);
+  }, []);
 
   // Initial Authentication Verification
   useEffect(() => {
@@ -396,6 +402,18 @@ export function App() {
           handleTabChange(doc);
           setIsAuthOpen(false);
         }}
+      />
+
+      {/* Logout Confirmation Dialog (Yes/No) */}
+      <ConfirmDialog
+        isOpen={isLogoutConfirmOpen}
+        onClose={() => setIsLogoutConfirmOpen(false)}
+        onConfirm={executeLogout}
+        title="Confirm Logout"
+        message="Do you want to log out?"
+        confirmText="Yes"
+        cancelText="No"
+        isDestructive={true}
       />
 
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
