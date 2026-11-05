@@ -188,8 +188,9 @@ export class LocalStore implements IDatabase {
     this.data.otps = this.data.otps.filter(o => o.email !== normalized && o.expires_at > Date.now());
     this.data.otps.push({
       email: normalized,
-      otp,
-      expires_at: Date.now() + ttlMs
+      otp: otp.trim(),
+      expires_at: Date.now() + ttlMs,
+      verified: false
     });
     this.saveData();
   }
@@ -197,14 +198,16 @@ export class LocalStore implements IDatabase {
   async verifyOtp(email: string, otp: string): Promise<boolean> {
     if (!this.data.otps) return false;
     const normalized = email.toLowerCase().trim();
-    const record = this.data.otps.find(o => o.email === normalized && o.otp === otp.trim());
+    const cleanOtp = otp.trim();
+    const record = this.data.otps.find(o => o.email === normalized && o.otp === cleanOtp);
     if (!record) return false;
     if (record.expires_at < Date.now()) {
       this.data.otps = this.data.otps.filter(o => o !== record);
       this.saveData();
       return false;
     }
-    this.data.otps = this.data.otps.filter(o => o !== record);
+    // Mark record as verified so subsequent retries or completion requests remain valid
+    record.verified = true;
     this.saveData();
     return true;
   }

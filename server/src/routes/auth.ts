@@ -108,8 +108,8 @@ router.post('/signup', async (req: Request, res: Response) => {
       });
     }
 
-    // 1. Create fresh Business entity
-    const businessId = `b-${Date.now()}`;
+    // 1. Create fresh Business entity with valid RFC4122 UUID
+    const businessId = crypto.randomUUID();
     const newBusiness: Business = {
       id: businessId,
       name: store_name.trim(),
@@ -122,8 +122,8 @@ router.post('/signup', async (req: Request, res: Response) => {
     };
     await db.createBusiness(newBusiness);
 
-    // 2. Create User entity
-    const userId = `u-${Date.now()}`;
+    // 2. Create User entity with valid RFC4122 UUID
+    const userId = crypto.randomUUID();
     const newUser: User = {
       id: userId,
       email: cleanEmail,
@@ -136,6 +136,9 @@ router.post('/signup', async (req: Request, res: Response) => {
       updated_at: new Date().toISOString()
     };
     await db.createUser(newUser);
+
+    // 3. Seed initial Kirana catalog for store
+    await db.seedInitialData(businessId);
 
     const token = generateToken(newUser);
 
@@ -155,7 +158,15 @@ router.post('/signup', async (req: Request, res: Response) => {
       }
     });
   } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message });
+    const rawMsg = err?.message || '';
+    console.error('[Signup Error]', rawMsg);
+    let userMsg = 'Registration failed. Please check your information and try again.';
+    if (rawMsg.includes('already exists')) {
+      userMsg = 'An account with this email already exists. Please log in instead.';
+    } else if (!rawMsg.toLowerCase().includes('supabase') && !rawMsg.includes('syntax') && !rawMsg.includes('uuid') && !rawMsg.includes('table')) {
+      userMsg = rawMsg;
+    }
+    res.status(500).json({ success: false, error: userMsg });
   }
 });
 

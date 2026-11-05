@@ -187,6 +187,7 @@ export interface OtpRecord {
   email: string;
   otp: string;
   expires_at: number;
+  verified?: boolean;
 }
 
 

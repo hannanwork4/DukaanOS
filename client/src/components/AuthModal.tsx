@@ -221,7 +221,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         onSuccess(res.user, res.business);
         onClose();
       } catch (err: any) {
-        setErrorMessage(err.message || 'Verification or signup failed. Please try again.');
+        let msg = err.message || 'Verification or signup failed. Please try again.';
+        if (msg.toLowerCase().includes('supabase') || msg.toLowerCase().includes('syntax') || msg.toLowerCase().includes('uuid')) {
+          msg = 'Unable to complete registration. Please check your details and try again.';
+        }
+        setErrorMessage(msg);
       } finally {
         setIsLoading(false);
       }

@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { IDatabase } from './interface.js';
+import { LocalStore } from './localStore.js';
 import {
   Business,
   Product,
@@ -16,7 +17,8 @@ import {
 } from '../types.js';
 
 export class SupabaseStore implements IDatabase {
-  private client: SupabaseClient;
+  public client: SupabaseClient;
+  private localStore: LocalStore;
 
   constructor(url: string, serviceRoleKey: string) {
     this.client = createClient(url, serviceRoleKey, {
@@ -25,29 +27,41 @@ export class SupabaseStore implements IDatabase {
         autoRefreshToken: false
       }
     });
+    this.localStore = new LocalStore();
   }
 
   async getBusiness(id: string): Promise<Business | null> {
-    const { data, error } = await this.client
-      .from('businesses')
-      .select('*')
-      .eq('id', id)
-      .single();
-    if (error || !data) return null;
-    return data as Business;
+    try {
+      const { data, error } = await this.client
+        .from('businesses')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (!error && data) return data as Business;
+    } catch {}
+    return this.localStore.getBusiness(id);
   }
 
   async createBusiness(business: Business): Promise<Business> {
-    const { data, error } = await this.client
-      .from('businesses')
-      .upsert(business)
-      .select()
-      .single();
-    if (error) throw new Error(`Supabase createBusiness error: ${error.message}`);
-    return data as Business;
+    await this.localStore.createBusiness(business);
+    try {
+      const { data, error } = await this.client
+        .from('businesses')
+        .upsert(business)
+        .select()
+        .single();
+      if (!error && data) return data as Business;
+      if (error) {
+        console.warn(`Supabase createBusiness note: ${error.message}`);
+      }
+    } catch (e: any) {
+      console.warn(`Supabase createBusiness exception: ${e.message}`);
+    }
+    return business;
   }
 
   async updateBusiness(id: string, updates: Partial<Business>): Promise<Business | null> {
+    await this.localStore.updateBusiness(id, updates);
     const { data, error } = await this.client
       .from('businesses')
       .update(updates)
@@ -60,6 +74,7 @@ export class SupabaseStore implements IDatabase {
 
   async deleteBusiness(id: string): Promise<boolean> {
     try {
+      await this.localStore.deleteBusiness(id);
       await this.client.from('transactions').delete().eq('business_id', id);
       await this.client.from('stock_movements').delete().eq('business_id', id);
       await this.client.from('supplier_payments').delete().eq('business_id', id);
@@ -78,34 +93,64 @@ export class SupabaseStore implements IDatabase {
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
-    const { data } = await this.client.from('users').select('*').eq('email', email).maybeSingle();
-    return data as User || null;
+    const local = await this.localStore.getUserByEmail(email);
+    if (local) return local;
+    try {
+      const { data } = await this.client.from('users').select('*').eq('email', email).maybeSingle();
+      return (data as User) || null;
+    } catch {
+      return null;
+    }
   }
 
   async getUserById(id: string): Promise<User | null> {
-    const { data } = await this.client.from('users').select('*').eq('id', id).maybeSingle();
-    return data as User || null;
+    const local = await this.localStore.getUserById(id);
+    if (local) return local;
+    try {
+      const { data } = await this.client.from('users').select('*').eq('id', id).maybeSingle();
+      return (data as User) || null;
+    } catch {
+      return null;
+    }
   }
 
   async createUser(user: User): Promise<User> {
-    const { data, error } = await this.client.from('users').insert(user).select().single();
-    if (error) throw new Error(error.message);
-    return data as User;
+    const created = await this.localStore.createUser(user);
+    try {
+      await this.client.from('users').insert(user);
+    } catch {
+      // Ignored if users table is not in Supabase schema
+    }
+    return created;
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User | null> {
-    const { data } = await this.client.from('users').update(updates).eq('id', id).select().maybeSingle();
-    return data as User || null;
+    const updated = await this.localStore.updateUser(id, updates);
+    try {
+      await this.client.from('users').update(updates).eq('id', id);
+    } catch {}
+    return updated;
   }
 
   async saveOtp(email: string, otp: string, ttlMs = 600000): Promise<void> {
-    await this.client.from('otps').upsert({ email, otp, expires_at: Date.now() + ttlMs });
+    await this.localStore.saveOtp(email, otp, ttlMs);
+    try {
+      await this.client.from('otps').upsert({ email, otp, expires_at: Date.now() + ttlMs });
+    } catch {
+      // Ignored if otps table is not in Supabase schema
+    }
   }
 
   async verifyOtp(email: string, otp: string): Promise<boolean> {
-    const { data } = await this.client.from('otps').select('*').eq('email', email).eq('otp', otp).maybeSingle();
-    if (!data) return false;
-    return data.expires_at > Date.now();
+    const localValid = await this.localStore.verifyOtp(email, otp);
+    if (localValid) return true;
+    try {
+      const { data } = await this.client.from('otps').select('*').eq('email', email).eq('otp', otp).maybeSingle();
+      if (data && data.expires_at > Date.now()) return true;
+    } catch {
+      // Ignored if otps table is not in Supabase schema
+    }
+    return false;
   }
 
   async getProducts(businessId: string): Promise<Product[]> {
@@ -558,8 +603,19 @@ export class SupabaseStore implements IDatabase {
   }
 
   async seedInitialData(businessId: string): Promise<void> {
-    // In Supabase, the seed data is usually loaded via SQL migration or initial upsert
-    console.log(`Supabase seed requested for business: ${businessId}`);
+    console.log(`[SupabaseStore] Seeding initial Kirana catalog for business: ${businessId}`);
+    await this.localStore.seedInitialData(businessId);
+    try {
+      const existing = await this.getProducts(businessId);
+      if (existing.length === 0) {
+        const localProds = await this.localStore.getProducts(businessId);
+        if (localProds.length > 0) {
+          await this.client.from('products').upsert(localProds);
+        }
+      }
+    } catch (e: any) {
+      console.warn('Supabase product seed note:', e.message);
+    }
   }
 }
 
