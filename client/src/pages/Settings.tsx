@@ -78,10 +78,10 @@ export const Settings: React.FC<SettingsProps> = ({
     setIsResetting(true);
     try {
       await api.seedDemoData();
-      showToast('success', 'Demo Kirana store data successfully seeded.');
+      showToast('success', 'Sample Kirana store catalog restored successfully.');
       onRefresh();
     } catch (err: any) {
-      showToast('error', err.message || 'Failed to seed demo data');
+      showToast('error', err.message || 'Failed to restore sample store data');
     } finally {
       setIsResetting(false);
     }
@@ -305,14 +305,14 @@ export const Settings: React.FC<SettingsProps> = ({
         </div>
       </div>
 
-      {/* Reset Demo Data Confirm Dialog */}
+      {/* Restore Sample Data Confirm Dialog */}
       <ConfirmDialog
         isOpen={isResetConfirmOpen}
-        title={t('confirmResetTitle')}
-        message={t('confirmResetMsg')}
-        confirmText={t('resetBtn')}
-        cancelText={t('cancelBtn')}
-        isDestructive={true}
+        title={t('confirmResetTitle') || 'Restore Sample Catalog'}
+        message={t('confirmResetMsg') || 'Are you sure you want to restore the sample Kirana store catalog and records?'}
+        confirmText={t('resetBtn') || 'Restore Sample Catalog'}
+        cancelText={t('cancelBtn') || 'Cancel'}
+        isDestructive={false}
         onConfirm={handleSeedData}
         onClose={() => setIsResetConfirmOpen(false)}
       />

@@ -2,13 +2,13 @@
   "businesses": [
     {
       "id": "b0000000-0000-0000-0000-000000000001",
-      "name": "Hannan General Store",
-      "owner_name": "Hannan",
-      "phone": "8143813994",
+      "name": "Sharma General Store",
+      "owner_name": "Rajesh Sharma",
+      "phone": "+91 98765 43210",
       "address": "Shop No. 4, Main Market, Lajpat Nagar, New Delhi",
       "currency": "INR",
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-05T22:08:53.749Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-05T22:22:16.441Z"
     }
   ],
   "products": [
@@ -24,8 +24,8 @@
       "purchase_price": 115,
       "selling_price": 135,
       "is_archived": false,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000002",
@@ -39,8 +39,8 @@
       "purchase_price": 215,
       "selling_price": 250,
       "is_archived": false,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000003",
@@ -54,8 +54,8 @@
       "purchase_price": 22,
       "selling_price": 28,
       "is_archived": false,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000004",
@@ -69,8 +69,8 @@
       "purchase_price": 42,
       "selling_price": 48,
       "is_archived": false,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000005",
@@ -84,8 +84,8 @@
       "purchase_price": 140,
       "selling_price": 165,
       "is_archived": false,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000006",
@@ -99,8 +99,8 @@
       "purchase_price": 8.5,
       "selling_price": 10,
       "is_archived": false,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "p0000000-0000-0000-0000-000000000007",
@@ -114,8 +114,8 @@
       "purchase_price": 62,
       "selling_price": 72,
       "is_archived": false,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     }
   ],
   "suppliers": [
@@ -129,8 +129,8 @@
       "total_purchases": 18500,
       "amount_paid": 14500,
       "outstanding_balance": 4000,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "s0000000-0000-0000-0000-000000000002",
@@ -142,8 +142,8 @@
       "total_purchases": 24000,
       "amount_paid": 24000,
       "outstanding_balance": 0,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "s0000000-0000-0000-0000-000000000003",
@@ -155,8 +155,8 @@
       "total_purchases": 12500,
       "amount_paid": 10000,
       "outstanding_balance": 2500,
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     }
   ],
   "purchases": [],
@@ -170,11 +170,11 @@
       "description": "Shop Electricity Bill October",
       "category": "Electricity",
       "amount": 2450,
-      "date": "2026-11-03T21:46:04.752Z",
+      "date": "2026-11-03T22:22:16.441Z",
       "payment_method": "UPI",
       "notes": "Paid via BSES online portal",
-      "created_at": "2026-11-03T21:46:04.752Z",
-      "updated_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z",
+      "updated_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "e0000000-0000-0000-0000-000000000002",
@@ -182,11 +182,11 @@
       "description": "Tempo Transport charges for grain sacks",
       "category": "Transport",
       "amount": 600,
-      "date": "2026-11-04T21:46:04.752Z",
+      "date": "2026-11-04T22:22:16.441Z",
       "payment_method": "Cash",
       "notes": "Local tempo freight from mandi",
-      "created_at": "2026-11-04T21:46:04.752Z",
-      "updated_at": "2026-11-04T21:46:04.752Z"
+      "created_at": "2026-11-04T22:22:16.441Z",
+      "updated_at": "2026-11-04T22:22:16.441Z"
     }
   ],
   "supplier_payments": [],
@@ -197,22 +197,22 @@
       "business_id": "b0000000-0000-0000-0000-000000000001",
       "type": "expense",
       "amount": 2450,
-      "date": "2026-11-03T21:46:04.752Z",
+      "date": "2026-11-03T22:22:16.441Z",
       "description": "Shop Electricity Bill October (Electricity)",
       "payment_method": "UPI",
       "status": "completed",
-      "created_at": "2026-11-03T21:46:04.752Z"
+      "created_at": "2026-11-03T22:22:16.441Z"
     },
     {
       "id": "t0000000-0000-0000-0000-000000000002",
       "business_id": "b0000000-0000-0000-0000-000000000001",
       "type": "expense",
       "amount": 600,
-      "date": "2026-11-04T21:46:04.752Z",
+      "date": "2026-11-04T22:22:16.441Z",
       "description": "Tempo Transport charges for grain sacks (Transport)",
       "payment_method": "Cash",
       "status": "completed",
-      "created_at": "2026-11-04T21:46:04.752Z"
+      "created_at": "2026-11-04T22:22:16.441Z"
     }
   ],
   "otps": [
