@@ -89,77 +89,77 @@ export const Settings: React.FC<SettingsProps> = ({ business, onRefresh, showToa
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
-      <div className="pb-3 border-b border-amber-200/70">
+      <div className="pb-3 border-b border-amber-200/50">
         <div className="flex items-center gap-2">
           <span className="text-xl">⚙️</span>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">
-            सेटिंग्स व Claude MCP कॉन्फ़िगरेशन <span className="text-sm font-normal text-amber-800">/ Settings</span>
+          <h1 className="text-xl font-black tracking-tight text-slate-900">
+            दुकान सेटिंग्स व MCP कनेक्टिविटी <span className="text-sm font-bold text-slate-600">/ Settings</span>
           </h1>
         </div>
-        <p className="text-xs text-amber-900/70 mt-0.5">
-          Claude AI वॉइस व फोटो इंटीग्रेशन, दुकान विवरण और डेमो डेटा
+        <p className="text-xs text-slate-600 mt-1 font-medium">
+          दुकान प्रोफ़ाइल, रिमोट MCP एकीकरण एवं डेमो डेटा प्रबंधन
         </p>
       </div>
 
       {/* Shop Profile Card */}
-      <div className="bg-white rounded-2xl border border-amber-200/80 shadow-warm p-5 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-amber-100">
+      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d p-6 space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-amber-200/40">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">दुकान प्रोफाइल (Store Profile)</h2>
-            <p className="text-xs text-amber-900/70">कैश मेमो व इनवॉइस पर छपने वाला विवरण</p>
+            <h2 className="text-sm font-black text-slate-900">दुकान प्रोफ़ाइल (Store Profile)</h2>
+            <p className="text-xs text-slate-600">कैश मेमो व इनवॉइस पर छपने वाला विवरण</p>
           </div>
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-200">
+          <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-slate-100 text-slate-800 border border-slate-200">
             ID: {business?.id.slice(0, 13)}...
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div>
-            <span className="text-slate-500 block">दुकान का नाम (Store Name):</span>
-            <span className="font-bold text-slate-900 text-sm">{business?.name}</span>
+            <span className="text-slate-500 font-semibold block">दुकान का नाम:</span>
+            <span className="font-black text-slate-900 text-sm">{business?.name}</span>
           </div>
           <div>
-            <span className="text-slate-500 block">दुकानदार / मालिक (Proprietor):</span>
-            <span className="font-bold text-slate-900 text-sm">{business?.owner_name || 'Rajesh Sharma'}</span>
+            <span className="text-slate-500 font-semibold block">दुकानदार / मालिक:</span>
+            <span className="font-black text-slate-900 text-sm">{business?.owner_name || 'Rajesh Sharma'}</span>
           </div>
           <div>
-            <span className="text-slate-500 block">संपर्क नंबर (Phone):</span>
+            <span className="text-slate-500 font-semibold block">संपर्क नंबर:</span>
             <span className="font-bold text-slate-900 font-mono">{business?.phone || '+91 98765 43210'}</span>
           </div>
           <div>
-            <span className="text-slate-500 block">दुकान का पता (Address):</span>
+            <span className="text-slate-500 font-semibold block">दुकान का पता:</span>
             <span className="font-bold text-slate-900">{business?.address || 'Shop No. 4, Main Market, Lajpat Nagar'}</span>
           </div>
         </div>
       </div>
 
-      {/* Claude MCP Integration Guide */}
-      <div className="bg-white rounded-2xl border border-amber-200/80 shadow-warm p-5 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-amber-100">
-          <div className="flex items-center gap-2">
-            <Cpu className="w-5 h-5 text-emerald-600" />
+      {/* MCP Integration Guide */}
+      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d p-6 space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-amber-200/40">
+          <div className="flex items-center gap-2.5">
+            <Server className="w-5 h-5 text-amber-700" />
             <div>
-              <h2 className="text-sm font-bold text-slate-900">Claude AI MCP कनेक्टिविटी</h2>
-              <p className="text-xs text-amber-900/70">बोलकर या बिल फोटो खींचकर दुकान चलाने के लिए Claude को जोड़ें</p>
+              <h2 className="text-sm font-black text-slate-900">MCP सर्वर कनेक्टिविटी</h2>
+              <p className="text-xs text-slate-600">बाहरी वॉइस व फोटो एजेंट को जोड़ने के लिए MCP लिंक</p>
             </div>
           </div>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-            Port 4001 • Ready ✓
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black bg-slate-100 text-slate-800 border border-slate-200">
+            Port 4001 • Ready
           </span>
         </div>
 
         {/* Remote SSE Connection */}
         <div className="space-y-2">
-          <div className="text-xs font-bold text-slate-900">रिमोट MCP SSE URL:</div>
+          <div className="text-xs font-black text-slate-900">रिमोट MCP SSE URL:</div>
           <div className="flex items-center gap-2">
-            <code className="flex-1 bg-amber-50/50 border border-amber-200 px-3 py-2 rounded-xl text-xs font-mono text-amber-950 select-all font-semibold">
+            <code className="flex-1 bg-white/80 border border-slate-200 px-3.5 py-2.5 rounded-xl text-xs font-mono text-slate-900 select-all font-bold">
               {mcpUrl}
             </code>
             <button
               onClick={copyMcpUrl}
-              className="inline-flex items-center gap-1 px-3.5 py-2 text-xs font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl transition-colors border border-amber-300"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-black bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition-all shadow-btn-3d-dark cursor-pointer"
             >
-              {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedUrl ? <Check className="w-3.5 h-3.5 text-amber-400" /> : <Copy className="w-3.5 h-3.5" />}
               {copiedUrl ? 'कॉपी हुआ' : 'Copy URL'}
             </button>
           </div>
@@ -168,28 +168,28 @@ export const Settings: React.FC<SettingsProps> = ({ business, onRefresh, showToa
         {/* Claude Desktop Config JSON */}
         <div className="space-y-2 pt-2">
           <div className="flex items-center justify-between">
-            <div className="text-xs font-bold text-slate-900">Claude Desktop Config (claude_desktop_config.json):</div>
+            <div className="text-xs font-black text-slate-900">Claude Desktop Config (claude_desktop_config.json):</div>
             <button
               onClick={copyConfig}
-              className="inline-flex items-center gap-1 text-xs text-orange-700 hover:text-orange-900 font-bold"
+              className="inline-flex items-center gap-1 text-xs text-slate-900 hover:text-amber-800 font-black cursor-pointer"
             >
-              {copiedConfig ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              {copiedConfig ? 'क्लिपबोर्ड पर कॉपी हुआ!' : 'Copy JSON'}
+              {copiedConfig ? <Check className="w-3.5 h-3.5 text-amber-600" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedConfig ? 'कॉपी हुआ!' : 'Copy JSON'}
             </button>
           </div>
-          <pre className="bg-slate-900 text-amber-100 p-4 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed border border-amber-900/40">
+          <pre className="bg-slate-950 text-amber-200/90 p-4 rounded-2xl text-[11px] font-mono overflow-x-auto leading-relaxed border border-slate-800 shadow-inner">
             {JSON.stringify(claudeDesktopConfig, null, 2)}
           </pre>
         </div>
 
         {/* Registered Tools List */}
-        <div className="pt-3 border-t border-amber-100">
-          <div className="text-xs font-bold text-slate-900 mb-2">रजिस्टर्ड MCP टूल्स (18 Tools Active):</div>
+        <div className="pt-3 border-t border-amber-200/40">
+          <div className="text-xs font-black text-slate-900 mb-2">रजिस्टर्ड MCP टूल्स (18 Tools Active):</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
             {mcpToolsList.map((t) => (
-              <div key={t.name} className="p-2.5 bg-amber-50/40 border border-amber-200/70 rounded-xl text-xs">
-                <span className="font-mono font-bold text-amber-950">{t.name}</span>
-                <p className="text-[10px] text-amber-900/80 mt-0.5">{t.desc}</p>
+              <div key={t.name} className="p-3 bg-white/70 border border-slate-200 rounded-xl text-xs">
+                <span className="font-mono font-black text-slate-900">{t.name}</span>
+                <p className="text-[10px] text-slate-600 mt-0.5">{t.desc}</p>
               </div>
             ))}
           </div>
@@ -197,18 +197,18 @@ export const Settings: React.FC<SettingsProps> = ({ business, onRefresh, showToa
       </div>
 
       {/* Demo Reset Card */}
-      <div className="bg-white rounded-2xl border border-amber-200/80 shadow-warm p-5 space-y-3">
+      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d p-6 space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">डेमो किराना डेटा (Sample Store Data)</h2>
-            <p className="text-xs text-amber-900/70">
-              दुकान का पूरा सैंपल डेटा (प्रोडक्ट्स, सप्लायर्स, खरीद-बिक्री) रीलोड करें।
+            <h2 className="text-sm font-black text-slate-900">डेमो किराना डेटा (Sample Store Data)</h2>
+            <p className="text-xs text-slate-600">
+              दुकान का पूरा सैंपल डेटा (सामान, सप्लायर, खरीद-बिक्री) रीलोड करें।
             </p>
           </div>
           <button
             onClick={() => setIsResetConfirmOpen(true)}
             disabled={isResetting}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-amber-900 bg-amber-50 border border-amber-300 rounded-xl hover:bg-amber-100 transition-colors shadow-2xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-slate-900 bg-white/90 border border-slate-200 rounded-2xl hover:bg-amber-50 hover:border-amber-300 transition-all shadow-2xs cursor-pointer"
           >
             <RefreshCcw className={`w-3.5 h-3.5 ${isResetting ? 'animate-spin' : ''}`} />
             {isResetting ? 'लोड हो रहा है...' : 'डेमो डेटा रीलोड करें'}

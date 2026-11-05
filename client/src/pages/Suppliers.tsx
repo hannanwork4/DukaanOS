@@ -150,46 +150,46 @@ export const Suppliers: React.FC<SuppliersProps> = ({ suppliers, onRefresh, show
   const totalOutstanding = filteredSuppliers.reduce((sum, s) => sum + s.outstanding_balance, 0);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/70">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-amber-200/50">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xl">🤝</span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              व्यापारी खाता <span className="text-sm font-normal text-amber-800">/ Supplier Khata</span>
+            <h1 className="text-xl font-black tracking-tight text-slate-900">
+              व्यापारी खाता <span className="text-sm font-bold text-slate-600">/ Supplier Khata</span>
             </h1>
           </div>
-          <p className="text-xs text-amber-900/70 mt-0.5">
-            कुल {suppliers.length} व्यापारी • कुल बाकी उधारी: <span className="font-extrabold text-orange-900 font-mono">₹{totalOutstanding.toLocaleString('en-IN')}</span>
+          <p className="text-xs text-slate-600 mt-1 font-medium">
+            कुल {suppliers.length} व्यापारी • कुल बाकी उधारी: <span className="font-black text-slate-900 font-mono">₹{totalOutstanding.toLocaleString('en-IN')}</span>
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-md shadow-orange-500/25 active:scale-98"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
-          <Plus className="w-3.5 h-3.5" />
+          <Plus className="w-4 h-4" />
           + नया सप्लायर जोड़ें (Add Supplier)
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="bg-white p-3.5 rounded-2xl border border-amber-200/80 shadow-warm flex items-center justify-between gap-3">
+      {/* 3D Filter Bar */}
+      <div className="bg-white/80 glass-panel p-4 rounded-2xl border border-white/80 shadow-card-3d flex items-center justify-between gap-3">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-amber-600 absolute left-3.5 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           <input
             type="text"
             placeholder="व्यापारी का नाम, फर्म का नाम या फोन नंबर से खोजें..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs bg-amber-50/40 border border-amber-200/80 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/70 border border-slate-200 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors font-medium"
           />
         </div>
       </div>
 
-      {/* Supplier Table */}
-      <div className="bg-white rounded-2xl border border-amber-200/80 shadow-warm overflow-hidden">
+      {/* 3D Glass Supplier Table */}
+      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d overflow-hidden">
         {filteredSuppliers.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
             कोई व्यापारी नहीं मिला। नया व्यापारी जोड़ने के लिए ऊपर बटन दबाएं।
@@ -197,65 +197,65 @@ export const Suppliers: React.FC<SuppliersProps> = ({ suppliers, onRefresh, show
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-gradient-to-r from-amber-50/80 to-orange-50/40 border-b border-amber-200/70 text-amber-950 uppercase tracking-wider text-[10px]">
+              <thead className="bg-white/60 border-b border-amber-200/50 text-slate-800 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-4 py-3 font-bold">व्यापारी / फर्म</th>
-                  <th className="px-3 py-3 font-bold">फोन नंबर</th>
-                  <th className="px-3 py-3 font-bold text-right">कुल खरीद (Total Bought)</th>
-                  <th className="px-3 py-3 font-bold text-right">चुकाया गया (Paid)</th>
-                  <th className="px-3 py-3 font-bold text-right">बाकी उधारी (Due)</th>
-                  <th className="px-3 py-3 font-bold text-center">स्थिति</th>
-                  <th className="px-4 py-3 font-bold text-right">हिसाब व भुगतान</th>
+                  <th className="px-5 py-3.5 font-black">व्यापारी / फर्म</th>
+                  <th className="px-4 py-3.5 font-black">फोन नंबर</th>
+                  <th className="px-4 py-3.5 font-black text-right">कुल खरीद</th>
+                  <th className="px-4 py-3.5 font-black text-right">चुकाया गया</th>
+                  <th className="px-4 py-3.5 font-black text-right">बाकी उधारी</th>
+                  <th className="px-4 py-3.5 font-black text-center">स्थिति</th>
+                  <th className="px-5 py-3.5 font-black text-right">कार्रवाई</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-amber-100/70">
+              <tbody className="divide-y divide-amber-100/40">
                 {filteredSuppliers.map((s) => {
                   const hasDue = s.outstanding_balance > 0;
 
                   return (
-                    <tr key={s.id} className="hover:bg-amber-50/40 transition-colors">
-                      <td className="px-4 py-3">
+                    <tr key={s.id} className="hover:bg-white/50 transition-colors">
+                      <td className="px-5 py-3.5">
                         <div className="font-bold text-slate-900">{s.name}</div>
                         {s.business_name && (
-                          <div className="text-[11px] font-medium text-amber-900/80">{s.business_name}</div>
+                          <div className="text-[11px] font-semibold text-slate-600">{s.business_name}</div>
                         )}
                         {s.address && (
-                          <div className="text-[10px] text-slate-500 truncate max-w-xs">{s.address}</div>
+                          <div className="text-[10px] text-slate-400 truncate max-w-xs">{s.address}</div>
                         )}
                       </td>
 
-                      <td className="px-3 py-3 text-slate-700 font-mono text-[11px]">
+                      <td className="px-4 py-3.5 text-slate-700 font-mono text-[11px]">
                         {s.phone || '—'}
                       </td>
 
-                      <td className="px-3 py-3 text-right font-mono text-slate-700">
+                      <td className="px-4 py-3.5 text-right font-mono text-slate-700 font-medium">
                         ₹{s.total_purchases.toFixed(2)}
                       </td>
 
-                      <td className="px-3 py-3 text-right font-mono font-semibold text-emerald-800">
+                      <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-700">
                         ₹{s.amount_paid.toFixed(2)}
                       </td>
 
-                      <td className="px-3 py-3 text-right font-mono">
-                        <span className={`font-extrabold ${hasDue ? 'text-orange-700' : 'text-slate-400'}`}>
+                      <td className="px-4 py-3.5 text-right font-mono">
+                        <span className={`font-black ${hasDue ? 'text-amber-900' : 'text-slate-400'}`}>
                           ₹{s.outstanding_balance.toFixed(2)}
                         </span>
                       </td>
 
-                      <td className="px-3 py-3 text-center">
+                      <td className="px-4 py-3.5 text-center">
                         {hasDue ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-900 border border-orange-300">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-950 border border-amber-300">
                             उधारी बाकी
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                            हिसाब चुकता ✓
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                            चुकता
                           </span>
                         )}
                       </td>
 
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                      <td className="px-5 py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-2">
                           {hasDue && (
                             <button
                               onClick={() => {
@@ -263,24 +263,24 @@ export const Suppliers: React.FC<SuppliersProps> = ({ suppliers, onRefresh, show
                                 setPayAmount(s.outstanding_balance.toString());
                                 setPayNotes('');
                               }}
-                              className="px-2.5 py-1 text-[11px] font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg hover:from-emerald-700 hover:to-teal-700 shadow-2xs transition-all"
+                              className="px-3 py-1.5 text-[11px] font-black text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
                             >
                               उधारी चुकाएं (Pay)
                             </button>
                           )}
                           <button
                             onClick={() => openHistoryModal(s)}
-                            title="पेमेंट इतिहास (Payment History)"
-                            className="p-1.5 rounded-lg text-amber-700 hover:text-amber-900 hover:bg-amber-100 transition-colors"
+                            title="पेमेंट इतिहास"
+                            className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
                           >
-                            <History className="w-3.5 h-3.5" />
+                            <History className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => openEditModal(s)}
-                            title="विवरण बदलें (Edit)"
-                            className="p-1.5 rounded-lg text-amber-700 hover:text-amber-900 hover:bg-amber-100 transition-colors"
+                            title="बदलें"
+                            className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
                           >
-                            <Edit2 className="w-3.5 h-3.5" />
+                            <Edit2 className="w-4 h-4" />
                           </button>
                         </div>
                       </td>

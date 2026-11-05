@@ -203,64 +203,46 @@ export const Purchases: React.FC<PurchasesProps> = ({
   const currentOutstanding = Math.max(0, currentTotal - currentPaid);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/70">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-amber-200/50">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xl">🛒</span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              खरीद बही <span className="text-sm font-normal text-amber-800">/ Purchase Register</span>
+            <h1 className="text-xl font-black tracking-tight text-slate-900">
+              खरीद बही <span className="text-sm font-bold text-slate-600">/ Purchase Register</span>
             </h1>
           </div>
-          <p className="text-xs text-amber-900/70 mt-0.5">
-            सप्लायर से आया हुआ माल, गोदाम स्टॉक में बढ़ोतरी और व्यापारी उधारी
+          <p className="text-xs text-slate-600 mt-1 font-medium">
+            सप्लायर से आया हुआ माल, गोदाम स्टॉक में वृद्धि और व्यापारी उधारी का शुद्ध हिसाब
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-md shadow-orange-500/25 active:scale-98"
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl shadow-btn-3d hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
         >
-          <Plus className="w-3.5 h-3.5" />
+          <Plus className="w-4 h-4" />
           + नया माल आया (Record Purchase)
         </button>
       </div>
 
-      {/* Claude Photo Billing Tip Banner */}
-      <div className="p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50/50 border border-emerald-300 rounded-2xl flex items-start gap-3 text-xs text-emerald-950 shadow-xs">
-        <div className="p-2 bg-emerald-100/80 rounded-xl text-emerald-800 font-bold shrink-0 border border-emerald-200 text-base">
-          📸
-        </div>
-        <div>
-          <div className="font-bold text-emerald-950 flex items-center gap-1.5">
-            होलसेल पर्ची की फोटो खींचें (Zero-Typing Restock):
-            <span className="text-[10px] font-extrabold bg-emerald-200/80 text-emerald-900 px-2 py-0.2 rounded-full uppercase">
-              Claude Vision
-            </span>
-          </div>
-          <p className="text-emerald-900/90 mt-0.5 leading-relaxed">
-            डिस्ट्रिब्यूटर या मंडी की पर्ची का फोटो खींचकर Claude में भेजें और कहें: <span className="font-mono bg-white px-2 py-0.5 rounded text-[11px] text-emerald-950 border border-emerald-200 font-semibold">"यह माल दुकान में जोड़ दो"</span>। Claude सामान का नाम, मात्रा व दाम पढ़कर DukaanOS में सीधे दर्ज कर देगा!
-          </p>
-        </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="bg-white p-3.5 rounded-2xl border border-amber-200/80 shadow-warm flex items-center justify-between gap-3">
+      {/* 3D Filter Bar */}
+      <div className="bg-white/80 glass-panel p-4 rounded-2xl border border-white/80 shadow-card-3d flex items-center justify-between gap-3">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-amber-600 absolute left-3.5 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           <input
             type="text"
             placeholder="व्यापारी (सप्लायर) या खरीदे गए सामान से खोजें..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs bg-amber-50/40 border border-amber-200/80 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/70 border border-slate-200 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors font-medium"
           />
         </div>
       </div>
 
-      {/* Purchases List Table */}
-      <div className="bg-white rounded-2xl border border-amber-200/80 shadow-warm overflow-hidden">
+      {/* 3D Glass Purchases Table */}
+      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d overflow-hidden">
         {filteredPurchases.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
             कोई खरीद रिकॉर्ड नहीं मिला। गोदाम में माल जोड़ने के लिए ऊपर बटन दबाएं।
@@ -268,22 +250,22 @@ export const Purchases: React.FC<PurchasesProps> = ({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-gradient-to-r from-amber-50/80 to-orange-50/40 border-b border-amber-200/70 text-amber-950 uppercase tracking-wider text-[10px]">
+              <thead className="bg-white/60 border-b border-amber-200/50 text-slate-800 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-4 py-3 font-bold">दिनांक / ID</th>
-                  <th className="px-4 py-3 font-bold">व्यापारी (Supplier)</th>
-                  <th className="px-4 py-3 font-bold">खरीदा गया सामान</th>
-                  <th className="px-3 py-3 font-bold text-right">कुल बिल (Total)</th>
-                  <th className="px-3 py-3 font-bold text-right">चुकाया (Paid)</th>
-                  <th className="px-3 py-3 font-bold text-right">बाकी उधारी (Due)</th>
-                  <th className="px-3 py-3 font-bold text-center">पेमेंट माध्यम</th>
-                  <th className="px-4 py-3 font-bold text-right">कार्रवाई</th>
+                  <th className="px-5 py-3.5 font-black">दिनांक / ID</th>
+                  <th className="px-4 py-3.5 font-black">व्यापारी (Supplier)</th>
+                  <th className="px-4 py-3.5 font-black">खरीदा गया सामान</th>
+                  <th className="px-4 py-3.5 font-black text-right">कुल बिल (Total)</th>
+                  <th className="px-4 py-3.5 font-black text-right">चुकाया (Paid)</th>
+                  <th className="px-4 py-3.5 font-black text-right">बाकी उधारी (Due)</th>
+                  <th className="px-4 py-3.5 font-black text-center">पेमेंट माध्यम</th>
+                  <th className="px-5 py-3.5 font-black text-right">कार्रवाई</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-amber-100/70">
+              <tbody className="divide-y divide-amber-100/40">
                 {filteredPurchases.map((p) => (
-                  <tr key={p.id} className="hover:bg-amber-50/40 transition-colors">
-                    <td className="px-4 py-3">
+                  <tr key={p.id} className="hover:bg-white/50 transition-colors">
+                    <td className="px-5 py-3.5">
                       <div className="font-bold text-slate-900">
                         {new Date(p.purchase_date).toLocaleDateString('en-IN', {
                           day: 'numeric',
@@ -291,63 +273,57 @@ export const Purchases: React.FC<PurchasesProps> = ({
                           year: 'numeric'
                         })}
                       </div>
-                      <div className="text-[10px] font-mono text-amber-900/60">
+                      <div className="text-[10px] font-mono text-slate-400">
                         #{p.id.slice(0, 8)}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 font-bold text-slate-900">
+                    <td className="px-4 py-3.5 font-bold text-slate-900">
                       {p.supplier_name || 'होलसेल व्यापारी'}
                     </td>
 
-                    <td className="px-4 py-3 text-slate-700">
+                    <td className="px-4 py-3.5 text-slate-700">
                       <div className="max-w-xs space-y-0.5">
                         {(p.items || []).map((it, idx) => (
                           <div key={idx} className="text-[11px] truncate">
-                            <span className="font-bold text-amber-950">{it.quantity}x</span> {it.product_name}
-                            <span className="text-slate-500 font-mono ml-1">(@ ₹{it.unit_price})</span>
+                            <span className="font-black text-slate-900">{it.quantity}x</span> {it.product_name}
+                            <span className="text-slate-400 font-mono ml-1">(@ ₹{it.unit_price})</span>
                           </div>
                         ))}
                       </div>
                     </td>
 
-                    <td className="px-3 py-3 text-right font-mono font-bold text-slate-900">
+                    <td className="px-4 py-3.5 text-right font-mono font-black text-slate-900">
                       ₹{p.total_amount.toFixed(2)}
                     </td>
 
-                    <td className="px-3 py-3 text-right font-mono font-semibold text-emerald-800">
+                    <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-700">
                       ₹{p.amount_paid.toFixed(2)}
                     </td>
 
-                    <td className="px-3 py-3 text-right font-mono">
+                    <td className="px-4 py-3.5 text-right font-mono">
                       {p.outstanding_amount > 0 ? (
-                        <span className="font-extrabold text-orange-700 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                        <span className="font-black text-amber-950 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
                           ₹{p.outstanding_amount.toFixed(2)} बाकी
                         </span>
                       ) : (
-                        <span className="text-emerald-700 font-medium">चुकता ✓</span>
+                        <span className="text-slate-500 font-bold">चुकता</span>
                       )}
                     </td>
 
-                    <td className="px-3 py-3 text-center">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        p.payment_method === 'Cash'
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                          : p.payment_method === 'UPI'
-                          ? 'bg-indigo-100 text-indigo-800 border border-indigo-300'
-                          : 'bg-amber-100 text-amber-900 border border-amber-300'
-                      }`}>
-                        {p.payment_method === 'Cash' ? 'नकद (Cash)' : p.payment_method === 'UPI' ? 'UPI (PhonePe/GPay)' : p.payment_method}
+                    <td className="px-4 py-3.5 text-center">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
+                        {p.payment_method === 'Cash' ? 'नकद (Cash)' : p.payment_method === 'UPI' ? 'UPI' : p.payment_method}
                       </span>
                     </td>
 
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-5 py-3.5 text-right">
                       <button
                         onClick={() => openEditModal(p)}
-                        title="खरीद सुधारें (Edit purchase)"
-                        className="p-1.5 rounded-lg text-amber-700 hover:text-amber-900 hover:bg-amber-100 transition-colors"
+                        title="खरीद सुधारें"
+                        className="p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
                       >
-                        <Edit2 className="w-3.5 h-3.5" />
+                        <Edit2 className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>

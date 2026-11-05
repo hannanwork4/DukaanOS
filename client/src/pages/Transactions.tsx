@@ -4,8 +4,7 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Search,
-  Filter,
-  CheckCircle2
+  Filter
 } from 'lucide-react';
 import { TransactionRecord } from '../types';
 
@@ -26,40 +25,38 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions }) => {
   });
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/70">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">📖</span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              रोज़नामचा खाता <span className="text-sm font-normal text-amber-800">/ Unified Business Ledger</span>
-            </h1>
-          </div>
-          <p className="text-xs text-amber-900/70 mt-0.5">
-            खरीद, बिक्री, दुकान खर्चे और सप्लायर भुगतान का सम्मिलित बहीखाता (Complete Audit Trail)
-          </p>
+      <div className="pb-3 border-b border-amber-200/50">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">📖</span>
+          <h1 className="text-xl font-black tracking-tight text-slate-900">
+            रोज़नामचा खाता <span className="text-sm font-bold text-slate-600">/ Unified Business Ledger</span>
+          </h1>
         </div>
+        <p className="text-xs text-slate-600 mt-1 font-medium">
+          दुकान के सभी लेन-देन (खरीद, बिक्री, खर्चे और सप्लायर भुगतान) का प्रमाणित बहीखाता
+        </p>
       </div>
 
-      {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-white p-3.5 rounded-2xl border border-amber-200/80 shadow-warm">
+      {/* 3D Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between glass-panel p-4 rounded-2xl border border-white/80 shadow-card-3d">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-amber-600 absolute left-3.5 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           <input
             type="text"
             placeholder="लेन-देन विवरण या पेमेंट मोड से खोजें..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs bg-amber-50/40 border border-amber-200/80 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-white/70 border border-slate-200 rounded-xl focus:outline-hidden focus:border-amber-400 focus:bg-white transition-colors font-medium"
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="text-xs bg-amber-50/40 border border-amber-200/80 rounded-xl px-3 py-2 font-medium text-amber-950 focus:outline-hidden focus:border-amber-400"
+            className="text-xs bg-white/70 border border-slate-200 rounded-xl px-3.5 py-2.5 font-bold text-slate-800 focus:outline-hidden focus:border-amber-400"
           >
             <option value="All">सभी एंट्रीज (All Types)</option>
             <option value="sale">केवल बिक्री (Sales)</option>
@@ -70,8 +67,8 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions }) => {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl border border-amber-200/80 shadow-warm overflow-hidden">
+      {/* 3D Glass Table */}
+      <div className="glass-panel rounded-3xl border border-white/80 shadow-card-3d overflow-hidden">
         {filtered.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
             चुने गए फ़िल्टर के लिए कोई लेन-देन नहीं मिला।
@@ -79,23 +76,23 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions }) => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-gradient-to-r from-amber-50/80 to-orange-50/40 border-b border-amber-200/70 text-amber-950 uppercase tracking-wider text-[10px]">
+              <thead className="bg-white/60 border-b border-amber-200/50 text-slate-800 uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="px-4 py-3 font-bold">दिनांक व समय</th>
-                  <th className="px-3 py-3 font-bold">प्रकार (Type)</th>
-                  <th className="px-4 py-3 font-bold">विवरण (Description)</th>
-                  <th className="px-3 py-3 font-bold">पेमेंट माध्यम</th>
-                  <th className="px-4 py-3 font-bold text-right">रकम (Amount)</th>
-                  <th className="px-3 py-3 font-bold text-center">स्थिति</th>
+                  <th className="px-5 py-3.5 font-black">दिनांक व समय</th>
+                  <th className="px-4 py-3.5 font-black">प्रकार (Type)</th>
+                  <th className="px-4 py-3.5 font-black">विवरण</th>
+                  <th className="px-4 py-3.5 font-black">पेमेंट माध्यम</th>
+                  <th className="px-4 py-3.5 font-black text-right">रकम</th>
+                  <th className="px-5 py-3.5 font-black text-center">स्थिति</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-amber-100/70">
+              <tbody className="divide-y divide-amber-100/40">
                 {filtered.map((tx) => {
                   const isSale = tx.type === 'sale';
 
                   return (
-                    <tr key={tx.id} className="hover:bg-amber-50/40 transition-colors">
-                      <td className="px-4 py-3 text-slate-600 font-mono text-[11px] whitespace-nowrap">
+                    <tr key={tx.id} className="hover:bg-white/50 transition-colors">
+                      <td className="px-5 py-3.5 text-slate-500 font-mono text-[11px] whitespace-nowrap">
                         {new Date(tx.date).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short',
@@ -105,41 +102,37 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions }) => {
                         })}
                       </td>
 
-                      <td className="px-3 py-3">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase font-mono ${
+                      <td className="px-4 py-3.5">
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-mono ${
                           tx.type === 'sale'
-                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                            : tx.type === 'purchase'
-                            ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                            : tx.type === 'expense'
-                            ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                            : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                            ? 'bg-amber-100 text-amber-950 border border-amber-300'
+                            : 'bg-slate-100 text-slate-800 border border-slate-200'
                         }`}>
-                          {tx.type === 'sale' && <ArrowUpRight className="w-3 h-3 text-emerald-700" />}
-                          {tx.type !== 'sale' && <ArrowDownLeft className="w-3 h-3 text-amber-800" />}
+                          {tx.type === 'sale' && <ArrowUpRight className="w-3.5 h-3.5 text-amber-800" />}
+                          {tx.type !== 'sale' && <ArrowDownLeft className="w-3.5 h-3.5 text-slate-700" />}
                           {tx.type === 'sale' ? 'बिक्री' : tx.type === 'purchase' ? 'खरीद' : tx.type === 'expense' ? 'खर्चा' : 'भुगतान'}
                         </span>
                       </td>
 
-                      <td className="px-4 py-3 font-bold text-slate-900">
+                      <td className="px-4 py-3.5 font-bold text-slate-900">
                         {tx.description}
                       </td>
 
-                      <td className="px-3 py-3 text-slate-700">
-                        <span className="bg-amber-50 px-2 py-0.5 rounded font-medium border border-amber-200/60 text-[11px]">
+                      <td className="px-4 py-3.5 text-slate-700">
+                        <span className="bg-white/90 px-2.5 py-0.5 rounded-full font-semibold border border-slate-200 text-[11px]">
                           {tx.payment_method || '—'}
                         </span>
                       </td>
 
-                      <td className={`px-4 py-3 text-right font-mono font-extrabold whitespace-nowrap ${
-                        isSale ? 'text-emerald-700' : 'text-slate-900'
+                      <td className={`px-4 py-3.5 text-right font-mono font-black whitespace-nowrap ${
+                        isSale ? 'text-amber-900' : 'text-slate-900'
                       }`}>
                         {isSale ? '+' : '-'}₹{Number(tx.amount).toFixed(2)}
                       </td>
 
-                      <td className="px-3 py-3 text-center">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                          सफल ✓
+                      <td className="px-5 py-3.5 text-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
+                          दर्ज
                         </span>
                       </td>
                     </tr>

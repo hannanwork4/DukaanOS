@@ -42,17 +42,17 @@ export const Modal: React.FC<ModalProps> = ({
         aria-hidden="true" 
       />
       <div 
-        className={`relative w-full ${maxWidth} bg-white rounded-2xl border border-amber-200 shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col`}
+        className={`relative w-full ${maxWidth} bg-white/95 backdrop-blur-2xl rounded-3xl border border-white/80 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.3)] overflow-hidden z-10 max-h-[90vh] flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-amber-100 bg-gradient-to-r from-amber-50/80 via-orange-50/30 to-white">
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-amber-200/40 bg-white/70">
           <div>
-            <h3 className="text-base font-bold text-slate-900">{title}</h3>
-            {subtitle && <p className="text-xs text-amber-900/70 mt-0.5">{subtitle}</p>}
+            <h3 className="text-base font-black text-slate-900">{title}</h3>
+            {subtitle && <p className="text-xs text-slate-600 mt-0.5 font-medium">{subtitle}</p>}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-amber-700/60 hover:text-amber-900 hover:bg-amber-100/60 transition-colors"
+            className="p-1.5 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
