@@ -62,7 +62,17 @@ router.put('/profile', async (req: Request, res: Response) => {
     
     let business = await db.getBusiness(businessId);
     if (!business) {
-      await db.seedInitialData(businessId);
+      business = {
+        id: businessId,
+        name: name?.trim() || 'Sharma General Store',
+        owner_name: owner_name?.trim() || 'Abdul Hannan',
+        phone: phone?.trim() || '9848022338',
+        address: address?.trim() || 'Shop No. 4, Main Market, Lajpat Nagar, New Delhi',
+        currency: currency?.trim() || 'INR',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      await db.createBusiness(business);
     }
     
     const updated = await db.updateBusiness(businessId, {
@@ -72,6 +82,15 @@ router.put('/profile', async (req: Request, res: Response) => {
       ...(address !== undefined ? { address: address.trim() } : {}),
       ...(currency ? { currency: currency.trim() } : {})
     });
+
+    if (userId) {
+      try {
+        await db.updateUser(userId, {
+          ...(owner_name ? { name: owner_name.trim() } : {}),
+          ...(phone !== undefined ? { phone: phone.trim() } : {})
+        });
+      } catch {}
+    }
 
     // Also update user profile to keep owner name and phone permanently synced
     if (userId) {

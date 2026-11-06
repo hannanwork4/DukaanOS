@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { IDatabase } from './interface.js';
 import {
@@ -42,9 +43,14 @@ export class LocalStore implements IDatabase {
     if (customPath) {
       this.filePath = customPath;
     } else {
-      const dataDir = path.resolve(process.cwd(), 'data');
-      if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
+      const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || (typeof process.cwd === 'function' && process.cwd().startsWith('/var/task')));
+      const dataDir = process.env.DATA_DIR || (isServerless ? path.join(os.tmpdir(), 'dukaanos_data') : path.resolve(process.cwd(), 'data'));
+      try {
+        if (!fs.existsSync(dataDir)) {
+          fs.mkdirSync(dataDir, { recursive: true });
+        }
+      } catch (e) {
+        console.warn('[LocalStore] dataDir initialization note:', e);
       }
       this.filePath = path.join(dataDir, 'dukaanos.json');
     }
@@ -53,13 +59,13 @@ export class LocalStore implements IDatabase {
   }
 
   private loadData(): SchemaData {
-    if (fs.existsSync(this.filePath)) {
-      try {
+    try {
+      if (fs.existsSync(this.filePath)) {
         const raw = fs.readFileSync(this.filePath, 'utf-8');
         return JSON.parse(raw);
-      } catch (e) {
-        console.error('Error reading local db file, initializing fresh:', e);
       }
+    } catch (e) {
+      console.warn('[LocalStore] Initializing clean state:', (e as any)?.message || e);
     }
     const fresh: SchemaData = {
       businesses: [],
@@ -79,20 +85,24 @@ export class LocalStore implements IDatabase {
   }
 
   private saveData(dataToSave?: SchemaData) {
-    const toWrite = dataToSave || this.data;
-    const content = JSON.stringify(toWrite, null, 2);
-    const tempPath = `${this.filePath}.tmp`;
     try {
-      fs.writeFileSync(tempPath, content, 'utf-8');
+      const toWrite = dataToSave || this.data;
+      const content = JSON.stringify(toWrite, null, 2);
+      const tempPath = `${this.filePath}.tmp`;
       try {
-        fs.renameSync(tempPath, this.filePath);
+        fs.writeFileSync(tempPath, content, 'utf-8');
+        try {
+          fs.renameSync(tempPath, this.filePath);
+        } catch {
+          // Fallback for Windows EPERM / locked files
+          fs.writeFileSync(this.filePath, content, 'utf-8');
+          try { fs.unlinkSync(tempPath); } catch {}
+        }
       } catch {
-        // Fallback for Windows EPERM / locked files
         fs.writeFileSync(this.filePath, content, 'utf-8');
-        try { fs.unlinkSync(tempPath); } catch {}
       }
-    } catch {
-      fs.writeFileSync(this.filePath, content, 'utf-8');
+    } catch (err) {
+      console.warn('[LocalStore] Persistent file write skipped:', (err as any)?.message || err);
     }
   }
 

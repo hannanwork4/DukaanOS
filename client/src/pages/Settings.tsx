@@ -52,19 +52,37 @@ export const Settings: React.FC<SettingsProps> = ({
       const res = await api.autoConfigureClaude();
       setClaudeConnected(true);
       if (res.configuredOnDisk) {
-        showToast('success', res.message || 'Connected directly to Claude Desktop! Restart Claude to begin.');
+        showToast('success', 'Claude is connected directly! Open Claude to begin speaking with your store.');
       } else {
-        // Trigger browser download of claude_desktop_config.json for remote users
-        const blob = new Blob([JSON.stringify(res.config, null, 2)], { type: 'application/json' });
+        const batScript = `@echo off
+title DukaanOS - 1-Click Claude Setup
+echo ========================================================
+echo        DukaanOS - 1-Click Claude Integration
+echo ========================================================
+echo.
+echo Connecting DukaanOS Store to Claude Desktop...
+
+set "CLAUDE_DIR=%APPDATA%\\Claude"
+if not exist "%CLAUDE_DIR%" mkdir "%CLAUDE_DIR%"
+
+powershell -Command "$cfg = @{ mcpServers = @{ dukaanos = @{ command = 'node'; args = @('C:\\Users\\DELL\\Desktop\\DukaanOS\\mcp\\dist\\stdio.js'); env = @{ API_URL = 'https://dukaanos-plum.vercel.app'; DEFAULT_BUSINESS_ID = '${business?.id || 'b0000000-0000-0000-0000-000000000001'}' } } } } | ConvertTo-Json -Depth 5; Set-Content -Path \\"$env:APPDATA\\Claude\\claude_desktop_config.json\\" -Value $cfg"
+
+echo.
+echo [SUCCESS] Claude is now directly connected to your DukaanOS Store!
+echo Launch Claude Desktop, and your Kirana store tools will be active with the hammer icon.
+echo ========================================================
+pause
+`;
+        const blob = new Blob([batScript], { type: 'application/bat' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'claude_desktop_config.json';
+        a.download = 'Connect-Claude.bat';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('success', 'claude_desktop_config.json downloaded! Place it in your Claude configuration folder.');
+        showToast('success', 'Connect-Claude.bat downloaded! Click it once to instantly configure Claude Desktop.');
       }
     } catch (err: any) {
       showToast('error', err.message || 'Failed to connect Claude.');
@@ -154,16 +172,14 @@ export const Settings: React.FC<SettingsProps> = ({
         <div className="p-5 bg-[#17181c] rounded-2xl border border-black flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <div className="text-sm font-bold text-white flex items-center gap-2">
-              <span>Automatic Claude Integration</span>
-              {claudeConnected && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Configured
-                </span>
-              )}
+              <span>1-Click Claude Integration</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Live Cloud Sync
+              </span>
             </div>
             <p className="text-xs text-zinc-400 mt-0.5">
-              No manual JSON editing needed. Click below to automatically connect DukaanOS to your Claude Desktop.
+              Instantly connect Claude Desktop directly to DukaanOS. No JSON editing needed.
             </p>
           </div>
 
@@ -174,11 +190,34 @@ export const Settings: React.FC<SettingsProps> = ({
           >
             <Sparkles className="w-4 h-4 text-black" />
             <span>
-              {isConfiguringClaude
-                ? (t('connectingBtn') || 'Connecting...')
-                : 'Click here to connect with Claude'}
+              {isConfiguringClaude ? 'Configuring Claude...' : 'Connect to Claude Desktop'}
             </span>
           </button>
+        </div>
+
+        {/* VOICE PROMPTS FOR CLAUDE */}
+        <div className="space-y-2 pt-2 border-t border-zinc-800">
+          <div className="text-xs font-semibold text-zinc-400">
+            What you can speak or ask Claude once connected:
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {[
+              "\"What are today's sales and low stock items?\"",
+              "\"Add 10 packets of Fortune Oil purchased from Ramesh\"",
+              "\"How much outstanding money do I owe suppliers?\""
+            ].map((prompt, idx) => (
+              <div
+                key={idx}
+                onClick={() => {
+                  navigator.clipboard.writeText(prompt.replace(/"/g, ''));
+                  showToast('info', 'Prompt copied to clipboard! Paste it in Claude.');
+                }}
+                className="p-2.5 bg-zinc-900 hover:bg-zinc-800 rounded-xl border border-zinc-800 text-xs text-zinc-300 transition-all cursor-pointer hover:border-zinc-700"
+              >
+                {prompt}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -193,10 +232,10 @@ export const Settings: React.FC<SettingsProps> = ({
           </div>
           <div>
             <h3 className="text-base font-bold text-black flex items-center gap-2">
-              Developer & Technical Integration Details
+              Developer & Technical Specs
             </h3>
             <p className="text-xs text-zinc-500 mt-0.5">
-              Click to view raw JSON configurations, remote Claude MCP SSE endpoints, and active tool specifications.
+              View MCP SSE endpoints, raw server tools (19 active tools), and JSON specifications.
             </p>
           </div>
         </div>
@@ -204,28 +243,6 @@ export const Settings: React.FC<SettingsProps> = ({
         <div className="hidden sm:flex items-center gap-1 text-xs font-bold text-black group-hover:translate-x-1 transition-transform">
           <span>View Specs</span>
           <ArrowRight className="w-4 h-4" />
-        </div>
-      </div>
-
-      {/* SAMPLE STORE DATA RESET CARD */}
-      <div className="glass-panel rounded-3xl p-6 border border-black shadow-card-3d bg-white space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h3 className="text-sm font-bold text-black flex items-center gap-2">
-              <RefreshCcw className="w-4 h-4 text-black" />
-              <span>{t('demoStoreData', 'Sample Store Catalog')}</span>
-            </h3>
-            <p className="text-xs text-zinc-500 mt-1">
-              {t('demoStoreDataSub', 'Restore standard Kirana store baseline products, inventory, and supplier records for testing.')}
-            </p>
-          </div>
-          <button
-            onClick={() => setIsResetConfirmOpen(true)}
-            disabled={isResetting}
-            className="px-4 py-2 text-xs font-bold text-black bg-zinc-100 hover:bg-zinc-200 border border-black rounded-xl transition-all cursor-pointer whitespace-nowrap"
-          >
-            {isResetting ? t('resettingBtn', 'Restoring...') : t('resetDemoDataBtn', 'Restore Sample Data')}
-          </button>
         </div>
       </div>
 

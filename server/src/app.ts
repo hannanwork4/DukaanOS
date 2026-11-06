@@ -40,8 +40,17 @@ export async function ensureDbInit() {
       try {
         const existing = await db.getBusiness(defaultBusinessId);
         if (!existing) {
-          console.log(`[Init] Seeding initial Kirana store data for: ${defaultBusinessId}`);
-          await db.seedInitialData(defaultBusinessId);
+          console.log(`[Init] Creating clean store entity for: ${defaultBusinessId}`);
+          await db.createBusiness({
+            id: defaultBusinessId,
+            name: 'Sharma General Store',
+            owner_name: 'Abdul Hannan',
+            phone: '9848022338',
+            address: 'Shop No. 4, Main Market, Lajpat Nagar, New Delhi',
+            currency: 'INR',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
         }
 
         // Ensure official demo credentials (hannan@volopay.co / Hannan_Volopay) are always available
@@ -132,3 +141,4 @@ if (activeClientDist) {
 }
 
 export default app;
+

@@ -25,30 +25,19 @@ const FALLBACK_BUSINESS = {
   currency: 'INR'
 };
 
-const FALLBACK_PRODUCTS = [
-  { id: 'p001', business_id: DEFAULT_BUSINESS_ID, name: 'Aashirvaad Shudh Chakki Atta 5kg', barcode: '890103000001', category: 'Atta & Flours', purchase_price: 210, selling_price: 245, current_stock: 18, min_stock_alert: 5, unit: 'kg' },
-  { id: 'p002', business_id: DEFAULT_BUSINESS_ID, name: 'Fortune Sunlite Refined Oil 1L', barcode: '890103000002', category: 'Cooking Oil', purchase_price: 115, selling_price: 135, current_stock: 4, min_stock_alert: 8, unit: 'packet' },
-  { id: 'p003', business_id: DEFAULT_BUSINESS_ID, name: 'Tata Salt Vaccum Evaporated 1kg', barcode: '890103000003', category: 'Spices & Seasoning', purchase_price: 22, selling_price: 28, current_stock: 35, min_stock_alert: 10, unit: 'packet' },
-  { id: 'p004', business_id: DEFAULT_BUSINESS_ID, name: 'Madhur Pure & Hygienic Sugar 1kg', barcode: '890103000004', category: 'Rice, Sugar & Grains', purchase_price: 42, selling_price: 50, current_stock: 45, min_stock_alert: 15, unit: 'kg' },
-  { id: 'p005', business_id: DEFAULT_BUSINESS_ID, name: 'Amul Taaza Toned Milk 500ml', barcode: '890103000005', category: 'Dairy & Eggs', purchase_price: 25, selling_price: 27, current_stock: 2, min_stock_alert: 6, unit: 'packet' },
-  { id: 'p006', business_id: DEFAULT_BUSINESS_ID, name: 'Daawat Rozana Super Basmati Rice 5kg', barcode: '890103000006', category: 'Rice, Sugar & Grains', purchase_price: 360, selling_price: 430, current_stock: 14, min_stock_alert: 4, unit: 'kg' }
-];
-
-const FALLBACK_SUPPLIERS = [
-  { id: 's001', business_id: DEFAULT_BUSINESS_ID, name: 'Ramesh Kumar', business_name: 'Ramesh Traders', phone: '+91 98112 34567', address: 'Warehouse 12, Grain Market, Delhi', total_purchases: 18500, amount_paid: 14500, outstanding_balance: 4000 },
-  { id: 's002', business_id: DEFAULT_BUSINESS_ID, name: 'Sunil Gupta', business_name: 'Gupta Wholesale Dist.', phone: '+91 98223 45678', address: 'Block C, Khari Baoli, Old Delhi', total_purchases: 24000, amount_paid: 24000, outstanding_balance: 0 }
-];
+const FALLBACK_PRODUCTS: any[] = [];
+const FALLBACK_SUPPLIERS: any[] = [];
 
 const FALLBACK_DASHBOARD = {
   shop_summary: {
-    today_sales: 3450,
-    today_purchases: 1200,
-    today_expenses: 350,
-    estimated_gross_profit: 850,
-    supplier_dues: 4000,
-    low_stock_count: 2,
-    inventory_items: 6,
-    total_inventory_value: 12840
+    today_sales: 0,
+    today_purchases: 0,
+    today_expenses: 0,
+    estimated_gross_profit: 0,
+    supplier_dues: 0,
+    low_stock_count: 0,
+    inventory_items: 0,
+    total_inventory_value: 0
   },
   recent_sales: [],
   recent_purchases: []

@@ -73,7 +73,10 @@ export class SupabaseStore implements IDatabase {
   }
 
   async updateBusiness(id: string, updates: Partial<Business>): Promise<Business | null> {
-    const local = await this.localStore.updateBusiness(id, updates);
+    try {
+      await this.localStore.updateBusiness(id, updates);
+    } catch {}
+
     try {
       const { data, error } = await this.client
         .from('businesses')
@@ -82,13 +85,12 @@ export class SupabaseStore implements IDatabase {
         .select()
         .single();
       if (!error && data) return data as Business;
-      if (local) {
-        await this.client.from('businesses').upsert(local);
-      }
     } catch (e: any) {
       console.warn(`Supabase updateBusiness fallback: ${e.message}`);
     }
-    return local;
+
+    const current = await this.getBusiness(id);
+    return current ? { ...current, ...updates } : null;
   }
 
   async deleteBusiness(id: string): Promise<boolean> {
