@@ -2,6 +2,7 @@
   "name": "dukaanos-server",
   "version": "1.0.0",
   "description": "DukaanOS Backend API Server",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

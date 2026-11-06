@@ -1,5 +1,3 @@
-Dockerfile
-docker-compose.yml
-render.yaml
+deploy/
 mcp/
-server/
+android/
