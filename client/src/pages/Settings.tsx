@@ -213,18 +213,18 @@ export const Settings: React.FC<SettingsProps> = ({
           <div>
             <h3 className="text-sm font-bold text-black flex items-center gap-2">
               <RefreshCcw className="w-4 h-4 text-black" />
-              <span>{t('demoStoreData') || 'Sample Store Catalog'}</span>
+              <span>{t('demoStoreData', 'Sample Store Catalog')}</span>
             </h3>
             <p className="text-xs text-zinc-500 mt-1">
-              {t('demoStoreDataSub') || 'Restore standard Kirana store baseline products, inventory, and supplier records for testing.'}
+              {t('demoStoreDataSub', 'Restore standard Kirana store baseline products, inventory, and supplier records for testing.')}
             </p>
           </div>
           <button
             onClick={() => setIsResetConfirmOpen(true)}
             disabled={isResetting}
-            className="px-4 py-2 text-xs font-bold text-black bg-zinc-100 hover:bg-zinc-200 border border-black rounded-xl transition-all cursor-pointer"
+            className="px-4 py-2 text-xs font-bold text-black bg-zinc-100 hover:bg-zinc-200 border border-black rounded-xl transition-all cursor-pointer whitespace-nowrap"
           >
-            {isResetting ? (t('resettingBtn') || 'Resetting...') : (t('resetDemoDataBtn') || 'Restore Sample Data')}
+            {isResetting ? t('resettingBtn', 'Restoring...') : t('resetDemoDataBtn', 'Restore Sample Data')}
           </button>
         </div>
       </div>

@@ -1160,7 +1160,11 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "dateTimeCol": "தேதி & நேரம்",
     "typeCol": "வகை",
     "descCol": "விவரம்",
-    "recordedStatus": "பதிவு செய்யப்பட்டது"
+    "recordedStatus": "பதிவு செய்யப்பட்டது",
+    "demoStoreData": "மாதிரி கடை பட்டியல்",
+    "demoStoreDataSub": "சோதனைக்காக நிலையான கிரானா கடை பொருட்கள், இருப்பு மற்றும் சப்ளையர் பதிவுகளை மீட்டெடுக்கவும்.",
+    "resetDemoDataBtn": "மாதிரி தரவை மீட்டமை",
+    "resettingBtn": "மீட்டமைக்கிறது..."
   },
   "kn": {
     "overview": "ಅವಲೋಕನ",
@@ -1440,7 +1444,11 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "dateTimeCol": "ದಿನಾಂಕ & ಸಮಯ",
     "typeCol": "ವಿಧ",
     "descCol": "ವಿವರಣೆ",
-    "recordedStatus": "ದಾಖಲಿಸಲಾಗಿದೆ"
+    "recordedStatus": "ದಾಖಲಿಸಲಾಗಿದೆ",
+    "demoStoreData": "ಮಾದರಿ ಅಂಗಡಿ ಕ್ಯಾಟಲಾಗ್",
+    "demoStoreDataSub": "ಪರೀಕ್ಷೆಗಾಗಿ ಮಾನದಂಡ ಕಿರಾಣಿ ಅಂಗಡಿ ಉತ್ಪನ್ನಗಳು, ದಾಸ್ತಾನು ಮತ್ತು ಪೂರೈಕೆದಾರರ ದಾಖಲೆಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ.",
+    "resetDemoDataBtn": "ಮಾದರಿ ಡೇಟಾ ಮರುಸ್ಥಾಪಿಸಿ",
+    "resettingBtn": "ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ..."
   },
   "mr": {
     "overview": "आढावा",
@@ -1720,7 +1728,11 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "dateTimeCol": "तारीख आणि वेळ",
     "typeCol": "प्रकार",
     "descCol": "तपशील",
-    "recordedStatus": "नोंदवले गेले"
+    "recordedStatus": "नोंदवले गेले",
+    "demoStoreData": "नमुना स्टोअर कॅटलॉग",
+    "demoStoreDataSub": "चाचणीसाठी मानक किराणा मालाची उत्पादने, साठा आणि पुरवठादार नोंदी पुनर्संचयित करा.",
+    "resetDemoDataBtn": "नमुना डेटा पुनर्संचयित करा",
+    "resettingBtn": "पुनर्संचयित करत आहे..."
   },
   "bn": {
     "overview": "একনজরে",
@@ -2000,7 +2012,11 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "dateTimeCol": "তারিখ ও সময়",
     "typeCol": "ধরন",
     "descCol": "বিবরণ",
-    "recordedStatus": "রেকর্ড করা হয়েছে"
+    "recordedStatus": "রেকর্ড করা হয়েছে",
+    "demoStoreData": "নমুনা স্টোর ক্যাটালগ",
+    "demoStoreDataSub": "পরীক্ষার জন্য স্ট্যান্ডার্ড মুদি দোকান পণ্য, স্টক এবং সরবরাহকারীর তথ্য পুনরুদ্ধার করুন।",
+    "resetDemoDataBtn": "নমুনা তথ্য পুনরুদ্ধার করুন",
+    "resettingBtn": "পুনরুদ্ধার করা হচ্ছে..."
   },
   "gu": {
     "overview": "ઝાંખી",
@@ -2280,6 +2296,10 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
     "dateTimeCol": "તારીખ અને સમય",
     "typeCol": "પ્રકાર",
     "descCol": "વિગત",
-    "recordedStatus": "નોંધાયેલ"
+    "recordedStatus": "નોંધાયેલ",
+    "demoStoreData": "નમૂના સ્ટોર કેટલોગ",
+    "demoStoreDataSub": "પરીક્ષણ માટે પ્રમાણભૂત કરિયાણા સ્ટોર ઉત્પાદનો, સ્ટોક અને સપ્લાયર રેકોર્ડ્સ પુનઃસ્થાપિત કરો.",
+    "resetDemoDataBtn": "નમૂના ડેટા પુનઃસ્થાપિત કરો",
+    "resettingBtn": "પુનઃસ્થાપિત થઈ રહ્યું છે..."
   }
 };

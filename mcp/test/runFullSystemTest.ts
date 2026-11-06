@@ -35,8 +35,8 @@ async function fullSystemTest() {
   apiApp.use('/api/insights', insightsRouter);
   apiApp.use('/api/business', businessRouter);
 
-  const apiServer = await new Promise<any>((resolve) => {
-    const s = apiApp.listen(TEST_API_PORT, () => resolve(s));
+  const apiServer: any = await new Promise((resolve) => {
+    const s: any = apiApp.listen(TEST_API_PORT, () => resolve(s));
   });
   console.log(`✅ 1. Backend Express API live on http://localhost:${TEST_API_PORT}`);
 
@@ -64,8 +64,8 @@ async function fullSystemTest() {
     }
   });
 
-  const mcpServer = await new Promise<any>((resolve) => {
-    const s = mcpApp.listen(TEST_MCP_PORT, () => resolve(s));
+  const mcpServer: any = await new Promise((resolve) => {
+    const s: any = mcpApp.listen(TEST_MCP_PORT, () => resolve(s));
   });
   console.log(`✅ 2. MCP Server live with SSE Transport on http://localhost:${TEST_MCP_PORT}/sse`);
 
