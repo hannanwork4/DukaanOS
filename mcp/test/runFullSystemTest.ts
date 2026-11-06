@@ -35,7 +35,7 @@ async function fullSystemTest() {
   apiApp.use('/api/insights', insightsRouter);
   apiApp.use('/api/business', businessRouter);
 
-  const apiServer = await new Promise<http.Server>((resolve) => {
+  const apiServer = await new Promise<any>((resolve) => {
     const s = apiApp.listen(TEST_API_PORT, () => resolve(s));
   });
   console.log(`✅ 1. Backend Express API live on http://localhost:${TEST_API_PORT}`);
@@ -48,7 +48,7 @@ async function fullSystemTest() {
   mcpApp.get('/sse', async (req, res) => {
     const mcp = new McpServer({ name: 'DukaanOS-Test', version: '1.0.0' });
     registerTools(mcp);
-    const transport = new SSEServerTransport('/messages', res);
+    const transport = new SSEServerTransport('/messages', res as any);
     activeTransports.set(transport.sessionId, transport);
     res.on('close', () => activeTransports.delete(transport.sessionId));
     await mcp.connect(transport);
@@ -58,13 +58,13 @@ async function fullSystemTest() {
     const sessionId = req.query.sessionId as string;
     const transport = activeTransports.get(sessionId);
     if (transport) {
-      await transport.handlePostMessage(req, res);
+      await transport.handlePostMessage(req as any, res as any);
     } else {
       res.status(404).end();
     }
   });
 
-  const mcpServer = await new Promise<http.Server>((resolve) => {
+  const mcpServer = await new Promise<any>((resolve) => {
     const s = mcpApp.listen(TEST_MCP_PORT, () => resolve(s));
   });
   console.log(`✅ 2. MCP Server live with SSE Transport on http://localhost:${TEST_MCP_PORT}/sse`);

@@ -78,7 +78,7 @@ app.get('/sse', async (req, res) => {
 
   try {
     const server = createDukaanMcpServer();
-    const transport = new SSEServerTransport('/messages', res);
+    const transport = new SSEServerTransport('/messages', res as any);
     
     const sessionId = transport.sessionId;
     activeTransports.set(sessionId, transport);
@@ -113,7 +113,7 @@ app.post('/messages', async (req, res) => {
   }
 
   try {
-    await transport.handlePostMessage(req, res);
+    await transport.handlePostMessage(req as any, res as any);
   } catch (err: any) {
     console.error(`[MCP] Error handling message for session ${sessionId}:`, err);
     if (!res.headersSent) {
