@@ -1,0 +1,9 @@
+{
+  "appId": "com.dukaanos.app",
+  "appName": "DukaanOS",
+  "webDir": "client/dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  }
+}

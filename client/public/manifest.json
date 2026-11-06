@@ -1,0 +1,24 @@
+{
+  "name": "DukaanOS — Kirana Store Operating System",
+  "short_name": "DukaanOS",
+  "description": "Retail business management platform for Kirana stores with automated khata, stock alerts, and Claude MCP integration.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e0f11",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
