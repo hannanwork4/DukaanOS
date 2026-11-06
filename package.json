@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "DukaanOS - Voice-First Business Management Platform for Kirana Stores",
   "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "mcp"
+  ],
   "scripts": {
     "dev:server": "npm --prefix server run dev",
     "dev:mcp": "npm --prefix mcp run dev",
