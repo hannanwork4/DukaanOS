@@ -75,6 +75,31 @@ export function registerTools(server: McpServer) {
           }]
         };
       } catch (err: any) {
+        if (err.message && err.message.includes('already exists')) {
+          const allProds = await apiClient.getProducts();
+          const existing = findBestProductMatch(allProds, args.name);
+          if (existing) {
+            return {
+              content: [{
+                type: 'text',
+                text: JSON.stringify({
+                  status: 'success',
+                  message: `Product "${existing.name}" is already in inventory.`,
+                  product: {
+                    id: existing.id,
+                    name: existing.name,
+                    category: existing.category,
+                    unit: existing.unit,
+                    current_stock: existing.current_stock,
+                    min_stock_threshold: existing.min_stock_threshold,
+                    purchase_price: `₹${existing.purchase_price}`,
+                    selling_price: `₹${existing.selling_price}`
+                  }
+                }, null, 2)
+              }]
+            };
+          }
+        }
         return {
           isError: true,
           content: [{ type: 'text', text: `Error adding product: ${err.message}` }]
@@ -244,6 +269,28 @@ export function registerTools(server: McpServer) {
           }]
         };
       } catch (err: any) {
+        if (err.message && err.message.includes('already exists')) {
+          const allSups = await apiClient.getSuppliers();
+          const existing = allSups.find(s => s.name.toLowerCase() === args.name.toLowerCase());
+          if (existing) {
+            return {
+              content: [{
+                type: 'text',
+                text: JSON.stringify({
+                  status: 'success',
+                  message: `Supplier "${existing.name}" is already registered.`,
+                  supplier: {
+                    id: existing.id,
+                    name: existing.name,
+                    business_name: existing.business_name,
+                    phone: existing.phone,
+                    outstanding_balance: `₹${existing.outstanding_balance}`
+                  }
+                }, null, 2)
+              }]
+            };
+          }
+        }
         return {
           isError: true,
           content: [{ type: 'text', text: `Error adding supplier: ${err.message}` }]

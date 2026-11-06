@@ -2,11 +2,25 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'node:path';
+import fs from 'node:fs';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { registerTools } from './tools.js';
 
-dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
+const candidateEnvPaths = [
+  path.resolve(process.cwd(), '../.env'),
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), '../../.env'),
+  'C:\\Users\\DELL\\Desktop\\DukaanOS\\.env'
+];
+for (const envPath of candidateEnvPaths) {
+  try {
+    if (fs.existsSync(envPath)) {
+      dotenv.config({ path: envPath });
+      break;
+    }
+  } catch {}
+}
 dotenv.config();
 
 const MCP_PORT = process.env.MCP_PORT || 4001;
@@ -113,7 +127,7 @@ app.listen(MCP_PORT, () => {
   console.log(`🤖 DukaanOS MCP Server running on port ${MCP_PORT}`);
   console.log(`🌐 Streamable HTTP / SSE Endpoint: http://localhost:${MCP_PORT}/sse`);
   console.log(`📩 Messages Endpoint: http://localhost:${MCP_PORT}/messages`);
-  console.log(`🛠️ 18 Business Management Tools Registered`);
+  console.log(`🛠️ 19 Business Management Tools Registered`);
   console.log(`=========================================`);
 });
 

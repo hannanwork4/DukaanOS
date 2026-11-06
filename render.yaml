@@ -1,0 +1,42 @@
+services:
+  # 1. Full-Stack DukaanOS Web App & Backend API
+  - type: web
+    name: dukaanos-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DEFAULT_BUSINESS_ID
+        value: b0000000-0000-0000-0000-000000000001
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+
+  # 2. Remote Claude MCP Server
+  - type: web
+    name: dukaanos-mcp
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build:mcp
+    startCommand: npm run start:mcp
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MCP_PORT
+        value: 10000
+      - key: API_URL
+        fromService:
+          type: web
+          name: dukaanos-api
+          property: host
+      - key: MCP_SECRET
+        generateValue: true
+

@@ -1,24 +1,43 @@
 import dotenv from 'dotenv';
 import path from 'node:path';
+import fs from 'node:fs';
 
-dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
+const candidateEnvPaths = [
+  path.resolve(process.cwd(), '../.env'),
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), '../../.env'),
+  'C:\\Users\\DELL\\Desktop\\DukaanOS\\.env'
+];
+for (const envPath of candidateEnvPaths) {
+  try {
+    if (fs.existsSync(envPath)) {
+      dotenv.config({ path: envPath });
+      break;
+    }
+  } catch {}
+}
 dotenv.config();
 
-const API_BASE = (process.env.API_URL || 'http://localhost:4000').replace(/\/$/, '');
-const DEFAULT_BUSINESS_ID = process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
-
 export class DukaanApiClient {
-  private businessId: string;
+  private businessId?: string;
 
   constructor(businessId?: string) {
-    this.businessId = businessId || DEFAULT_BUSINESS_ID;
+    this.businessId = businessId;
+  }
+
+  private get baseUrl(): string {
+    return (process.env.API_URL || 'http://localhost:4000').replace(/\/$/, '');
+  }
+
+  private get activeBusinessId(): string {
+    return this.businessId || process.env.DEFAULT_BUSINESS_ID || 'b0000000-0000-0000-0000-000000000001';
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${API_BASE}${endpoint}`;
+    const url = `${this.baseUrl}${endpoint}`;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'x-business-id': this.businessId,
+      'x-business-id': this.activeBusinessId,
       ...(options.headers as Record<string, string> || {})
     };
 

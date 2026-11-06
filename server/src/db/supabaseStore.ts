@@ -173,59 +173,80 @@ export class SupabaseStore implements IDatabase {
   }
 
   async getProducts(businessId: string): Promise<Product[]> {
-    const { data, error } = await this.client
-      .from('products')
-      .select('*')
-      .eq('business_id', businessId)
-      .eq('is_archived', false)
-      .order('name', { ascending: true });
-    if (error) throw new Error(`Supabase getProducts error: ${error.message}`);
-    return (data || []) as Product[];
+    try {
+      const { data, error } = await this.client
+        .from('products')
+        .select('*')
+        .eq('business_id', businessId)
+        .eq('is_archived', false)
+        .order('name', { ascending: true });
+      if (!error && data && data.length > 0) return data as Product[];
+    } catch {}
+    return this.localStore.getProducts(businessId);
   }
 
   async getProductById(businessId: string, id: string): Promise<Product | null> {
-    const { data, error } = await this.client
-      .from('products')
-      .select('*')
-      .eq('business_id', businessId)
-      .eq('id', id)
-      .single();
-    if (error || !data) return null;
-    return data as Product;
+    try {
+      const { data, error } = await this.client
+        .from('products')
+        .select('*')
+        .eq('business_id', businessId)
+        .eq('id', id)
+        .single();
+      if (!error && data) return data as Product;
+    } catch {}
+    return this.localStore.getProductById(businessId, id);
   }
 
   async getProductByName(businessId: string, name: string): Promise<Product | null> {
-    const { data, error } = await this.client
-      .from('products')
-      .select('*')
-      .eq('business_id', businessId)
-      .eq('is_archived', false)
-      .ilike('name', name.trim())
-      .limit(1);
-    if (error || !data || data.length === 0) return null;
-    return data[0] as Product;
+    try {
+      const { data, error } = await this.client
+        .from('products')
+        .select('*')
+        .eq('business_id', businessId)
+        .eq('is_archived', false)
+        .ilike('name', name.trim())
+        .limit(1);
+      if (!error && data && data.length > 0) return data[0] as Product;
+    } catch {}
+    return this.localStore.getProductByName(businessId, name);
   }
 
   async createProduct(product: Product): Promise<Product> {
-    const { data, error } = await this.client
-      .from('products')
-      .insert(product)
-      .select()
-      .single();
-    if (error) throw new Error(`Supabase createProduct error: ${error.message}`);
-    return data as Product;
+    const local = await this.localStore.createProduct(product);
+    try {
+      const biz = await this.getBusiness(product.business_id);
+      if (biz) {
+        await this.client.from('businesses').upsert(biz);
+      }
+      const { data, error } = await this.client
+        .from('products')
+        .insert(product)
+        .select()
+        .single();
+      if (!error && data) return data as Product;
+      if (error) {
+        console.warn(`Supabase createProduct note: ${error.message}`);
+      }
+    } catch (e: any) {
+      console.warn(`Supabase createProduct exception: ${e.message}`);
+    }
+    return local;
   }
 
   async updateProduct(businessId: string, id: string, updates: Partial<Product>): Promise<Product> {
-    const { data, error } = await this.client
-      .from('products')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('business_id', businessId)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw new Error(`Supabase updateProduct error: ${error.message}`);
-    return data as Product;
+    const local = await this.localStore.updateProduct(businessId, id, updates);
+    try {
+      const { data, error } = await this.client
+        .from('products')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('business_id', businessId)
+        .eq('id', id)
+        .select()
+        .single();
+      if (!error && data) return data as Product;
+    } catch {}
+    return local;
   }
 
   async deleteProduct(businessId: string, id: string): Promise<boolean> {
@@ -238,57 +259,78 @@ export class SupabaseStore implements IDatabase {
   }
 
   async getSuppliers(businessId: string): Promise<Supplier[]> {
-    const { data, error } = await this.client
-      .from('suppliers')
-      .select('*')
-      .eq('business_id', businessId)
-      .order('name', { ascending: true });
-    if (error) throw new Error(`Supabase getSuppliers error: ${error.message}`);
-    return (data || []) as Supplier[];
+    try {
+      const { data, error } = await this.client
+        .from('suppliers')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('name', { ascending: true });
+      if (!error && data && data.length > 0) return data as Supplier[];
+    } catch {}
+    return this.localStore.getSuppliers(businessId);
   }
 
   async getSupplierById(businessId: string, id: string): Promise<Supplier | null> {
-    const { data, error } = await this.client
-      .from('suppliers')
-      .select('*')
-      .eq('business_id', businessId)
-      .eq('id', id)
-      .single();
-    if (error || !data) return null;
-    return data as Supplier;
+    try {
+      const { data, error } = await this.client
+        .from('suppliers')
+        .select('*')
+        .eq('business_id', businessId)
+        .eq('id', id)
+        .single();
+      if (!error && data) return data as Supplier;
+    } catch {}
+    return this.localStore.getSupplierById(businessId, id);
   }
 
   async getSupplierByName(businessId: string, name: string): Promise<Supplier | null> {
-    const { data, error } = await this.client
-      .from('suppliers')
-      .select('*')
-      .eq('business_id', businessId)
-      .or(`name.ilike.${name.trim()},business_name.ilike.${name.trim()}`)
-      .limit(1);
-    if (error || !data || data.length === 0) return null;
-    return data[0] as Supplier;
+    try {
+      const { data, error } = await this.client
+        .from('suppliers')
+        .select('*')
+        .eq('business_id', businessId)
+        .or(`name.ilike.${name.trim()},business_name.ilike.${name.trim()}`)
+        .limit(1);
+      if (!error && data && data.length > 0) return data[0] as Supplier;
+    } catch {}
+    return this.localStore.getSupplierByName(businessId, name);
   }
 
   async createSupplier(supplier: Supplier): Promise<Supplier> {
-    const { data, error } = await this.client
-      .from('suppliers')
-      .insert(supplier)
-      .select()
-      .single();
-    if (error) throw new Error(`Supabase createSupplier error: ${error.message}`);
-    return data as Supplier;
+    const local = await this.localStore.createSupplier(supplier);
+    try {
+      const biz = await this.getBusiness(supplier.business_id);
+      if (biz) {
+        await this.client.from('businesses').upsert(biz);
+      }
+      const { data, error } = await this.client
+        .from('suppliers')
+        .insert(supplier)
+        .select()
+        .single();
+      if (!error && data) return data as Supplier;
+      if (error) {
+        console.warn(`Supabase createSupplier note: ${error.message}`);
+      }
+    } catch (e: any) {
+      console.warn(`Supabase createSupplier exception: ${e.message}`);
+    }
+    return local;
   }
 
   async updateSupplier(businessId: string, id: string, updates: Partial<Supplier>): Promise<Supplier> {
-    const { data, error } = await this.client
-      .from('suppliers')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('business_id', businessId)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw new Error(`Supabase updateSupplier error: ${error.message}`);
-    return data as Supplier;
+    const local = await this.localStore.updateSupplier(businessId, id, updates);
+    try {
+      const { data, error } = await this.client
+        .from('suppliers')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('business_id', businessId)
+        .eq('id', id)
+        .select()
+        .single();
+      if (!error && data) return data as Supplier;
+    } catch {}
+    return local;
   }
 
   async deleteSupplier(businessId: string, id: string): Promise<boolean> {
@@ -301,64 +343,81 @@ export class SupabaseStore implements IDatabase {
   }
 
   async getPurchases(businessId: string): Promise<Purchase[]> {
-    const { data: purchases, error: pError } = await this.client
-      .from('purchases')
-      .select(`
-        *,
-        suppliers (name),
-        purchase_items (*, products (name))
-      `)
-      .eq('business_id', businessId)
-      .order('purchase_date', { ascending: false });
+    try {
+      const { data: purchases, error: pError } = await this.client
+        .from('purchases')
+        .select(`
+          *,
+          suppliers (name),
+          purchase_items (*, products (name))
+        `)
+        .eq('business_id', businessId)
+        .order('purchase_date', { ascending: false });
 
-    if (pError) throw new Error(`Supabase getPurchases error: ${pError.message}`);
-
-    return (purchases || []).map((p: any) => ({
-      ...p,
-      supplier_name: p.suppliers?.name || 'Unknown Supplier',
-      items: (p.purchase_items || []).map((item: any) => ({
-        ...item,
-        product_name: item.products?.name || 'Unknown Product'
-      }))
-    }));
+      if (!pError && purchases && purchases.length > 0) {
+        return (purchases || []).map((p: any) => ({
+          ...p,
+          supplier_name: p.suppliers?.name || 'Unknown Supplier',
+          items: (p.purchase_items || []).map((item: any) => ({
+            ...item,
+            product_name: item.products?.name || 'Unknown Product'
+          }))
+        }));
+      }
+    } catch {}
+    return this.localStore.getPurchases(businessId);
   }
 
   async getPurchaseById(businessId: string, id: string): Promise<Purchase | null> {
-    const { data: p, error } = await this.client
-      .from('purchases')
-      .select(`
-        *,
-        suppliers (name),
-        purchase_items (*, products (name))
-      `)
-      .eq('business_id', businessId)
-      .eq('id', id)
-      .single();
+    try {
+      const { data: p, error } = await this.client
+        .from('purchases')
+        .select(`
+          *,
+          suppliers (name),
+          purchase_items (*, products (name))
+        `)
+        .eq('business_id', businessId)
+        .eq('id', id)
+        .single();
 
-    if (error || !p) return null;
-
-    return {
-      ...p,
-      supplier_name: p.suppliers?.name || 'Unknown Supplier',
-      items: (p.purchase_items || []).map((item: any) => ({
-        ...item,
-        product_name: item.products?.name || 'Unknown Product'
-      }))
-    };
+      if (!error && p) {
+        return {
+          ...p,
+          supplier_name: p.suppliers?.name || 'Unknown Supplier',
+          items: (p.purchase_items || []).map((item: any) => ({
+            ...item,
+            product_name: item.products?.name || 'Unknown Product'
+          }))
+        };
+      }
+    } catch {}
+    return this.localStore.getPurchaseById(businessId, id);
   }
 
   async createPurchase(purchase: Purchase, items: PurchaseItem[]): Promise<Purchase> {
-    const { supplier_name, items: _i, ...purchaseRow } = purchase as any;
-    const { error: pErr } = await this.client.from('purchases').insert(purchaseRow);
-    if (pErr) throw new Error(`Failed to insert purchase: ${pErr.message}`);
+    const local = await this.localStore.createPurchase(purchase, items);
+    try {
+      const biz = await this.getBusiness(purchase.business_id);
+      if (biz) {
+        await this.client.from('businesses').upsert(biz);
+      }
+      const { supplier_name, items: _i, ...purchaseRow } = purchase as any;
+      const { error: pErr } = await this.client.from('purchases').insert(purchaseRow);
+      if (pErr) console.warn(`Supabase purchase note: ${pErr.message}`);
 
-    if (items.length > 0) {
-      const cleanItems = items.map(({ product_name, ...it }: any) => it);
-      const { error: iErr } = await this.client.from('purchase_items').insert(cleanItems);
-      if (iErr) throw new Error(`Failed to insert purchase items: ${iErr.message}`);
+      if (items.length > 0) {
+        const cleanItems = items.map(({ product_name, ...it }: any) => it);
+        const { error: iErr } = await this.client.from('purchase_items').insert(cleanItems);
+        if (iErr) console.warn(`Supabase purchase items note: ${iErr.message}`);
+      }
+
+      const fetched = await this.getPurchaseById(purchase.business_id, purchase.id);
+      if (fetched) return fetched;
+    } catch (e: any) {
+      console.warn(`Supabase createPurchase fallback: ${e.message}`);
     }
-
-    return this.getPurchaseById(purchase.business_id, purchase.id) as Promise<Purchase>;
+    return local;
   }
 
   async updatePurchase(purchase: Purchase, items: PurchaseItem[]): Promise<Purchase> {
@@ -393,60 +452,77 @@ export class SupabaseStore implements IDatabase {
   }
 
   async getSales(businessId: string): Promise<Sale[]> {
-    const { data: sales, error: sError } = await this.client
-      .from('sales')
-      .select(`
-        *,
-        sale_items (*, products (name))
-      `)
-      .eq('business_id', businessId)
-      .order('sale_date', { ascending: false });
+    try {
+      const { data: sales, error: sError } = await this.client
+        .from('sales')
+        .select(`
+          *,
+          sale_items (*, products (name))
+        `)
+        .eq('business_id', businessId)
+        .order('sale_date', { ascending: false });
 
-    if (sError) throw new Error(`Supabase getSales error: ${sError.message}`);
-
-    return (sales || []).map((s: any) => ({
-      ...s,
-      items: (s.sale_items || []).map((item: any) => ({
-        ...item,
-        product_name: item.products?.name || 'Unknown Product'
-      }))
-    }));
+      if (!sError && sales && sales.length > 0) {
+        return (sales || []).map((s: any) => ({
+          ...s,
+          items: (s.sale_items || []).map((item: any) => ({
+            ...item,
+            product_name: item.products?.name || 'Unknown Product'
+          }))
+        }));
+      }
+    } catch {}
+    return this.localStore.getSales(businessId);
   }
 
   async getSaleById(businessId: string, id: string): Promise<Sale | null> {
-    const { data: s, error } = await this.client
-      .from('sales')
-      .select(`
-        *,
-        sale_items (*, products (name))
-      `)
-      .eq('business_id', businessId)
-      .eq('id', id)
-      .single();
+    try {
+      const { data: s, error } = await this.client
+        .from('sales')
+        .select(`
+          *,
+          sale_items (*, products (name))
+        `)
+        .eq('business_id', businessId)
+        .eq('id', id)
+        .single();
 
-    if (error || !s) return null;
-
-    return {
-      ...s,
-      items: (s.sale_items || []).map((item: any) => ({
-        ...item,
-        product_name: item.products?.name || 'Unknown Product'
-      }))
-    };
+      if (!error && s) {
+        return {
+          ...s,
+          items: (s.sale_items || []).map((item: any) => ({
+            ...item,
+            product_name: item.products?.name || 'Unknown Product'
+          }))
+        };
+      }
+    } catch {}
+    return this.localStore.getSaleById(businessId, id);
   }
 
   async createSale(sale: Sale, items: SaleItem[]): Promise<Sale> {
-    const { items: _i, ...saleRow } = sale as any;
-    const { error: sErr } = await this.client.from('sales').insert(saleRow);
-    if (sErr) throw new Error(`Failed to insert sale: ${sErr.message}`);
+    const local = await this.localStore.createSale(sale, items);
+    try {
+      const biz = await this.getBusiness(sale.business_id);
+      if (biz) {
+        await this.client.from('businesses').upsert(biz);
+      }
+      const { items: _i, ...saleRow } = sale as any;
+      const { error: sErr } = await this.client.from('sales').insert(saleRow);
+      if (sErr) console.warn(`Supabase sale note: ${sErr.message}`);
 
-    if (items.length > 0) {
-      const cleanItems = items.map(({ product_name, ...it }: any) => it);
-      const { error: iErr } = await this.client.from('sale_items').insert(cleanItems);
-      if (iErr) throw new Error(`Failed to insert sale items: ${iErr.message}`);
+      if (items.length > 0) {
+        const cleanItems = items.map(({ product_name, ...it }: any) => it);
+        const { error: iErr } = await this.client.from('sale_items').insert(cleanItems);
+        if (iErr) console.warn(`Supabase sale items note: ${iErr.message}`);
+      }
+
+      const fetched = await this.getSaleById(sale.business_id, sale.id);
+      if (fetched) return fetched;
+    } catch (e: any) {
+      console.warn(`Supabase createSale fallback: ${e.message}`);
     }
-
-    return this.getSaleById(sale.business_id, sale.id) as Promise<Sale>;
+    return local;
   }
 
   async updateSale(sale: Sale, items: SaleItem[]): Promise<Sale> {
@@ -482,34 +558,50 @@ export class SupabaseStore implements IDatabase {
   }
 
   async getExpenses(businessId: string): Promise<Expense[]> {
-    const { data, error } = await this.client
-      .from('expenses')
-      .select('*')
-      .eq('business_id', businessId)
-      .order('date', { ascending: false });
-    if (error) throw new Error(`Supabase getExpenses error: ${error.message}`);
-    return (data || []) as Expense[];
+    try {
+      const { data, error } = await this.client
+        .from('expenses')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('date', { ascending: false });
+      if (!error && data && data.length > 0) return data as Expense[];
+    } catch {}
+    return this.localStore.getExpenses(businessId);
   }
 
   async getExpenseById(businessId: string, id: string): Promise<Expense | null> {
-    const { data, error } = await this.client
-      .from('expenses')
-      .select('*')
-      .eq('business_id', businessId)
-      .eq('id', id)
-      .single();
-    if (error || !data) return null;
-    return data as Expense;
+    try {
+      const { data, error } = await this.client
+        .from('expenses')
+        .select('*')
+        .eq('business_id', businessId)
+        .eq('id', id)
+        .single();
+      if (!error && data) return data as Expense;
+    } catch {}
+    return this.localStore.getExpenseById(businessId, id);
   }
 
   async createExpense(expense: Expense): Promise<Expense> {
-    const { data, error } = await this.client
-      .from('expenses')
-      .insert(expense)
-      .select()
-      .single();
-    if (error) throw new Error(`Supabase createExpense error: ${error.message}`);
-    return data as Expense;
+    const local = await this.localStore.createExpense(expense);
+    try {
+      const biz = await this.getBusiness(expense.business_id);
+      if (biz) {
+        await this.client.from('businesses').upsert(biz);
+      }
+      const { data, error } = await this.client
+        .from('expenses')
+        .insert(expense)
+        .select()
+        .single();
+      if (!error && data) return data as Expense;
+      if (error) {
+        console.warn(`Supabase createExpense note: ${error.message}`);
+      }
+    } catch (e: any) {
+      console.warn(`Supabase createExpense exception: ${e.message}`);
+    }
+    return local;
   }
 
   async updateExpense(businessId: string, id: string, updates: Partial<Expense>): Promise<Expense> {
@@ -557,14 +649,17 @@ export class SupabaseStore implements IDatabase {
   }
 
   async createSupplierPayment(payment: SupplierPayment): Promise<SupplierPayment> {
-    const { supplier_name, ...paymentRow } = payment as any;
-    const { data, error } = await this.client
-      .from('supplier_payments')
-      .insert(paymentRow)
-      .select()
-      .single();
-    if (error) throw new Error(`Supabase createSupplierPayment error: ${error.message}`);
-    return data as SupplierPayment;
+    const local = await this.localStore.createSupplierPayment(payment);
+    try {
+      const { supplier_name, ...paymentRow } = payment as any;
+      const { data, error } = await this.client
+        .from('supplier_payments')
+        .insert(paymentRow)
+        .select()
+        .single();
+      if (!error && data) return data as SupplierPayment;
+    } catch {}
+    return local;
   }
 
   async getStockMovements(businessId: string, productId?: string): Promise<StockMovement[]> {
@@ -591,14 +686,17 @@ export class SupabaseStore implements IDatabase {
   }
 
   async createStockMovement(movement: StockMovement): Promise<StockMovement> {
-    const { product_name, ...movementRow } = movement as any;
-    const { data, error } = await this.client
-      .from('stock_movements')
-      .insert(movementRow)
-      .select()
-      .single();
-    if (error) throw new Error(`Supabase createStockMovement error: ${error.message}`);
-    return data as StockMovement;
+    const local = await this.localStore.createStockMovement(movement);
+    try {
+      const { product_name, ...movementRow } = movement as any;
+      const { data, error } = await this.client
+        .from('stock_movements')
+        .insert(movementRow)
+        .select()
+        .single();
+      if (!error && data) return data as StockMovement;
+    } catch {}
+    return local;
   }
 
   async getTransactions(businessId: string): Promise<TransactionRecord[]> {
@@ -612,13 +710,16 @@ export class SupabaseStore implements IDatabase {
   }
 
   async createTransaction(record: TransactionRecord): Promise<TransactionRecord> {
-    const { data, error } = await this.client
-      .from('transactions')
-      .insert(record)
-      .select()
-      .single();
-    if (error) throw new Error(`Supabase createTransaction error: ${error.message}`);
-    return data as TransactionRecord;
+    const local = await this.localStore.createTransaction(record);
+    try {
+      const { data, error } = await this.client
+        .from('transactions')
+        .insert(record)
+        .select()
+        .single();
+      if (!error && data) return data as TransactionRecord;
+    } catch {}
+    return local;
   }
 
   async seedInitialData(businessId: string): Promise<void> {

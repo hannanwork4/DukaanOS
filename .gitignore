@@ -2,7 +2,10 @@ node_modules/
 dist/
 .env
 data/
+server/data/
+mcp/data/
 *.log
+*.tmp
 .DS_Store
 Thumbs.db
 

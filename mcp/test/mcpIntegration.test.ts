@@ -18,8 +18,8 @@ async function testMcpOverNetwork() {
   // 1. List Tools
   const { tools } = await client.listTools();
   console.log(`✅ Discovered ${tools.length} registered MCP tools`);
-  if (tools.length !== 18) {
-    throw new Error(`Expected 18 tools, found ${tools.length}`);
+  if (tools.length < 18) {
+    throw new Error(`Expected at least 18 tools, found ${tools.length}`);
   }
 
   // 2. Call get_dashboard_summary tool

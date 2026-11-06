@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  dukaanos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dukaanos-app
+    restart: unless-stopped
+    ports:
+      - "4000:4000" # Full Web App & Backend API
+      - "4001:4001" # Remote Claude MCP SSE Server
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - MCP_PORT=4001
+      - API_URL=http://localhost:4000
+      - DEFAULT_BUSINESS_ID=b0000000-0000-0000-0000-000000000001
+      - MCP_SECRET=dukaanos_secret_key_change_in_production
+      # Supabase Cloud Database (Optional fallback to local persistence)
+      - SUPABASE_URL=${SUPABASE_URL:-https://mcpbxawetfcleprkgkvn.supabase.co}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jcGJ4YXdldGZjbGVwcmdna3ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzODU1NzEsImV4cCI6MjA1NTk2MTU3MX0.s28R-U-8jK61b2R3e1-wHjM6gT-K3eQ3B-5j_N9k2X0}
+      # Resend Email API for OTP dispatch to Gmail (optional)
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+    volumes:
+      - dukaanos-data:/app/server/data
+
+volumes:
+  dukaanos-data:
+    driver: local
+

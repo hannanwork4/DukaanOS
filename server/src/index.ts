@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'node:path';
+import fs from 'node:fs';
 import productsRouter from './routes/products.js';
 import suppliersRouter from './routes/suppliers.js';
 import purchasesRouter from './routes/purchases.js';
@@ -68,6 +69,25 @@ app.use('/api/ledger', ledgerRouter);
 app.use('/api/insights', insightsRouter);
 app.use('/api/business', businessRouter);
 app.use('/api/auth', authRouter);
+
+// Serve Frontend client build in production or when client/dist exists
+const clientDistCandidates = [
+  path.resolve(process.cwd(), '../client/dist'),
+  path.resolve(process.cwd(), 'client/dist'),
+  path.resolve(process.cwd(), 'public')
+];
+const activeClientDist = clientDistCandidates.find(p => fs.existsSync(p));
+
+if (activeClientDist) {
+  console.log(`[Static] Serving frontend web app from: ${activeClientDist}`);
+  app.use(express.static(activeClientDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path === '/health' || req.path === '/openapi.json') {
+      return next();
+    }
+    res.sendFile(path.join(activeClientDist, 'index.html'));
+  });
+}
 
 // Initialize DB and start server
 async function startServer() {
